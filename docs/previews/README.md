@@ -13,6 +13,13 @@
 | Шаг 2 · `/code` MVP | [step2-recipe-2x-checked-dark.png](step2-recipe-2x-checked-dark.png) · [light](step2-recipe-2x-checked-light.png) | Мохито целиком: порции 2×, отмечены 2 ингредиента | 2026-10-22 |
 | Шаг 2 · `/code` MVP | [step2-404-dark.png](step2-404-dark.png) | Неизвестный коктейль → «Коктейль не найден» | 2026-10-22 |
 | Шаг 3 · `/ref` | [step3-refs-board.png](step3-refs-board.png) | 11 референсов Mobbin для Итерации 2: Мой бар, Мне повезёт, фильтры v2, навигация. Разбор — [ANALYSIS.md](../../refs/mobbin/ANALYSIS.md) | 2026-10-22 |
+| Шаг 4a · `/code` срез 2a | [step4a-catalog-dark.png](step4a-catalog-dark.png) · [light](step4a-catalog-light.png) | Каталог на 51 коктейль: поиск, «Фильтры │ База ⌄ · Вкус ⌄ · Крепость ⌄» | 2026-10-22 |
+| Шаг 4a | [step4a-catalog-sticky-dark.png](step4a-catalog-sticky-dark.png) · [light](step4a-catalog-sticky-light.png) | Прилипшая шапка: поиск и фильтры на стекле | 2026-10-22 |
+| Шаг 4a | [step4a-search-focus-dark.png](step4a-search-focus-dark.png) · [light](step4a-search-focus-light.png) · [ввод](step4a-search-query-dark.png) | Поиск: популярные ингредиенты; ввод «камп» → «Ингредиент: Кампари» | 2026-10-22 |
+| Шаг 4a | [step4a-facet-sheet-dark.png](step4a-facet-sheet-dark.png) · [light](step4a-facet-sheet-light.png) | Шторка одного фасета «Вкус», живой «Показать N» | 2026-10-22 |
+| Шаг 4a | [step4a-filter-sheet-dark.png](step4a-filter-sheet-dark.png) · [light](step4a-filter-sheet-light.png) · [N=0](step4a-filter-sheet-zero-light.png) | Шторка всех фильтров; N = 0 → «Ничего не найдено» | 2026-10-22 |
+| Шаг 4a | [step4a-empty-dark.png](step4a-empty-dark.png) · [light](step4a-empty-light.png) | Пустая выдача: одна подсказка, «Сбросить всё», «Похожие» | 2026-10-22 |
+| Шаг 4a | [step4a-design-system-dark.png](step4a-design-system-dark.png) · [light](step4a-design-system-light.png) | Витрина v0.2: + Chip v2, поиск, EmptyState, шторки, StickyHeader | 2026-10-22 |
 
 ![Шаг 1 — референсы](step1-refs-board.png)
 
@@ -21,3 +28,9 @@
 | Каталог · тёмная | Каталог · светлая | Рецепт 1× | Рецепт 2× + чек-лист |
 |---|---|---|---|
 | ![](step2-catalog-dark.png) | ![](step2-catalog-light.png) | ![](step2-recipe-1x-dark.png) | ![](step2-recipe-2x-checked-dark.png) |
+
+## Шаг 4a — поиск и фильтры
+
+| Каталог | Поиск | Шторка фасета | Пусто |
+|---|---|---|---|
+| ![](step4a-catalog-dark.png) | ![](step4a-search-query-dark.png) | ![](step4a-facet-sheet-dark.png) | ![](step4a-empty-light.png) |

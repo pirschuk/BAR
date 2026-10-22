@@ -31,6 +31,8 @@ export function BottomSheet({ open, onClose, title, children, footer, initialDet
   const [drag, setDrag] = useState(0);
   const start = useRef<number | null>(null);
   const titleId = useId();
+  const dialog = useRef<HTMLDivElement>(null);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     if (open) setDetent(initialDetent);
@@ -40,11 +42,18 @@ export function BottomSheet({ open, onClose, title, children, footer, initialDet
     if (!open || inline) return;
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     const prev = document.body.style.overflow;
+    const opener = document.activeElement as HTMLElement | null;
+    const root = document.getElementById('root');
     document.body.style.overflow = 'hidden';
+    // фон недоступен для Tab и скринридера, пока открыта шторка (aria-modal сам этого не делает)
+    root?.setAttribute('inert', '');
+    dialog.current?.focus();
     window.addEventListener('keydown', onKey);
     return () => {
       document.body.style.overflow = prev;
+      root?.removeAttribute('inert');
       window.removeEventListener('keydown', onKey);
+      opener?.focus({ preventScroll: true });
     };
   }, [open, inline, onClose]);
 
@@ -69,11 +78,13 @@ export function BottomSheet({ open, onClose, title, children, footer, initialDet
 
   const sheet = (
     <div
+      ref={dialog}
+      tabIndex={-1}
       role="dialog"
       aria-modal={inline ? undefined : true}
       aria-labelledby={titleId}
       className={cn(
-        'flex w-full flex-col overflow-hidden rounded-t-sheet bg-surface text-fg',
+        'flex w-full flex-col overflow-hidden rounded-t-sheet bg-surface text-fg outline-none',
         inline ? 'relative max-h-sheet-medium' : 'animate-sheet-in pointer-events-auto mx-auto max-w-app',
         !inline && (detent === 'large' ? 'h-sheet-large' : 'max-h-sheet-medium'),
       )}
@@ -89,14 +100,16 @@ export function BottomSheet({ open, onClose, title, children, footer, initialDet
         <div className="flex justify-center pt-2 pb-1" aria-hidden>
           <span className="h-[5px] w-9 rounded-full bg-fg-3/40" />
         </div>
-        <div className="flex items-center justify-between gap-3 px-4 pb-2">
+        <div className={cn('flex items-center justify-between gap-3 border-b px-4 pb-3', scrolled ? 'border-border' : 'border-transparent')}>
           <h2 id={titleId} className="text-title-2 text-fg">
             {title}
           </h2>
           <IconButton icon={X} label="Закрыть" onClick={onClose} />
         </div>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-4">{children}</div>
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-4" onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 0)}>
+        {children}
+      </div>
       {footer && <div className="pb-safe-sm shrink-0 border-t border-border px-4 pt-3">{footer}</div>}
     </div>
   );
@@ -122,7 +135,10 @@ export function SheetSection({ title, children }: { title: string; children: Rea
   );
 }
 
-/** Футер шторки: текстовое «Сбросить» + primary-пилюля «Показать N» на остаток ширины [Viator, Insight Timer] */
+/**
+ * Футер шторки: нейтральное текстовое «Сбросить» + primary-пилюля L «Показать N» на остаток ширины
+ * [Viator, Insight Timer]. Две равные пилюли не берём: «Показать 13 коктейлей» не помещается в половину.
+ */
 export function SheetFooter({ children }: { children: ReactNode }) {
   return <div className="grid grid-cols-[auto_1fr] items-center gap-3">{children}</div>;
 }

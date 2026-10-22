@@ -2,13 +2,15 @@ import type { ButtonHTMLAttributes } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { cn } from '../../lib/cn';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'plain';
 export type ButtonSize = 'l' | 'm' | 's';
 
 const VARIANT: Record<ButtonVariant, string> = {
   primary: 'bg-accent text-accent-fg',
   secondary: 'bg-surface-2 text-fg',
   ghost: 'bg-transparent text-accent',
+  // нейтральное текстовое действие рядом с primary — не второй акцент
+  plain: 'bg-transparent text-fg',
 };
 
 const SIZE: Record<ButtonSize, string> = {

@@ -20,7 +20,7 @@ export const SearchBar = forwardRef<HTMLInputElement, Props>(function SearchBar(
       <label
         className={cn(
           'flex h-tap min-w-0 flex-1 items-center gap-2 rounded-control bg-surface-2 pl-3 text-fg-2',
-          'focus-within:outline-2 focus-within:outline-accent',
+          'focus-within:outline-1 focus-within:outline-fg-3',
           disabled && 'opacity-40',
         )}
       >

@@ -31,7 +31,7 @@ export function Chip({ variant = 'filter', selected = false, pressed, icon: Icon
         'pressable hit-44 inline-flex h-chip shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-subhead font-medium whitespace-nowrap select-none',
         'disabled:pointer-events-none disabled:opacity-40',
         variant === 'removable'
-          ? 'border-transparent bg-fg text-bg'
+          ? 'border-border bg-surface-2 text-fg'
           : filled
             ? 'border-transparent bg-accent text-accent-fg'
             : 'border-border bg-surface-2 text-fg',

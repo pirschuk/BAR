@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
-import { SearchX, SlidersHorizontal } from 'lucide-react';
+import { Citrus, SearchX, SlidersHorizontal } from 'lucide-react';
 import { cocktails, countLabel } from '../lib/cocktails';
 import {
   EMPTY_FILTERS,
@@ -81,6 +81,16 @@ export function CatalogPage() {
     pending.current = next;
     closeSheet();
   };
+  // прямая ссылка с #filters: подкладываем запись без хэша, чтобы «Назад» закрыл шторку, а не ушёл с сайта
+  useEffect(() => {
+    if (location.hash && !(location.state as { sheet?: boolean } | null)?.sheet) {
+      const hash = location.hash;
+      navigate({ search: location.search, hash: '' }, { replace: true, preventScrollReset: true });
+      navigate({ search: location.search, hash }, { state: { sheet: true }, preventScrollReset: true });
+    }
+    // только при первом показе
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   useEffect(() => {
     if (!location.hash && pending.current) {
       setFilters(pending.current);
@@ -199,6 +209,7 @@ export function CatalogPage() {
           {suggestions.map((d) => (
             <SearchRow
               key={d.id}
+              icon={Citrus}
               title={
                 <>
                   Ингредиент: <Highlight text={d.name} query={q} />
@@ -209,7 +220,7 @@ export function CatalogPage() {
             />
           ))}
 
-          <p className="mt-2 px-4 text-footnote text-fg-2" aria-live="polite">
+          <p className={`mt-2 px-4 text-footnote text-fg-2 ${list.length ? '' : 'invisible'}`} aria-live="polite">
             {countLabel(list.length)}
             {q.trim() && ` по запросу «${q.trim()}»`}
           </p>
@@ -223,9 +234,19 @@ export function CatalogPage() {
               <EmptyState
                 icon={SearchX}
                 title="Ничего не нашлось"
-                hint={hasFacetFilters(f) ? 'Уберите часть фильтров' : 'Попробуйте другое название или ингредиент'}
+                hint={
+                  hasFacetFilters(f) && q.trim()
+                    ? 'Измените запрос или уберите фильтры'
+                    : hasFacetFilters(f)
+                      ? 'Уберите часть фильтров'
+                      : 'Попробуйте другое название или ингредиент'
+                }
                 action={
-                  hasFacetFilters(f) ? (
+                  hasFacetFilters(f) && q.trim() ? (
+                    <Button variant="secondary" size="m" onClick={() => setFilters(EMPTY_FILTERS)}>
+                      Сбросить всё
+                    </Button>
+                  ) : hasFacetFilters(f) ? (
                     <Button variant="secondary" size="m" onClick={resetFacets}>
                       Сбросить фильтры
                     </Button>

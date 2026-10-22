@@ -142,7 +142,7 @@ export function DesignSystemPage() {
       <header className="pt-safe flex items-start justify-between gap-3 px-4">
         <div>
           <h1 className="text-large-title text-fg">Дизайн-система</h1>
-          <p className="mt-1 text-footnote text-fg-2">BAR v0.1 · компоненты MVP</p>
+          <p className="mt-1 text-footnote text-fg-2">BAR v0.2 · компоненты итераций 1–2a</p>
         </div>
         <ThemeToggle />
       </header>
@@ -367,8 +367,8 @@ export function DesignSystemPage() {
                 title="Заголовок"
                 footer={
                   <SheetFooter>
-                    <Button variant="ghost" size="m" className="px-2">Сбросить</Button>
-                    <Button size="m" className="rounded-full whitespace-nowrap">Показать 12 коктейлей</Button>
+                    <Button variant="plain" className="px-1!">Сбросить</Button>
+                    <Button className="px-4! whitespace-nowrap">Показать 12 коктейлей</Button>
                   </SheetFooter>
                 }
               >

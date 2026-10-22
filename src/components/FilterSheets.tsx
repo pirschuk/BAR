@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { countLabel } from '../lib/cocktails';
-import { EMPTY_FILTERS, FACETS, type FacetKey, type FilterState } from '../lib/filters';
+import { EMPTY_FILTERS, FACETS, getIngredient, type FacetKey, type FilterState } from '../lib/filters';
 import { BottomSheet, SheetFooter, SheetSection } from './ui/BottomSheet';
 import { Button } from './ui/Button';
 import { Chip, ChipWrap } from './ui/Chip';
@@ -45,15 +45,31 @@ export function FilterSheet({ open, facet, value, count, onApply, onClose, inlin
       title={facet ? FACETS[facet].title : 'Фильтры'}
       footer={
         <SheetFooter>
-          <Button variant="ghost" size="m" className="px-2" onClick={reset} disabled={!dirty}>
+          <Button variant="plain" className="px-1!" onClick={reset} disabled={!dirty}>
             Сбросить
           </Button>
-          <Button size="m" className="rounded-full whitespace-nowrap" onClick={() => onApply(draft)} disabled={n === 0}>
-            {n === 0 ? 'Ничего не найдено' : `Показать ${countLabel(n)}`}
-          </Button>
+          {n === 0 ? (
+            // не «бледный акцент», а нейтральная плашка: текст должен читаться в обеих темах
+            <Button variant="secondary" className="px-4! whitespace-nowrap text-fg-2 disabled:opacity-100" disabled>
+              Ничего не найдено
+            </Button>
+          ) : (
+            <Button className="px-4! whitespace-nowrap" onClick={() => onApply(draft)}>
+              Показать {countLabel(n)}
+            </Button>
+          )}
         </SheetFooter>
       }
     >
+      {!facet && draft.ing && (
+        <SheetSection title="Ингредиент">
+          <ChipWrap label="Ингредиент">
+            <Chip variant="removable" onClick={() => setDraft({ ...draft, ing: null })}>
+              {getIngredient(draft.ing)?.name}
+            </Chip>
+          </ChipWrap>
+        </SheetSection>
+      )}
       {keys.map((key) => {
         const options = FACETS[key].options as readonly { id: string; label: string }[];
         const selected = draft[key] as string[];
