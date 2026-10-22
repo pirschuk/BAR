@@ -119,3 +119,79 @@ Drinkin в базе Mobbin не найден; ближайший по духу �
 - Хэндл 36×5 сверху, заголовок по центру крупно.
 
 ### BitePal — выбор порций · `4-sheet-bitepal-servings-picker.jpg` (из Шага 0)
+
+---
+
+# Шаг 3 — референсы для Итерации 2 (поиск, фильтры, «Мой бар», «Мне повезёт»)
+
+Дата: 2026-10-22. Доска: [`docs/previews/step3-refs-board.png`](../../docs/previews/step3-refs-board.png).
+
+## Зона 5. Мой бар (инвентарь)
+
+### ★ Kitchen Stories — поиск по ингредиентам · `5-bar-kitchen-stories-search-by-ingredients.jpg`
+[mobbin](https://mobbin.com/screens/2a6c76a0-cbd1-44d6-aa7d-8e8485a6e6f6)
+- Под полем — выбранные ингредиенты `×`-чипсами (заливка, без обводки), ниже —
+  подсказки обводкой; ряды скроллятся горизонтально.
+- Выдача сгруппирована: **«2 out of 4 ingredients»** + чипсы совпавших — совпадение
+  показано числом, а не фильтром «да/нет». → наши секции «Можно приготовить» /
+  «Не хватает одного».
+
+### ★ Cherrypick — добавить ингредиенты · `5-bar-cherrypick-add-ingredients.jpg`
+[mobbin](https://mobbin.com/screens/febcb18b-8c47-4483-a9bd-2add3336413f)
+- Шторка поверх шторки фильтров: поиск + чипсы-результаты. Невыбранный —
+  обводка и **«+»**, выбранный — тёмная заливка и **«×»**: действие видно до тапа.
+
+### MyFitnessPal — ограничения · `5-bar-myfitnesspal-selected-chips.jpg`
+[mobbin](https://mobbin.com/screens/734b01b4-ef69-4c64-940f-5532575a6c89)
+- Поиск → выбранные `×`-чипсы → «Common …» плотной wrap-сеткой (чипсы ~32pt,
+  gap 6–8). Длинный словарь читается за секунды.
+
+### Recime — «What's in your pantry» · `5-bar-recime-pantry-grid.jpg`
+[mobbin](https://mobbin.com/screens/4eeb192b-a2af-4e8a-a69c-7ae2c78da096)
+- Сетка 4 колонки «иконка + подпись», сначала «Popular». Без иллюстраций
+  ингредиентов нам ближе wrap-чипсы (MyFitnessPal), но порядок «Популярное
+  первым» берём.
+
+## Зона 6. Мне повезёт
+
+### ★ Julienne — колода · `6-lucky-julienne-card-deck.jpg`
+[mobbin](https://mobbin.com/screens/67dd4c4f-ef10-4298-93ed-64363802e662)
+- Карточки стопкой: верхняя повёрнута и сдвинута, следующая выглядывает —
+  сразу понятно, что можно смахнуть. Действия («Save», «Ask») — на карточке.
+
+### Transit — перегенерация · `6-lucky-transit-shuffle.jpg`
+[mobbin](https://mobbin.com/screens/354dc707-ae6a-424a-9381-f7247ca5e046)
+- Крупный результат + центральная круглая кнопка «↻» 48pt, вторичные действия
+  меньше по бокам.
+- Отказались: колёса фортуны (SHEIN, Fanatics) — шумно и долго.
+
+## Зона 7. Фильтры v2
+
+### ★ Viator — шторка одного фасета · `7-filters-viator-facet-sheet.jpg`
+[mobbin](https://mobbin.com/screens/6452ea9c-166d-45e2-ae65-3bcfc80f0308)
+- Ряд фасетов «Dates ⌄ · Duration ⌃ · Languages ⌄»; тап открывает шторку **только
+  этого фасета**: список с чекбоксами, футер «Clear all» (текст) + «Show 200
+  results» (primary). Над выдачей — «200 results» `title-2`.
+
+### Google Drive — активные фасеты и пусто · `7-filters-google-drive-active-chips-empty.jpg`
+[mobbin](https://mobbin.com/screens/f9f86637-40e2-4126-a850-5106dc9cf02a)
+- Активный фасет: заливка + «✓» + значение («✓ Last year ⌄»); в конце ряда —
+  «Clear all». Пусто: иллюстрация, «No matching results», одна кнопка «Clear filters».
+
+### Careem / GitHub — пустой результат · `7-filters-careem-no-results.jpg`
+[mobbin](https://mobbin.com/screens/669816e3-ae99-4103-975d-ee96dd3821fe) ·
+[GitHub](https://mobbin.com/screens/d094ef53-7f0b-4ea7-b57b-835f2e069638)
+- Ряд фильтров остаётся над пустым состоянием; текст «Use fewer filters or reset
+  all filters» — одна строка с подсказкой действия; одна кнопка (outline / ссылка).
+
+## Зона 8. Навигация
+
+### ★ GitHub — плавающий таб-бар · `8-nav-github-floating-tabbar.jpg`
+[mobbin](https://mobbin.com/screens/d094ef53-7f0b-4ea7-b57b-835f2e069638)
+- Пилюля с отступом ~16 от краёв, высота ~64, активный таб — светлая
+  подложка-пилюля; иконка 24 + подпись 11–12.
+
+### ★ CREME — центральное действие · `8-nav-creme-center-action-tabbar.jpg`
+[mobbin](https://mobbin.com/screens/715a96fa-90bc-4180-b8ba-1342b060bd0f)
+- Тёмный бар, по центру — белая круглая кнопка ~44–48 с ✦: главное действие
+  приложения, а не раздел. → наша 🎲 «Мне повезёт».

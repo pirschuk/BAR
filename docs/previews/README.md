@@ -12,6 +12,7 @@
 | Шаг 2 · `/code` MVP | [step2-recipe-1x-dark.png](step2-recipe-1x-dark.png) · [light](step2-recipe-1x-light.png) | Рецепт Негрони 1×, первый экран | 2026-10-22 |
 | Шаг 2 · `/code` MVP | [step2-recipe-2x-checked-dark.png](step2-recipe-2x-checked-dark.png) · [light](step2-recipe-2x-checked-light.png) | Мохито целиком: порции 2×, отмечены 2 ингредиента | 2026-10-22 |
 | Шаг 2 · `/code` MVP | [step2-404-dark.png](step2-404-dark.png) | Неизвестный коктейль → «Коктейль не найден» | 2026-10-22 |
+| Шаг 3 · `/ref` | [step3-refs-board.png](step3-refs-board.png) | 11 референсов Mobbin для Итерации 2: Мой бар, Мне повезёт, фильтры v2, навигация. Разбор — [ANALYSIS.md](../../refs/mobbin/ANALYSIS.md) | 2026-10-22 |
 
 ![Шаг 1 — референсы](step1-refs-board.png)
 
