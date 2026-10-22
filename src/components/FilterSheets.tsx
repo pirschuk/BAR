@@ -1,0 +1,87 @@
+import { useEffect, useState } from 'react';
+import { countLabel } from '../lib/cocktails';
+import { EMPTY_FILTERS, FACETS, type FacetKey, type FilterState } from '../lib/filters';
+import { BottomSheet, SheetFooter, SheetSection } from './ui/BottomSheet';
+import { Button } from './ui/Button';
+import { Chip, ChipWrap } from './ui/Chip';
+
+type Props = {
+  open: boolean;
+  /** null — все фасеты (FilterSheet), иначе — один фасет (FacetSheet) [Viator] */
+  facet: FacetKey | null;
+  value: FilterState;
+  /** сколько коктейлей даст черновик фильтров — для «Показать N» */
+  count: (draft: FilterState) => number;
+  onApply: (next: FilterState) => void;
+  onClose: () => void;
+  /** для витрины */
+  inline?: boolean;
+};
+
+const ORDER: FacetKey[] = ['base', 'taste', 'strength'];
+
+function toggle<T>(list: T[], id: T): T[] {
+  return list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
+}
+
+/** Черновик внутри шторки: применяется только по «Показать N»; закрытие без него ничего не меняет */
+export function FilterSheet({ open, facet, value, count, onApply, onClose, inline }: Props) {
+  const [draft, setDraft] = useState(value);
+  useEffect(() => {
+    if (open) setDraft(value);
+  }, [open, value]);
+
+  const keys = facet ? [facet] : ORDER;
+  const n = count(draft);
+  const reset = () =>
+    setDraft(facet ? { ...draft, [facet]: [] } : { ...EMPTY_FILTERS, q: draft.q });
+  const dirty = keys.some((k) => (draft[k] as string[]).length) || (!facet && draft.ing !== null);
+
+  return (
+    <BottomSheet
+      open={open}
+      onClose={onClose}
+      inline={inline}
+      title={facet ? FACETS[facet].title : 'Фильтры'}
+      footer={
+        <SheetFooter>
+          <Button variant="secondary" size="m" className="rounded-full" onClick={reset} disabled={!dirty}>
+            Сбросить
+          </Button>
+          <Button size="m" className="rounded-full" onClick={() => onApply(draft)} disabled={n === 0}>
+            {n === 0 ? 'Ничего не найдено' : `Показать ${countLabel(n)}`}
+          </Button>
+        </SheetFooter>
+      }
+    >
+      {keys.map((key) => {
+        const options = FACETS[key].options as readonly { id: string; label: string }[];
+        const selected = draft[key] as string[];
+        const body = (
+          <ChipWrap label={FACETS[key].title}>
+            {options.map((o) => (
+              <Chip
+                key={o.id}
+                variant="option"
+                selected={selected.includes(o.id)}
+                onClick={() => setDraft({ ...draft, [key]: toggle(selected, o.id) })}
+              >
+                {o.label}
+              </Chip>
+            ))}
+          </ChipWrap>
+        );
+        return facet ? (
+          <div key={key} className="pt-2">
+            <p className="mb-3 px-4 text-footnote text-fg-2">Можно выбрать несколько</p>
+            {body}
+          </div>
+        ) : (
+          <SheetSection key={key} title={FACETS[key].title}>
+            {body}
+          </SheetSection>
+        );
+      })}
+    </BottomSheet>
+  );
+}

@@ -61,6 +61,8 @@
   --color-on-media: #ffffff;
   --color-on-media-2: rgb(255 255 255 / 0.72);
   --color-transparent: transparent;
+  /* затемнение под шторкой — одинаковое в обеих темах */
+  --color-scrim: rgb(0 0 0 / 0.4);
 
   --font-sans: -apple-system, 'SF Pro Text', BlinkMacSystemFont, Inter, Roboto, system-ui, sans-serif;
 
@@ -156,6 +158,13 @@
   backdrop-filter: blur(16px) saturate(1.4);
 }
 
+/* Стекло липкой шапки: цвет фона темы + размытие */
+@utility sticky-glass {
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  backdrop-filter: blur(20px) saturate(1.6);
+}
+
 /* Скрим под текст поверх обложки */
 @utility scrim-bottom {
   background: linear-gradient(to top, rgb(0 0 0 / 0.72), transparent 60%);
@@ -181,6 +190,33 @@
 @utility hero-shape {
   border-bottom-left-radius: var(--hero-radius);
   border-bottom-right-radius: var(--hero-radius);
+}
+
+/* Шторка: детенты medium / large */
+@utility max-h-sheet-medium {
+  max-height: 62svh;
+}
+@utility h-sheet-large {
+  height: 92svh;
+}
+@utility pb-safe-sm {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), var(--spacing) * 4);
+}
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@utility animate-sheet-in {
+  animation: sheet-in 320ms var(--ease-soft);
+}
+@utility animate-fade-in {
+  animation: fade-in 200ms ease-out;
 }
 
 @utility h-hero {

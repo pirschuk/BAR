@@ -1,6 +1,8 @@
 // Схема — .claude/skills/cocktail-data/SKILL.md
 
-export type Base = 'gin' | 'rum' | 'whiskey' | 'tequila' | 'vodka' | 'aperitif';
+export type Base = 'gin' | 'rum' | 'whiskey' | 'tequila' | 'vodka' | 'brandy' | 'aperitif' | 'non-alcoholic';
+
+export type Taste = 'sour' | 'sweet' | 'bitter' | 'fruity' | 'herbal' | 'refreshing' | 'creamy' | 'spicy';
 
 export type Method = 'build' | 'stir' | 'shake' | 'dry-shake' | 'blend' | 'muddle' | 'layer' | 'throw';
 
@@ -39,6 +41,8 @@ export type IngredientCategory =
   | 'other';
 
 export type Ingredient = {
+  /** id из словаря src/data/ingredients.json */
+  ref: string;
   name: string;
   amountMl?: number;
   amount?: number;
@@ -72,4 +76,17 @@ export type Cocktail = {
   iba?: boolean;
   base: Base;
   cover: Cover;
+};
+
+export type IngredientGroup = 'spirit' | 'liqueur' | 'bitter' | 'syrup' | 'juice-fruit' | 'soda' | 'other';
+
+/** Словарь ингредиентов — src/data/ingredients.json */
+export type IngredientDef = {
+  id: string;
+  name: string;
+  aliases: string[];
+  group: IngredientGroup;
+  /** вода, лёд, сахар, соль — всегда «есть» */
+  pantry?: boolean;
+  popular?: boolean;
 };

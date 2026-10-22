@@ -1,11 +1,18 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { ChevronLeft, Moon } from 'lucide-react';
+import { ChevronLeft, Moon, SearchX, SlidersHorizontal, Wine } from 'lucide-react';
 import { Link } from 'react-router';
 import { cocktails, countLabel, getCocktail, scaleIngredient, type GlassShape, type Servings } from '../lib/cocktails';
 import { useTheme } from '../lib/theme';
 import type { Cocktail, Ice } from '../types/cocktail';
 import { Button, IconButton, buttonClass } from '../components/ui/Button';
-import { Chip, ChipRow } from '../components/ui/Chip';
+import { Chip, ChipDivider, ChipRow, ChipWrap } from '../components/ui/Chip';
+import { SearchBar } from '../components/ui/SearchBar';
+import { Highlight, RecentRow, SearchRow, SearchSectionTitle } from '../components/ui/SearchRows';
+import { EmptyState } from '../components/ui/EmptyState';
+import { BottomSheet, SheetFooter, SheetSection } from '../components/ui/BottomSheet';
+import { StickyHeader } from '../components/ui/StickyHeader';
+import { FilterSheet } from '../components/FilterSheets';
+import { EMPTY_FILTERS, applyFilters, type FilterState } from '../lib/filters';
 import { GlassIllustration } from '../components/ui/GlassIllustration';
 import { CocktailCard, coverStyle } from '../components/ui/CocktailCard';
 import { CocktailHero } from '../components/ui/CocktailHero';
@@ -113,6 +120,11 @@ function Swatch({ token, cls, note }: (typeof PALETTE)[number]) {
 
 export function DesignSystemPage() {
   const [chip, setChip] = useState('gin');
+  const [facets, setFacets] = useState<Set<string>>(new Set(['Вкус']));
+  const [options, setOptions] = useState<Set<string>>(new Set(['Кислый']));
+  const [query, setQuery] = useState('');
+  const sheetValue: FilterState = { ...EMPTY_FILTERS, taste: ['sour'] };
+  const sheetCount = (d: FilterState) => applyFilters(cocktails, d).length;
   const [servings, setServings] = useState<Servings>(2);
   const [checked, setChecked] = useState<ReadonlySet<number>>(new Set([0]));
   const sour = must('whiskey-sour');
@@ -141,6 +153,10 @@ export function DesignSystemPage() {
           ['type', 'Типографика'],
           ['button', 'Button'],
           ['chip', 'Chip'],
+          ['search', 'Поиск'],
+          ['empty', 'EmptyState'],
+          ['sheet', 'Шторки'],
+          ['sticky', 'StickyHeader'],
           ['glass', 'Бокалы'],
           ['card', 'CocktailCard'],
           ['hero', 'CocktailHero'],
@@ -199,6 +215,14 @@ export function DesignSystemPage() {
               </Button>
             </div>
           </State>
+          <State label="S · ghost / secondary / pressed / disabled — «Сбросить», «Это есть»">
+            <div className="flex flex-wrap items-center gap-3">
+              <Button variant="ghost" size="s">Сбросить</Button>
+              <Button variant="secondary" size="s">Это есть</Button>
+              <Button variant="secondary" size="s" pressed>Это есть</Button>
+              <Button variant="ghost" size="s" disabled>Сбросить</Button>
+            </div>
+          </State>
           <State label="Link как кнопка">
             <Link to="/" className={buttonClass('primary', 'l', 'w-full')}>
               Открыть каталог
@@ -220,18 +244,70 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="chip" title="Chip / ChipRow" note="36 визуально, 44 тач-зона. Выбранный — акцент. Ряд уходит за правый край.">
+      <Section id="chip" title="Chip / ChipRow" note="36 визуально, 44 тач-зона. Варианты: filter, facet (⌄), option (+ / ✓), removable (×).">
         <div className="flex flex-col gap-5">
-          <State label="default / selected / pressed / disabled" className="px-4">
+          <State label="filter — default / selected / pressed / disabled / с иконкой и бейджем" className="px-4">
             <div className="flex flex-wrap gap-2">
               <Chip>Джин</Chip>
               <Chip selected>Ром</Chip>
               <Chip pressed>Виски</Chip>
               <Chip disabled>Текила</Chip>
+              <Chip icon={SlidersHorizontal}>Фильтры</Chip>
+              <Chip icon={SlidersHorizontal} badge={2}>Фильтры</Chip>
+            </div>
+          </State>
+          <State label="facet — пусто / выбрано одно / выбрано несколько / pressed" className="px-4">
+            <div className="flex flex-wrap gap-2">
+              <Chip variant="facet">Вкус</Chip>
+              <Chip variant="facet" selected>Кислый</Chip>
+              <Chip variant="facet" selected>Ром +1</Chip>
+              <Chip variant="facet" pressed>Крепость</Chip>
+            </div>
+          </State>
+          <State label="option — «+» не выбран / «✓» выбран (интерактивно)">
+            <ChipWrap label="Вкус">
+              {['Кислый', 'Сладкий', 'Горький', 'Фруктовый', 'Травяной'].map((o) => (
+                <Chip
+                  key={o}
+                  variant="option"
+                  selected={options.has(o)}
+                  onClick={() => setOptions((prev) => { const n = new Set(prev); if (!n.delete(o)) n.add(o); return n; })}
+                >
+                  {o}
+                </Chip>
+              ))}
+            </ChipWrap>
+          </State>
+          <State label="removable — активный ингредиент из поиска" className="px-4">
+            <div className="flex flex-wrap gap-2">
+              <Chip variant="removable">Кампари</Chip>
+              <Chip variant="removable" pressed>Лайм</Chip>
             </div>
           </State>
           <div>
-            <p className="mb-2 px-4 text-caption text-fg-3 uppercase">ChipRow · интерактивно</p>
+            <p className="mb-2 px-4 text-caption text-fg-3 uppercase">ChipRow — «Фильтры» │ фасеты · «Сбросить» (интерактивно)</p>
+            <ChipRow label="Фильтры">
+              <Chip icon={SlidersHorizontal} badge={facets.size}>Фильтры</Chip>
+              <ChipDivider />
+              {['База', 'Вкус', 'Крепость'].map((label) => (
+                <Chip
+                  key={label}
+                  variant="facet"
+                  selected={facets.has(label)}
+                  onClick={() => setFacets((prev) => { const n = new Set(prev); if (!n.delete(label)) n.add(label); return n; })}
+                >
+                  {facets.has(label) ? (label === 'Вкус' ? 'Кислый' : label === 'База' ? 'Ром +1' : 'Лёгкий') : label}
+                </Chip>
+              ))}
+              {facets.size > 0 && (
+                <Button variant="ghost" size="s" onClick={() => setFacets(new Set())}>
+                  Сбросить
+                </Button>
+              )}
+            </ChipRow>
+          </div>
+          <div>
+            <p className="mb-2 px-4 text-caption text-fg-3 uppercase">ChipRow — выбор одного (Итерация 1)</p>
             <ChipRow label="База">
               {['Все', 'Джин', 'Ром', 'Виски', 'Текила', 'Водка', 'Аперитивы'].map((label) => (
                 <Chip key={label} selected={chip === label} onClick={() => setChip(label)}>
@@ -240,6 +316,106 @@ export function DesignSystemPage() {
               ))}
             </ChipRow>
           </div>
+        </div>
+      </Section>
+
+      <Section id="search" title="SearchBar / строки поиска" note="44, радиус 12; ⓧ при вводе; «Отмена» в режиме поиска. Строки ≥ 48: недавнее (часы), подсказка (лупа).">
+        <div className="flex flex-col gap-5">
+          <State label="пусто" className="px-4">
+            <SearchBar value="" onChange={() => {}} placeholder="Название или ингредиент" />
+          </State>
+          <State label="режим поиска + ввод (интерактивно)" className="px-4">
+            <SearchBar value={query} onChange={setQuery} showCancel onCancel={() => setQuery('')} placeholder="Название или ингредиент" />
+          </State>
+          <State label="с текстом" className="px-4">
+            <SearchBar value="кампари" onChange={() => {}} placeholder="Название или ингредиент" />
+          </State>
+          <State label="disabled" className="px-4">
+            <SearchBar value="" onChange={() => {}} disabled placeholder="Найти ингредиент" />
+          </State>
+          <div>
+            <SearchSectionTitle title="Недавние" action={<Button variant="ghost" size="s">Очистить</Button>} />
+            <RecentRow title="негрони" />
+            <RecentRow title="что-то с кампари" pressed />
+            <SearchSectionTitle title="Подсказка при вводе «камп»" />
+            <SearchRow title={<>Ингредиент: <Highlight text="Кампари" query="камп" /></>} subtitle="Показать все коктейли с ним" />
+          </div>
+        </div>
+      </Section>
+
+      <Section id="empty" title="EmptyState" note="Иконка в круге 96, title-2, одна строка-подсказка, одно действие. Под ним — «Похожие».">
+        <div className="flex flex-col gap-3">
+          <EmptyState
+            icon={SearchX}
+            title="Ничего не нашлось"
+            hint="Уберите часть фильтров"
+            action={<Button variant="secondary" size="m">Сбросить фильтры</Button>}
+            className="mx-4 rounded-card border border-border"
+          />
+          <EmptyState icon={Wine} title="Бар пока пуст" hint="Отметьте, что есть дома" className="mx-4 rounded-card border border-border" />
+        </div>
+      </Section>
+
+      <Section id="sheet" title="BottomSheet / FacetSheet / FilterSheet" note="Здесь — встроенно, на экране — поверх скрима. Свайп за хэндл: вверх — large, вниз — закрыть. «Показать N» — живой счётчик.">
+        <div className="flex flex-col gap-6 px-4">
+          <State label="BottomSheet · базовый, с липким футером">
+            <div className="overflow-hidden rounded-sheet border border-border">
+              <BottomSheet
+                open
+                inline
+                onClose={() => {}}
+                title="Заголовок"
+                footer={
+                  <SheetFooter>
+                    <Button variant="secondary" size="m" className="rounded-full">Сбросить</Button>
+                    <Button size="m" className="rounded-full">Показать 12 коктейлей</Button>
+                  </SheetFooter>
+                }
+              >
+                <SheetSection title="Секция">
+                  <p className="px-4 text-subhead text-fg-2">Содержимое прокручивается, футер остаётся на месте.</p>
+                </SheetSection>
+              </BottomSheet>
+            </div>
+          </State>
+          <State label="FacetSheet · Вкус (интерактивно)">
+            <div className="overflow-hidden rounded-sheet border border-border">
+              <FilterSheet open inline facet="taste" value={sheetValue} count={sheetCount} onApply={() => {}} onClose={() => {}} />
+            </div>
+          </State>
+          <State label="FilterSheet · все фасеты">
+            <div className="overflow-hidden rounded-sheet border border-border">
+              <FilterSheet open inline facet={null} value={sheetValue} count={sheetCount} onApply={() => {}} onClose={() => {}} />
+            </div>
+          </State>
+          <State label="N = 0 — CTA disabled">
+            <div className="overflow-hidden rounded-sheet border border-border">
+              <FilterSheet open inline facet="strength" value={{ ...EMPTY_FILTERS, q: 'zzz' }} count={() => 0} onApply={() => {}} onClose={() => {}} />
+            </div>
+          </State>
+        </div>
+      </Section>
+
+      <Section id="sticky" title="StickyHeader" note="До прилипания — фон экрана; после — стекло и линия снизу. Large title уезжает, поиск и фильтры остаются.">
+        <div className="flex flex-col gap-5">
+          {[false, true].map((stuck) => (
+            <State key={String(stuck)} label={stuck ? 'прилипла' : 'в потоке'}>
+              <div className="cover-gradient" style={coverStyle(must('negroni'))}>
+                <StickyHeader forceStuck={stuck}>
+                  <div className="px-4 pt-2">
+                    <SearchBar value="" onChange={() => {}} placeholder="Название или ингредиент" />
+                  </div>
+                  <ChipRow label="Фильтры" className="mt-2 pb-2">
+                    <Chip icon={SlidersHorizontal}>Фильтры</Chip>
+                    <ChipDivider />
+                    <Chip variant="facet">База</Chip>
+                    <Chip variant="facet">Вкус</Chip>
+                    <Chip variant="facet">Крепость</Chip>
+                  </ChipRow>
+                </StickyHeader>
+              </div>
+            </State>
+          ))}
         </div>
       </Section>
 

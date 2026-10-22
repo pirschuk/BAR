@@ -3,7 +3,7 @@ import type { LucideIcon } from 'lucide-react';
 import { cn } from '../../lib/cn';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
-export type ButtonSize = 'l' | 'm';
+export type ButtonSize = 'l' | 'm' | 's';
 
 const VARIANT: Record<ButtonVariant, string> = {
   primary: 'bg-accent text-accent-fg',
@@ -15,6 +15,8 @@ const SIZE: Record<ButtonSize, string> = {
   // L — CTA, pill; M — действия, радиус 12
   l: 'h-btn-l rounded-full px-6',
   m: 'h-tap rounded-control px-4',
+  // S — вторичные действия в строке («Сбросить», «Это есть»): 36 визуально, 44 тач-зона
+  s: 'hit-44 h-chip rounded-full px-3 text-subhead! font-semibold',
 };
 
 /** Классы кнопки — для <Link>, который должен выглядеть как Button */

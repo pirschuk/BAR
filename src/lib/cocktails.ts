@@ -13,7 +13,9 @@ export const BASES: { id: Base; label: string }[] = [
   { id: 'whiskey', label: 'Виски' },
   { id: 'tequila', label: 'Текила' },
   { id: 'vodka', label: 'Водка' },
+  { id: 'brandy', label: 'Бренди' },
   { id: 'aperitif', label: 'Аперитивы' },
+  { id: 'non-alcoholic', label: 'Безалкогольные' },
 ];
 
 export function isBase(value: string | null): value is Base {
