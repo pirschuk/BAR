@@ -60,6 +60,8 @@ export function BottomSheet({ open, onClose, title, children, footer, initialDet
   if (!open) return null;
 
   const onDown = (e: PointerEvent) => {
+    // кнопки в шапке (✕) — не жест: иначе pointer capture уводит click с кнопки на шапку
+    if ((e.target as HTMLElement).closest('button')) return;
     start.current = e.clientY;
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
@@ -107,7 +109,7 @@ export function BottomSheet({ open, onClose, title, children, footer, initialDet
           <IconButton icon={X} label="Закрыть" onClick={onClose} />
         </div>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-4" onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 0)}>
+      <div className="min-h-0 flex-1 overflow-x-clip overflow-y-auto overscroll-contain pb-4" onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 0)}>
         {children}
       </div>
       {footer && <div className="pb-safe-sm shrink-0 border-t border-border px-4 pt-3">{footer}</div>}

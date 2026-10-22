@@ -50,7 +50,15 @@ function Layout() {
 
   const empty =
     location.pathname === '/bar'
-      ? { title: inv.size ? 'Пока ничего не получится' : 'Бар пока пуст', hint: 'Отметьте ещё 1–2 ингредиента — колода соберётся' }
+      ? {
+          title: inv.size ? 'Пока ничего не получится' : 'Бар пока пуст',
+          hint: 'Отметьте ещё 1–2 ингредиента — колода соберётся',
+          action: (
+            <Button variant="secondary" size="m" onClick={closeLucky}>
+              К ингредиентам
+            </Button>
+          ),
+        }
       : {
           title: 'Не из чего выбирать',
           hint: 'Ничего не подходит под поиск и фильтры',

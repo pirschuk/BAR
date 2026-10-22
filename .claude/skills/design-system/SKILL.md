@@ -188,7 +188,7 @@ description: Правила дизайн-системы приложения-к�
   есть дома, иначе ничего (решение владельца, v3). «Могу сделать» —
   галочка (CheckRow) в шторке фильтров, не чипс в ряду.
 - **LuckyDeck**: колода из 2–3 карточек — следующая выглядывает сзади
-  (scale .94, сдвиг 12 вниз); свайп верхней влево/вправо или кнопка «Ещё
+  (scale .92, сдвиг 24 вниз — видно ~14px; при .94/12 колода не читается); свайп верхней влево/вправо или кнопка «Ещё
   раз» — следующая; `prefers-reduced-motion` → кроссфейд. `[Julienne, Transit]`
 
 ## 8. Паттерны из Mobbin
@@ -326,6 +326,13 @@ _Пополняется командой `/ref`._
   всегда яркий оранжевый), `IngredientRow missing` (тег, не текст). Токены: `--spacing-switch-*`,
   `--spacing-row-l` 52. Логика наличия — `src/lib/inventory.ts`; сценарии — `scripts/shots-bar.mjs`.
 - «Отмена» в поиске — `text-fg`: акцент на экране один (CTA или выбранный фильтр).
+- Срез 2c: `LuckyDeck` (+ `LuckyCard`, ref `throwNext()`), композиция `src/components/LuckySheet.tsx`,
+  логика `src/lib/lucky.ts`; токен `--spacing-deck` 420 (`min-h-deck` — пустое состояние той же
+  высоты). Шторка «Мне повезёт» живёт в Layout (`#lucky`), открывается 🎲 таб-бара.
+- `BottomSheet`: жест — только за хэндл/шапку и не с кнопки (иначе pointer capture съедает click ✕);
+  тело шторки `overflow-x-clip` — вылетающая карта не даёт горизонтального скролла.
+- reduced-motion: свайп и «Ещё раз» сразу меняют карту, transform сбрасывается.
+- Сценарии: `node scripts/shots-lucky.mjs dark|light` (печатает лог проверок).
 - Скриншоты состояний каталога: `node scripts/shots-catalog.mjs dark|light`,
   склейка — `python3 scripts/montage.py out.png a.png b.png …`.
 

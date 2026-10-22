@@ -111,6 +111,8 @@
   --spacing-switch-h: 31px;
   --spacing-switch-thumb: 27px;
   --spacing-row-l: 52px;
+  /* LuckySheet: подпись + колода 280 + выглядывающая карта + футер */
+  --spacing-deck: 420px;
 
   --radius-*: initial;
   --radius-full: 9999px;

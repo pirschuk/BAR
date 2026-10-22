@@ -26,6 +26,10 @@
 | Шаг 4b | [step4b-filter-can-dark.png](step4b-filter-can-dark.png) · [light](step4b-filter-can-light.png) · [результат](step4b-catalog-can-dark.png) | Галочка «Могу сделать» в фильтрах → только подходящие | 2026-10-22 |
 | Шаг 4b | [step4b-recipe-missing-dark.png](step4b-recipe-missing-dark.png) · [light](step4b-recipe-missing-light.png) · [всё есть](step4b-recipe-all-dark.png) | Рецепт: «Не хватает 1» + «Это есть», тег «нет дома»; «Всё есть дома» + подсказка про шейкер | 2026-10-22 |
 | Шаг 4b | [step4b-design-system-dark.png](step4b-design-system-dark.png) · [light](step4b-design-system-light.png) | Витрина: + TabBar, SwitchRow/CheckRow, баннеры наличия, итог бара | 2026-10-22 |
+| Шаг 4c · `/code` срез 2c | [step4c-lucky-dark.png](step4c-lucky-dark.png) · [light](step4c-lucky-light.png) | «Мне повезёт» из каталога: колода, выглядывает следующая карта | 2026-10-22 |
+| Шаг 4c | [step4c-lucky-swipe-dark.png](step4c-lucky-swipe-dark.png) · [light](step4c-lucky-swipe-light.png) | Кадр свайпа: карта наклоняется и улетает, под ней следующая | 2026-10-22 |
+| Шаг 4c | [step4c-lucky-filtered-dark.png](step4c-lucky-filtered-dark.png) · [бар](step4c-lucky-bar-dark.png) · [один](step4c-lucky-single-dark.png) · [пусто](step4c-lucky-empty-light.png) | По фильтрам, из «Моего бара», единственный вариант, «Не из чего выбирать» | 2026-10-22 |
+| Шаг 4c | [step4c-design-system-dark.png](step4c-design-system-dark.png) · [light](step4c-design-system-light.png) | Витрина: + LuckySheet / LuckyDeck | 2026-10-22 |
 
 ![Шаг 1 — референсы](step1-refs-board.png)
 
@@ -46,3 +50,9 @@
 | Мой бар | Каталог ✓ | Могу сделать | Рецепт |
 |---|---|---|---|
 | ![](step4b-bar-dark.png) | ![](step4b-catalog-marks-dark.png) | ![](step4b-filter-can-dark.png) | ![](step4b-recipe-missing-light.png) |
+
+## Шаг 4c — «Мне повезёт»
+
+| Колода | Свайп | Один вариант | Пусто |
+|---|---|---|---|
+| ![](step4c-lucky-dark.png) | ![](step4c-lucky-swipe-light.png) | ![](step4c-lucky-single-dark.png) | ![](step4c-lucky-empty-light.png) |

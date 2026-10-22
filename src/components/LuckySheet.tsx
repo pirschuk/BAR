@@ -59,14 +59,15 @@ export function LuckySheet({ open, onClose, pool, caption, onOpenRecipe, empty, 
     >
       {top ? (
         <div className="px-4">
-          <p className="mb-4 text-footnote text-fg-2">
+          <p className="mb-4 truncate text-footnote text-fg-2">
             {caption}
-            {single ? ' · это единственный подходящий' : ' · смахните карту или нажмите «Ещё раз»'}
+            {single && ' · единственный подходящий'}
           </p>
           <LuckyDeck ref={deckRef} current={top} peek={under} frame={frame} onNext={() => setDeck((d) => next(d))} />
         </div>
       ) : (
-        <EmptyState icon={Dices} title={empty.title} hint={empty.hint} action={empty.action} />
+        // та же высота, что у колоды с подписью: шторка не прыгает при смене фильтров
+        <EmptyState icon={Dices} title={empty.title} hint={empty.hint} action={empty.action} className="min-h-deck justify-center" />
       )}
     </BottomSheet>
   );

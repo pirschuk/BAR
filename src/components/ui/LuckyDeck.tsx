@@ -18,7 +18,7 @@ export function LuckyCard({ cocktail, className }: { cocktail: Cocktail; classNa
       <div className="absolute inset-x-4 bottom-4">
         <h3 className="line-clamp-2 text-title-1 text-on-media">{cocktail.name}</h3>
         <p className="mt-1 text-footnote text-on-media-2">
-          {methodLabel(cocktail.method)} · {glassLabel(cocktail.glass)} · ~{cocktail.abv}%
+          {methodLabel(cocktail.method)} · {glassLabel(cocktail.glass)} · {cocktail.abv ? `~${cocktail.abv}%` : 'без алкоголя'}
         </p>
       </div>
     </article>
@@ -55,16 +55,32 @@ export const LuckyDeck = forwardRef<LuckyDeckHandle, Props>(function LuckyDeck({
   const box = useRef<HTMLDivElement>(null);
   const canSwipe = !!peek && frame === undefined;
 
+  // нажатие «Ещё раз» во время полёта не теряется: одно копится и запускается после приземления
+  const queued = useRef(false);
   const throwCard = (dir: 1 | -1) => {
-    if (reducedMotion()) return onNext();
+    if (reducedMotion()) {
+      setDx(0);
+      onNext();
+      return;
+    }
     setFly(dir);
     window.setTimeout(() => {
       onNext();
       setFly(0);
       setDx(0);
+      if (queued.current) {
+        queued.current = false;
+        window.setTimeout(() => throwCard(-1), 30);
+      }
     }, FLY_MS);
   };
-  useImperativeHandle(ref, () => ({ throwNext: () => (canSwipe && !fly ? throwCard(-1) : undefined) }));
+  useImperativeHandle(ref, () => ({
+    throwNext: () => {
+      if (!canSwipe) return;
+      if (fly) queued.current = true;
+      else throwCard(-1);
+    },
+  }));
 
   const onDown = (e: PointerEvent) => {
     if (!canSwipe || fly) return;
@@ -89,7 +105,7 @@ export const LuckyDeck = forwardRef<LuckyDeckHandle, Props>(function LuckyDeck({
   const progress = Math.min(1, Math.abs(offset) / 240);
 
   return (
-    <div ref={box} className="relative mb-6 h-70" aria-live="polite">
+    <div ref={box} className="relative mt-1 mb-6 h-70" aria-live="polite">
       {peek && (
         <div
           aria-hidden
@@ -102,7 +118,7 @@ export const LuckyDeck = forwardRef<LuckyDeckHandle, Props>(function LuckyDeck({
       <div
         key={current.id}
         className={cn('animate-fade-in absolute inset-0 touch-pan-y select-none', canSwipe && 'cursor-grab', !dragging && 'transition-transform duration-200')}
-        style={{ transform: `translateX(${offset}px) rotate(${offset / 24}deg)` }}
+        style={{ transform: `translateX(${offset}px) rotate(${offset / 32}deg)` }}
         onPointerDown={onDown}
         onPointerMove={onMove}
         onPointerUp={onUp}
