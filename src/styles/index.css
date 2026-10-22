@@ -22,6 +22,8 @@
   --press: rgb(255 255 255 / 0.08);
   /* обложка рецепта уходит в фон только в тёмной теме */
   --hero-fade: var(--bg);
+  /* в тёмной обложка растворяется в фоне; в светлой — скруглённый низ вместо шва */
+  --hero-radius: 0px;
 }
 
 :root[data-theme='light'] {
@@ -39,6 +41,7 @@
   --success: #1e9e5a;
   --press: rgb(0 0 0 / 0.06);
   --hero-fade: transparent;
+  --hero-radius: 28px;
 }
 
 @theme inline {
@@ -148,7 +151,7 @@
 
 /* Стекло поверх обложек */
 @utility glass {
-  background: rgb(20 20 22 / 0.45);
+  background: rgb(20 20 22 / 0.55);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
   backdrop-filter: blur(16px) saturate(1.4);
 }
@@ -173,6 +176,11 @@
 }
 @utility pb-safe {
   padding-bottom: max(env(safe-area-inset-bottom, 0px), var(--spacing) * 8);
+}
+
+@utility hero-shape {
+  border-bottom-left-radius: var(--hero-radius);
+  border-bottom-right-radius: var(--hero-radius);
 }
 
 @utility h-hero {

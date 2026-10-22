@@ -20,7 +20,7 @@ type Props = {
 export function CocktailHero({ cocktail, onBack, height = 'screen' }: Props) {
   return (
     <header
-      className={cn('cover-gradient relative flex flex-col overflow-hidden', height === 'screen' ? 'h-hero pt-safe' : 'h-80 pt-3')}
+      className={cn('cover-gradient relative flex flex-col overflow-hidden', height === 'screen' ? 'hero-shape h-hero pt-safe' : 'h-80 pt-3')}
       style={coverStyle(cocktail)}
     >
       <span className="scrim-top absolute inset-0" aria-hidden />
@@ -33,13 +33,13 @@ export function CocktailHero({ cocktail, onBack, height = 'screen' }: Props) {
       </div>
 
       {onBack && (
-        <div className={cn('absolute left-3', height === 'screen' ? 'top-safe' : 'top-3')}>
+        <div className={cn('absolute left-4', height === 'screen' ? 'top-safe' : 'top-3')}>
           <IconButton icon={ChevronLeft} label="Назад" variant="glass" onClick={onBack} />
         </div>
       )}
 
       <div className="relative px-4 pb-5">
-        <h1 className="line-clamp-3 text-title-1 text-on-media">{cocktail.name}</h1>
+        <h1 className="line-clamp-2 text-title-1 text-on-media">{cocktail.name}</h1>
         <p className="mt-0.5 text-footnote text-on-media-2">{cocktail.nameEn}</p>
       </div>
     </header>

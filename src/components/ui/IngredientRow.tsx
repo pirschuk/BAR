@@ -35,9 +35,9 @@ export function IngredientRow({ name, amount, optional, checked, onToggle, press
         <span className={cn('block text-body', checked ? 'text-fg-3 line-through' : 'text-fg')}>{name}</span>
         {optional && <span className="block text-footnote text-fg-3">по желанию</span>}
       </span>
-      <span className={cn('shrink-0 text-right tabular-nums', checked ? 'text-fg-3' : 'text-fg')}>
-        {amount.value && <span className="text-headline">{amount.value} </span>}
-        <span className={cn('text-footnote', checked ? 'text-fg-3' : 'text-fg-2')}>{amount.unit}</span>
+      <span className="flex shrink-0 items-baseline gap-1.5">
+        <span className={cn('min-w-9 text-right text-headline tabular-nums', checked ? 'text-fg-3' : 'text-fg')}>{amount.value}</span>
+        <span className={cn('w-14 text-footnote', checked ? 'text-fg-3' : 'text-fg-2')}>{amount.unit}</span>
       </span>
     </button>
   );

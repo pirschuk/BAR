@@ -55,7 +55,7 @@ const PALETTE = [
   { token: '--bg', cls: 'bg-bg', note: 'фон экрана' },
   { token: '--surface', cls: 'bg-surface', note: 'карточки, шторки' },
   { token: '--surface-2', cls: 'bg-surface-2', note: 'поля, чипсы' },
-  { token: '--text', cls: 'bg-fg', note: 'основной текст · fg' },
+  { token: '--text', cls: 'bg-fg', note: 'текст · fg' },
   { token: '--text-2', cls: 'bg-fg-2', note: 'вторичный · fg-2' },
   { token: '--text-3', cls: 'bg-fg-3', note: 'подписи · fg-3' },
   { token: '--accent', cls: 'bg-accent', note: 'акцент, CTA' },
@@ -103,7 +103,7 @@ function Swatch({ token, cls, note }: (typeof PALETTE)[number]) {
       <span className="min-w-0">
         <span className="block text-subhead font-semibold text-fg">{token}</span>
         <span className="block truncate text-footnote text-fg-2">{note}</span>
-        <span className="block text-caption text-fg-3 uppercase">{value}</span>
+        <span className="block truncate text-caption text-fg-3 uppercase">{value.replace(/\s+/g, '')}</span>
       </span>
     </div>
   );
@@ -157,7 +157,7 @@ export function DesignSystemPage() {
       </ChipRow>
 
       <Section id="palette" title="Палитра" note="CSS-переменные; значения меняются вместе с темой. Обложки коктейлей — данные (cover), не токены.">
-        <div className="grid grid-cols-2 gap-x-3 gap-y-4 px-4">
+        <div className="grid grid-cols-2 items-start gap-x-3 gap-y-4 px-4">
           {PALETTE.map((p) => (
             <Swatch key={p.token} {...p} />
           ))}
@@ -254,7 +254,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="card" title="CocktailCard" note="3:4, 167×223 в сетке. Градиент напитка + бокал + стеклянная плашка + скрим под названием.">
+      <Section id="card" title="CocktailCard" note="3:4, 173×231 в сетке. Градиент напитка + бокал + стеклянная плашка + скрим под названием.">
         <div className="grid grid-cols-2 gap-x-3 gap-y-5 px-4">
           <State label="default">
             <CocktailCard cocktail={must('negroni')} />

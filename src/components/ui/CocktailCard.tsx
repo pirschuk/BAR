@@ -17,7 +17,7 @@ export function CocktailCard({ cocktail, pressed, className }: Props) {
     <Link
       to={`/cocktail/${cocktail.id}`}
       data-pressed={pressed || undefined}
-      className={cn('pressable-scale cover-gradient block aspect-card overflow-hidden rounded-card', className)}
+      className={cn('pressable-scale cover-gradient block aspect-card overflow-hidden rounded-card outline-1 -outline-offset-1 outline-border', className)}
       style={coverStyle(cocktail)}
     >
       <GlassIllustration

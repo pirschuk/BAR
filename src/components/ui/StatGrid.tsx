@@ -11,7 +11,7 @@ export function StatGrid({ items, className }: { items: Stat[]; className?: stri
       {items.map(({ icon: Icon, label, value }) => (
         <div key={label} className="flex min-w-0 flex-col gap-1">
           <Icon className="size-5 text-fg-2" aria-hidden />
-          <dt className="text-footnote text-fg-3">{label}</dt>
+          <dt className="text-footnote text-fg-2">{label}</dt>
           <dd className="truncate text-headline text-fg">{value}</dd>
         </div>
       ))}
