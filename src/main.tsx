@@ -16,6 +16,7 @@ function Layout() {
   );
 }
 
+// basename = base из vite.config.ts: '/' локально и на Vercel, '/BAR/' на GitHub Pages
 const router = createBrowserRouter([
   {
     element: <Layout />,
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
       { path: '*', element: <NotFoundPage /> },
     ],
   },
-]);
+], { basename: import.meta.env.BASE_URL });
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -1,0 +1,50 @@
+# Тестовый стенд прототипа: https://pirschuk.github.io/BAR/
+# Сборка с base=/BAR/ (BASE_PATH) + 404.html для прямых ссылок SPA, публикация через actions/deploy-pages.
+name: Deploy prototype to GitHub Pages
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# один деплой за раз; новый пуш отменяет незавершённую публикацию
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+      - run: node scripts/validate-cocktails.mjs
+
+      # BASE_PATH=/BAR/ + копия dist/index.html → dist/404.html
+      - run: npm run build:gh-pages
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

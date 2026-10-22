@@ -286,7 +286,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="stats" title="StatGrid / StrengthMeter" note="4 равные колонки; крепость — 4 деления по ABV: ≤10 · ≤18 · ≤26 · >26 %.">
+      <Section id="stats" title="StatGrid / StrengthMeter" note="4 колонки по содержимому, крайние — по краям; крепость — 4 деления по ABV: ≤10 · ≤18 · ≤26 · >26 %.">
         <div className="flex flex-col gap-5 px-4">
           <State label="Олд Фэшн">
             <StatGrid items={cocktailStats(must('old-fashioned'))} />

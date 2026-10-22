@@ -80,11 +80,11 @@ const GLASS_LABEL: Record<Glass, string> = {
 
 const METHOD_LABEL: Record<Method, string> = {
   build: 'В бокале',
-  stir: 'Стир',
-  shake: 'Шейк',
+  stir: 'Перемешать',
+  shake: 'Шейкер',
   'dry-shake': 'Драй-шейк',
   blend: 'Блендер',
-  muddle: 'Мадл',
+  muddle: 'Размять',
   layer: 'Слоями',
   throw: 'Пролив',
 };

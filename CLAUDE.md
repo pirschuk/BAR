@@ -16,7 +16,9 @@ Claude Code: план → дизайн-система → экран → виз�
 ## Команды
 
 - `npm run dev` — dev-сервер, http://127.0.0.1:5173 (порт фиксированный, `--strictPort`).
-- `npm run build` — `tsc` + сборка в `dist/`.
+- `npm run build` — `tsc` + сборка в `dist/` от корня `/` (локально, Vercel).
+- `npm run build:gh-pages` — сборка с `BASE_PATH=/BAR/` + `dist/404.html` для прямых ссылок.
+- `node scripts/serve-gh-pages.mjs` — локальная эмуляция GitHub Pages на http://127.0.0.1:4174/BAR/.
 - `npx tsc --noEmit` — проверка типов (её же запускает хук после каждой правки `.ts/.tsx`).
 - `npm test` — unit-тесты (vitest, `src/**/*.test.ts`): порции, склонения, фильтр.
 - `node scripts/screenshot.mjs <роут> [имя] [--full] [--theme light] [--click <локатор>]` —
@@ -24,6 +26,15 @@ Claude Code: план → дизайн-система → экран → виз�
 - `python3 scripts/split-shot.py <png>` — нарезать длинный скриншот на экраны по 844.
 - `node scripts/validate-cocktails.mjs` — валидация `cocktails.json`.
 - `node scripts/make-icons.mjs` — иконки PWA из `public/favicon.svg`.
+
+## Хостинг
+
+- **GitHub Pages — тестовый стенд:** https://pirschuk.github.io/BAR/. Деплой —
+  `.github/workflows/deploy-gh-pages.yml` на пуш в `main` и `claude/**`.
+- **Vercel — основная публикация (позже):** от корня `/`, `vercel.json` (rewrites → `index.html`).
+- Базовый путь — только через `import.meta.env.BASE_URL` (роутер — `basename`, манифест —
+  `start_url`/`scope`, иконки — относительные пути). Абсолютные `/…` ссылки на ресурсы
+  в коде не писать: на Pages они уйдут мимо `/BAR/`. Ссылки роутера (`<Link to="/">`) — можно.
 
 ## Процесс (обязателен)
 
