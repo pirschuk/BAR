@@ -138,3 +138,36 @@ describe('мой бар', () => {
     expect(toolsFor(getCocktail('mojito')!).map((t) => t.id)).toEqual(['tool-muddler']);
   });
 });
+
+describe('мне повезёт', () => {
+  // детерминированный random для воспроизводимости
+  const seeded = (seed: number) => () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+  it('без повторов, пока колода не пройдена', async () => {
+    const { makeDeck, next, current } = await import('./lucky');
+    const ids = cocktails.map((c) => c.id);
+    const rnd = seeded(1);
+    let d = makeDeck(ids, rnd);
+    const seen = new Set<string>();
+    for (let i = 0; i < ids.length; i++) {
+      seen.add(current(d)!);
+      d = next(d, rnd);
+    }
+    expect(seen.size).toBe(ids.length);
+  });
+  it('после перетасовки первая карта не повторяет последнюю', async () => {
+    const { makeDeck, next, current } = await import('./lucky');
+    const rnd = seeded(7);
+    for (let n = 0; n < 50; n++) {
+      let d = makeDeck(['a', 'b', 'c'], rnd);
+      d = next(next(d, rnd), rnd);
+      const last = current(d);
+      expect(current(next(d, rnd))).not.toBe(last);
+    }
+  });
+  it('одна карта — без «хвоста»', async () => {
+    const { makeDeck, peek, next, current } = await import('./lucky');
+    const d = makeDeck(['negroni']);
+    expect(peek(d)).toBeUndefined();
+    expect(current(next(d))).toBe('negroni');
+  });
+});

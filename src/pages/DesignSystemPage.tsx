@@ -13,6 +13,7 @@ import { BottomSheet, SheetFooter, SheetSection } from '../components/ui/BottomS
 import { StickyHeader } from '../components/ui/StickyHeader';
 import { FilterSheet } from '../components/FilterSheets';
 import { TabBar } from '../components/ui/TabBar';
+import { LuckySheet } from '../components/LuckySheet';
 import { CheckRow, SwitchRow } from '../components/ui/Toggles';
 import { AvailabilityBanner, BarSummary, InfoNote } from '../components/ui/Availability';
 import { EMPTY_FILTERS, applyFilters, type FilterState } from '../lib/filters';
@@ -165,6 +166,7 @@ export function DesignSystemPage() {
           ['tabbar', 'TabBar'],
           ['toggles', 'Switch / Check'],
           ['availability', 'Наличие'],
+          ['lucky', 'Мне повезёт'],
           ['glass', 'Бокалы'],
           ['card', 'CocktailCard'],
           ['hero', 'CocktailHero'],
@@ -432,14 +434,14 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="tabbar" title="TabBar" note="Плавающая стеклянная пилюля 64, отступ 16; активный таб — подложка surface-2; по центру — «Мне повезёт» 48. Только на корневых экранах.">
+      <Section id="tabbar" title="TabBar" note="Плавающая стеклянная пилюля 64, отступ 16; активный таб — подложка surface-2; по центру — «Мне повезёт» 48 → LuckySheet. Только на корневых экранах.">
         <div className="flex flex-col gap-5">
-          <State inset label="активный «Каталог» (по текущему адресу) · «Мне повезёт» — в 2c, disabled">
+          <State inset label="«Мне повезёт» disabled (например, пока данные не готовы)">
             <div className="cover-gradient py-6" style={coverStyle(must('aperol-spritz'))}>
               <TabBar inline luckyDisabled />
             </div>
           </State>
-          <State inset label="pressed «Мой бар» · центральная кнопка активна">
+          <State inset label="pressed «Мой бар» · «Мне повезёт» активна (с 2c)">
             <div className="py-2">
               <TabBar inline pressedTo="/bar" />
             </div>
@@ -467,6 +469,39 @@ export function DesignSystemPage() {
           <BarSummary can={0} nearly={2} to="/?can=1" />
           <InfoNote icon={Wrench}>Нужен шейкер — подойдёт банка с плотной крышкой.</InfoNote>
           <InfoNote icon={HardDriveDownload}>Браузер не даёт сохранить бар — он сохранится до закрытия вкладки.</InfoNote>
+        </div>
+      </Section>
+
+      <Section id="lucky" title="LuckySheet / LuckyDeck" note="Колода: следующая карта выглядывает сзади (scale .92, сдвиг 24); смахнуть или «Ещё раз» — следующая, без повторов. Подпись — из чего выбираем.">
+        <div className="flex flex-col gap-6 px-4">
+          <State label="колода (интерактивно: смахните карту)">
+            <div className="overflow-hidden rounded-sheet border border-border">
+              <LuckySheet open inline pool={cocktails.slice(0, 8)} caption="Весь каталог: 8 коктейлей" onClose={() => {}} onOpenRecipe={() => {}} empty={{ title: '', hint: '' }} />
+            </div>
+          </State>
+          <State label="кадр свайпа">
+            <div className="overflow-hidden rounded-sheet border border-border">
+              <LuckySheet open inline frame={-110} pool={cocktails.slice(8, 12)} caption="Подходят: 4 коктейля" onClose={() => {}} onOpenRecipe={() => {}} empty={{ title: '', hint: '' }} />
+            </div>
+          </State>
+          <State label="единственный вариант — «Ещё раз» disabled">
+            <div className="overflow-hidden rounded-sheet border border-border">
+              <LuckySheet open inline pool={[must('negroni')]} caption="Всё есть дома: 1 коктейль" onClose={() => {}} onOpenRecipe={() => {}} empty={{ title: '', hint: '' }} />
+            </div>
+          </State>
+          <State label="выбирать не из чего">
+            <div className="overflow-hidden rounded-sheet border border-border">
+              <LuckySheet
+                open
+                inline
+                pool={[]}
+                caption=""
+                onClose={() => {}}
+                onOpenRecipe={() => {}}
+                empty={{ title: 'Не из чего выбирать', hint: 'Ничего не подходит под поиск и фильтры', action: <Button variant="secondary" size="m">Сбросить всё</Button> }}
+              />
+            </div>
+          </State>
         </div>
       </Section>
 
