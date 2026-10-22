@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { Wrench } from 'lucide-react';
+import { missing, toolsFor, useInventory } from '../lib/inventory';
+import { AvailabilityBanner, InfoNote } from '../components/ui/Availability';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { getCocktail, scaleIngredient, type Servings } from '../lib/cocktails';
 import { CocktailHero } from '../components/ui/CocktailHero';
@@ -24,6 +27,7 @@ export function CocktailPage() {
   const [servings, setServings] = useState<Servings>(1);
   // отметки живут, пока открыта страница; смена порций их не сбрасывает
   const [checked, setChecked] = useState<ReadonlySet<number>>(new Set());
+  const { inv, add } = useInventory();
 
   if (!cocktail) return <NotFoundPage title="Коктейль не найден" />;
 
@@ -36,12 +40,25 @@ export function CocktailPage() {
       return next;
     });
 
+  const lacking = missing(cocktail, inv);
+  const lackingRefs = new Set(lacking.map((m) => m.ref));
+  const toolHints = inv.size ? toolsFor(cocktail).filter((t) => !inv.has(t.id)) : [];
+
   return (
     <main className="pb-safe">
       <CocktailHero cocktail={cocktail} onBack={back} />
 
       <p className="mt-4 px-4 text-body text-fg-2">{cocktail.description}</p>
       <StatGrid items={cocktailStats(cocktail)} className="mx-4 mt-5" />
+      <div className="mx-4 mt-4">
+        {inv.size === 0 ? (
+          <AvailabilityBanner state="empty-bar" />
+        ) : lacking.length === 0 ? (
+          <AvailabilityBanner state="all" />
+        ) : (
+          <AvailabilityBanner state="missing" names={lacking.map((m) => m.name)} onHave={() => add(lacking.map((m) => m.ref))} />
+        )}
+      </div>
 
       <SectionHeader
         title="Ингредиенты"
@@ -57,6 +74,7 @@ export function CocktailPage() {
               amount={scaleIngredient(ing, servings)}
               checked={checked.has(i)}
               onToggle={() => toggle(i)}
+              missing={inv.size > 0 && lackingRefs.has(ing.ref)}
             />
           </li>
         ))}
@@ -67,6 +85,11 @@ export function CocktailPage() {
 
       <SectionHeader title="Приготовление" className="mt-8" />
       <StepList steps={cocktail.steps} className="mt-2" />
+      {toolHints.map((t) => (
+        <InfoNote key={t.id} icon={Wrench} className="mx-4 mt-4">
+          Нужен {t.name.toLowerCase()} — {t.substitute}.
+        </InfoNote>
+      ))}
     </main>
   );
 }

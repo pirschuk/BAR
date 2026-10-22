@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { BASES, cocktails, countLabel, filterByBase, getCocktail, scaleIngredient, strengthLevel } from './cocktails';
+import { barSummary, canMake, missing, toolsFor } from './inventory';
 import {
   EMPTY_FILTERS,
   activeCount,
@@ -76,7 +77,7 @@ describe('поиск', () => {
 describe('фильтры', () => {
   it('URL ↔ состояние, мусор отбрасывается', () => {
     const f = parseFilters(new URLSearchParams('q=лайм&base=rum,gin,zzz&taste=sour&strength=light&ing=nope'));
-    expect(f).toEqual({ q: 'лайм', base: ['rum', 'gin'], taste: ['sour'], strength: ['light'], ing: null });
+    expect(f).toEqual({ q: 'лайм', base: ['rum', 'gin'], taste: ['sour'], strength: ['light'], ing: null, can: false });
     expect(filtersToParams(f)).toEqual({ q: 'лайм', base: 'rum,gin', taste: 'sour', strength: 'light' });
     expect(filtersToParams(EMPTY_FILTERS)).toEqual({});
   });
@@ -102,5 +103,38 @@ describe('фильтры', () => {
   });
   it('«Похожие» не пустые, даже если выдача пуста', () => {
     expect(similarFor(cocktails, { ...EMPTY_FILTERS, q: 'zzz', base: ['rum'] }).length).toBeGreaterThan(0);
+  });
+});
+
+describe('мой бар', () => {
+  const negroni = getCocktail('negroni')!;
+  const inv = new Set(['gin', 'campari']);
+  it('недостающие — без «всегда есть» и необязательных', () => {
+    expect(missing(negroni, inv).map((m) => m.ref)).toEqual(['sweet-vermouth']);
+    const sour = getCocktail('whiskey-sour')!;
+    expect(missing(sour, new Set(['bourbon', 'lemon', 'simple-syrup']))).toEqual([]);
+  });
+  it('пустой бар ничего не «может»', () => {
+    expect(canMake(negroni, new Set())).toBe(false);
+    expect(barSummary(cocktails, new Set())).toEqual({ can: 0, nearly: 0 });
+  });
+  it('«Могу сделать» в URL и фильтре', () => {
+    const f = parseFilters(new URLSearchParams('can=1'));
+    expect(f.can).toBe(true);
+    expect(filtersToParams(f)).toEqual({ can: '1' });
+    expect(activeCount(f)).toBe(1);
+    const full = new Set(['gin', 'campari', 'sweet-vermouth']);
+    const list = applyFilters(cocktails, f, (c) => canMake(c, full));
+    expect(list.map((c) => c.id)).toContain('negroni');
+    expect(list.every((c) => canMake(c, full))).toBe(true);
+  });
+  it('итог: можно и без одного', () => {
+    const s = barSummary(cocktails, new Set(['gin', 'campari', 'sweet-vermouth']));
+    expect(s.can).toBeGreaterThanOrEqual(1);
+    expect(s.nearly).toBeGreaterThanOrEqual(1);
+  });
+  it('инструменты — по методу', () => {
+    expect(toolsFor(getCocktail('daiquiri')!).map((t) => t.id)).toEqual(['tool-shaker']);
+    expect(toolsFor(getCocktail('mojito')!).map((t) => t.id)).toEqual(['tool-muddler']);
   });
 });

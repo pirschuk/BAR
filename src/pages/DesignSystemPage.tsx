@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { ChevronLeft, Moon, SearchX, SlidersHorizontal, Wine } from 'lucide-react';
+import { ChevronLeft, HardDriveDownload, Moon, SearchX, SlidersHorizontal, Wine, Wrench } from 'lucide-react';
 import { Link } from 'react-router';
 import { cocktails, countLabel, getCocktail, scaleIngredient, type GlassShape, type Servings } from '../lib/cocktails';
 import { useTheme } from '../lib/theme';
@@ -12,6 +12,9 @@ import { EmptyState } from '../components/ui/EmptyState';
 import { BottomSheet, SheetFooter, SheetSection } from '../components/ui/BottomSheet';
 import { StickyHeader } from '../components/ui/StickyHeader';
 import { FilterSheet } from '../components/FilterSheets';
+import { TabBar } from '../components/ui/TabBar';
+import { CheckRow, SwitchRow } from '../components/ui/Toggles';
+import { AvailabilityBanner, BarSummary, InfoNote } from '../components/ui/Availability';
 import { EMPTY_FILTERS, applyFilters, type FilterState } from '../lib/filters';
 import { GlassIllustration } from '../components/ui/GlassIllustration';
 import { CocktailCard, coverStyle } from '../components/ui/CocktailCard';
@@ -125,6 +128,8 @@ export function DesignSystemPage() {
   const [query, setQuery] = useState('');
   const sheetValue: FilterState = { ...EMPTY_FILTERS, taste: ['sour'] };
   const sheetCount = (d: FilterState) => applyFilters(cocktails, d).length;
+  const [sw, setSw] = useState(true);
+  const [ck, setCk] = useState(false);
   const [servings, setServings] = useState<Servings>(2);
   const [checked, setChecked] = useState<ReadonlySet<number>>(new Set([0]));
   const sour = must('whiskey-sour');
@@ -157,6 +162,9 @@ export function DesignSystemPage() {
           ['empty', 'EmptyState'],
           ['sheet', 'Шторки'],
           ['sticky', 'StickyHeader'],
+          ['tabbar', 'TabBar'],
+          ['toggles', 'Switch / Check'],
+          ['availability', 'Наличие'],
           ['glass', 'Бокалы'],
           ['card', 'CocktailCard'],
           ['hero', 'CocktailHero'],
@@ -388,6 +396,11 @@ export function DesignSystemPage() {
               <FilterSheet open inline facet={null} value={sheetValue} count={sheetCount} onApply={() => {}} onClose={() => {}} />
             </div>
           </State>
+          <State label="FilterSheet · бар пуст — «Могу сделать» недоступна">
+            <div className="overflow-hidden rounded-sheet border border-border">
+              <FilterSheet open inline facet={null} barEmpty value={EMPTY_FILTERS} count={sheetCount} onApply={() => {}} onClose={() => {}} />
+            </div>
+          </State>
           <State label="N = 0 — CTA disabled">
             <div className="overflow-hidden rounded-sheet border border-border">
               <FilterSheet open inline facet="strength" value={{ ...EMPTY_FILTERS, q: 'zzz' }} count={() => 0} onApply={() => {}} onClose={() => {}} />
@@ -419,6 +432,44 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
+      <Section id="tabbar" title="TabBar" note="Плавающая стеклянная пилюля 64, отступ 16; активный таб — подложка surface-2; по центру — «Мне повезёт» 48. Только на корневых экранах.">
+        <div className="flex flex-col gap-5">
+          <State inset label="активный «Каталог» (по текущему адресу) · «Мне повезёт» — в 2c, disabled">
+            <div className="cover-gradient py-6" style={coverStyle(must('aperol-spritz'))}>
+              <TabBar inline luckyDisabled />
+            </div>
+          </State>
+          <State inset label="pressed «Мой бар» · центральная кнопка активна">
+            <div className="py-2">
+              <TabBar inline pressedTo="/bar" />
+            </div>
+          </State>
+        </div>
+      </Section>
+
+      <Section id="toggles" title="SwitchRow / CheckRow" note="Строки ≥ 52, вся строка — тач-зона. Switch 51×31 — настройки; галочка — «Могу сделать» в фильтрах.">
+        <div className="flex flex-col">
+          <SwitchRow title="Светлая тема" subtitle="Тёмная — по умолчанию" on={sw} onToggle={() => setSw(!sw)} />
+          <SwitchRow title="Выключено" on={false} onToggle={() => {}} />
+          <SwitchRow title="Pressed" on onToggle={() => {}} pressed />
+          <SwitchRow title="Disabled" on={false} onToggle={() => {}} disabled />
+          <CheckRow title="Могу сделать" subtitle="Только из того, что есть дома" on={ck} onToggle={() => setCk(!ck)} />
+          <CheckRow title="Могу сделать" subtitle="Сначала отметьте, что есть дома, в «Моём баре»" on={false} onToggle={() => {}} disabled />
+        </div>
+      </Section>
+
+      <Section id="availability" title="Наличие: баннер, итог бара, подсказка" note="Рецепт: всё есть / не хватает N / бар пуст. «Мой бар»: итог с CTA. InfoNote — нейтральная подсказка.">
+        <div className="flex flex-col gap-3 px-4">
+          <AvailabilityBanner state="all" />
+          <AvailabilityBanner state="missing" names={['Кампари', 'Красный вермут']} onHave={() => {}} />
+          <AvailabilityBanner state="empty-bar" />
+          <BarSummary can={7} nearly={5} to="/?can=1" />
+          <BarSummary can={0} nearly={2} to="/?can=1" />
+          <InfoNote icon={Wrench}>Нужен шейкер — подойдёт банка с плотной крышкой.</InfoNote>
+          <InfoNote icon={HardDriveDownload}>Браузер не даёт сохранить бар — он сохранится до закрытия вкладки.</InfoNote>
+        </div>
+      </Section>
+
       <Section id="glass" title="GlassIllustration" note="6 силуэтов MVP; остальные бокалы маппятся на ближайший. Лёд: кубики, крупный, колотый.">
         <div className="grid grid-cols-3 gap-3 px-4">
           {SHAPES.map((s) => (
@@ -443,6 +494,12 @@ export function DesignSystemPage() {
           </State>
           <State label="светлый градиент">
             <CocktailCard cocktail={must('dry-martini')} />
+          </State>
+          <State label="всё есть дома — отметка ✓">
+            <CocktailCard cocktail={must('mojito')} available />
+          </State>
+          <State label="всё есть, светлый верх">
+            <CocktailCard cocktail={must('daiquiri')} available />
           </State>
         </div>
       </Section>
@@ -509,6 +566,9 @@ export function DesignSystemPage() {
             </li>
           ))}
           <li>
+            <IngredientRow name="Кампари" amount={{ value: '30', unit: 'мл' }} checked={false} onToggle={() => {}} missing />
+          </li>
+          <li>
             <IngredientRow
               name="Яичный белок"
               optional
@@ -519,7 +579,7 @@ export function DesignSystemPage() {
             />
           </li>
         </ul>
-        <p className="mt-2 px-4 text-caption text-fg-3 uppercase">default · checked · единицы мл / лист / бар. л. / долить · optional + pressed</p>
+        <p className="mt-2 px-4 text-caption text-fg-3 uppercase">default · checked · единицы мл / лист / бар. л. / долить · нет дома · optional + pressed</p>
       </Section>
 
       <Section id="steps" title="StepList" note="Номер в круге 28 + callout; длинный шаг переносится.">

@@ -4,6 +4,7 @@ import { EMPTY_FILTERS, FACETS, getIngredient, type FacetKey, type FilterState }
 import { BottomSheet, SheetFooter, SheetSection } from './ui/BottomSheet';
 import { Button } from './ui/Button';
 import { Chip, ChipWrap } from './ui/Chip';
+import { CheckRow } from './ui/Toggles';
 
 type Props = {
   open: boolean;
@@ -14,6 +15,8 @@ type Props = {
   count: (draft: FilterState) => number;
   onApply: (next: FilterState) => void;
   onClose: () => void;
+  /** «Мой бар» пуст — галочка «Могу сделать» недоступна */
+  barEmpty?: boolean;
   /** для витрины */
   inline?: boolean;
 };
@@ -25,7 +28,7 @@ function toggle<T>(list: T[], id: T): T[] {
 }
 
 /** Черновик внутри шторки: применяется только по «Показать N»; закрытие без него ничего не меняет */
-export function FilterSheet({ open, facet, value, count, onApply, onClose, inline }: Props) {
+export function FilterSheet({ open, facet, value, count, onApply, onClose, barEmpty = false, inline }: Props) {
   const [draft, setDraft] = useState(value);
   useEffect(() => {
     if (open) setDraft(value);
@@ -35,7 +38,7 @@ export function FilterSheet({ open, facet, value, count, onApply, onClose, inlin
   const n = count(draft);
   const reset = () =>
     setDraft(facet ? { ...draft, [facet]: [] } : { ...EMPTY_FILTERS, q: draft.q });
-  const dirty = keys.some((k) => (draft[k] as string[]).length) || (!facet && draft.ing !== null);
+  const dirty = keys.some((k) => (draft[k] as string[]).length) || (!facet && (draft.ing !== null || draft.can));
 
   return (
     <BottomSheet
@@ -61,6 +64,17 @@ export function FilterSheet({ open, facet, value, count, onApply, onClose, inlin
         </SheetFooter>
       }
     >
+      {!facet && (
+        <section className="border-b border-border pb-3">
+          <CheckRow
+            title="Могу сделать"
+            subtitle={barEmpty ? 'Сначала отметьте, что есть дома, в «Моём баре»' : 'Только из того, что есть дома'}
+            on={draft.can && !barEmpty}
+            disabled={barEmpty}
+            onToggle={() => setDraft({ ...draft, can: !draft.can })}
+          />
+        </section>
+      )}
       {!facet && draft.ing && (
         <SheetSection title="Ингредиент">
           <ChipWrap label="Ингредиент">

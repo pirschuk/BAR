@@ -9,10 +9,12 @@ type Props = {
   checked: boolean;
   onToggle: () => void;
   pressed?: boolean;
+  /** нет в «Моём баре» — тег, без зачёркивания (зачёркивание = «уже налил») */
+  missing?: boolean;
 };
 
 /** Строка чек-листа: вся строка — тач-зона (≥ 48), отмеченная — зачёркнута */
-export function IngredientRow({ name, amount, optional, checked, onToggle, pressed }: Props) {
+export function IngredientRow({ name, amount, optional, checked, onToggle, pressed, missing }: Props) {
   return (
     <button
       type="button"
@@ -33,7 +35,11 @@ export function IngredientRow({ name, amount, optional, checked, onToggle, press
       </span>
       <span className="min-w-0 flex-1">
         <span className={cn('block text-body', checked ? 'text-fg-3 line-through' : 'text-fg')}>{name}</span>
-        {optional && <span className="block text-footnote text-fg-3">по желанию</span>}
+        {(optional || missing) && (
+          <span className="block text-footnote text-fg-2">
+            {[optional && 'по желанию', missing && 'нет дома'].filter(Boolean).join(' · ')}
+          </span>
+        )}
       </span>
       <span className="flex shrink-0 items-baseline gap-1.5">
         <span className={cn('min-w-9 text-right text-headline tabular-nums', checked ? 'text-fg-3' : 'text-fg')}>{amount.value}</span>

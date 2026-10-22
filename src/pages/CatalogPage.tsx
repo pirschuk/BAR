@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
-import { Citrus, SearchX, SlidersHorizontal } from 'lucide-react';
+import { Citrus, SearchX, SlidersHorizontal, Wine } from 'lucide-react';
 import { cocktails, countLabel } from '../lib/cocktails';
 import {
   EMPTY_FILTERS,
@@ -29,7 +29,9 @@ import { RecentRow, SearchRow, SearchSectionTitle, Highlight } from '../componen
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { StickyHeader } from '../components/ui/StickyHeader';
 import { FilterSheet } from '../components/FilterSheets';
-import { ThemeToggle } from '../components/ThemeToggle';
+import { canMake, useInventory } from '../lib/inventory';
+import { Link } from 'react-router';
+import { buttonClass } from '../components/ui/Button';
 import type { Cocktail } from '../types/cocktail';
 
 const FACET_ORDER: FacetKey[] = ['base', 'taste', 'strength'];
@@ -42,12 +44,12 @@ function sheetFromHash(hash: string): { open: boolean; facet: FacetKey | null } 
   return { open: false, facet: null };
 }
 
-function Grid({ list, onOpen }: { list: Cocktail[]; onOpen?: () => void }) {
+function Grid({ list, onOpen, isAvailable }: { list: Cocktail[]; onOpen?: () => void; isAvailable: (c: Cocktail) => boolean }) {
   return (
     <ul className="grid grid-cols-2 gap-3 px-4" onClickCapture={onOpen}>
       {list.map((c) => (
         <li key={c.id}>
-          <CocktailCard cocktail={c} />
+          <CocktailCard cocktail={c} available={isAvailable(c)} />
         </li>
       ))}
     </ul>
@@ -59,7 +61,9 @@ export function CatalogPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const f = useMemo(() => parseFilters(params), [params]);
-  const list = useMemo(() => applyFilters(cocktails, f), [f]);
+  const { inv } = useInventory();
+  const isAvailable = useMemo(() => (c: Cocktail) => canMake(c, inv), [inv]);
+  const list = useMemo(() => applyFilters(cocktails, f, isAvailable), [f, isAvailable]);
   const sheet = sheetFromHash(location.hash);
 
   const input = useRef<HTMLInputElement>(null);
@@ -118,11 +122,10 @@ export function CatalogPage() {
   const resetFacets = () => setFilters({ ...EMPTY_FILTERS, q });
 
   return (
-    <main className="pb-safe">
+    <main className="pb-tabbar">
       {!searching && (
-        <header className="pt-safe flex items-center justify-between gap-3 px-4">
+        <header className="pt-safe flex min-h-tap items-center px-4">
           <h1 className="text-large-title text-fg">Коктейли</h1>
-          <ThemeToggle />
         </header>
       )}
 
@@ -153,6 +156,11 @@ export function CatalogPage() {
               Фильтры
             </Chip>
             <ChipDivider />
+            {f.can && (
+              <Chip variant="removable" aria-label="Убрать фильтр «Могу сделать»" onClick={() => setFilters({ ...f, can: false })}>
+                Могу сделать
+              </Chip>
+            )}
             {f.ing && (
               <Chip variant="removable" aria-label={`Убрать ингредиент ${getIngredient(f.ing)?.name}`} onClick={() => setFilters({ ...f, ing: null })}>
                 {getIngredient(f.ing)?.name}
@@ -227,8 +235,19 @@ export function CatalogPage() {
 
           {list.length > 0 ? (
             <div className="mt-3">
-              <Grid list={list} onOpen={remember} />
+              <Grid list={list} onOpen={remember} isAvailable={isAvailable} />
             </div>
+          ) : f.can && !applyFilters(cocktails, { ...EMPTY_FILTERS, can: true }, isAvailable).length ? (
+            <EmptyState
+              icon={Wine}
+              title={inv.size ? 'Пока ничего не получится' : 'Бар пока пуст'}
+              hint={inv.size ? 'Добавьте 1–2 ингредиента в «Мой бар»' : 'Отметьте, что есть дома'}
+              action={
+                <Link to="/bar" className={buttonClass('secondary', 'm')}>
+                  Открыть «Мой бар»
+                </Link>
+              }
+            />
           ) : (
             <>
               <EmptyState
@@ -259,7 +278,7 @@ export function CatalogPage() {
               />
               <SectionHeader title="Похожие" />
               <div className="mt-2">
-                <Grid list={similarFor(cocktails, f)} />
+                <Grid list={similarFor(cocktails, f)} isAvailable={isAvailable} />
               </div>
             </>
           )}
@@ -270,9 +289,10 @@ export function CatalogPage() {
         open={sheet.open}
         facet={sheet.facet}
         value={f}
-        count={(draft) => applyFilters(cocktails, draft).length}
+        count={(draft) => applyFilters(cocktails, draft, isAvailable).length}
         onApply={apply}
         onClose={closeSheet}
+        barEmpty={inv.size === 0}
       />
     </main>
   );
