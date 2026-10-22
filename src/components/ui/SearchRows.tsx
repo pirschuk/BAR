@@ -40,7 +40,7 @@ export function SearchRow({ icon: Icon = Search, leading, title, subtitle, onCli
     >
       <span className="flex size-8 shrink-0 items-center justify-center text-fg-2">{leading ?? <Icon className="size-5" aria-hidden />}</span>
       <span className={cn('min-w-0 flex-1 border-b border-border py-2')}>
-        <span className="block truncate text-body text-fg-2">{title}</span>
+        <span className="block truncate text-body text-fg">{title}</span>
         {subtitle && <span className="block truncate text-footnote text-fg-3">{subtitle}</span>}
       </span>
       {trailingFill && <ArrowUpLeft className="size-5 shrink-0 text-fg-3" aria-hidden />}

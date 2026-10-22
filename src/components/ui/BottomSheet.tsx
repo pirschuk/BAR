@@ -105,7 +105,7 @@ export function BottomSheet({ open, onClose, title, children, footer, initialDet
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex flex-col justify-end">
-      <button type="button" aria-label="Закрыть" tabIndex={-1} onClick={onClose} className="animate-fade-in absolute inset-0 bg-scrim" />
+      <button type="button" aria-hidden tabIndex={-1} onClick={onClose} className="animate-fade-in absolute inset-0 bg-scrim" />
       <div className="pointer-events-none relative">{sheet}</div>
     </div>,
     document.body,
@@ -122,7 +122,7 @@ export function SheetSection({ title, children }: { title: string; children: Rea
   );
 }
 
-/** Футер шторки: «Сбросить» + primary «Показать N» — две пилюли [Fresha, Insight Timer] */
+/** Футер шторки: текстовое «Сбросить» + primary-пилюля «Показать N» на остаток ширины [Viator, Insight Timer] */
 export function SheetFooter({ children }: { children: ReactNode }) {
-  return <div className="grid grid-cols-[auto_1fr] gap-3">{children}</div>;
+  return <div className="grid grid-cols-[auto_1fr] items-center gap-3">{children}</div>;
 }

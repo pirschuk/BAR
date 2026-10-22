@@ -303,6 +303,21 @@ _Пополняется командой `/ref`._
   скриншот в нужной теме — `node scripts/screenshot.mjs <роут> <имя> --theme light`.
 - Компоненты — `src/components/ui/`, витрина — `src/pages/DesignSystemPage.tsx`.
 
+**Добавлено в Итерации 2 (срез 2a):**
+- Компоненты: `Chip` (filter/facet/option/removable + `ChipDivider`, `ChipWrap`),
+  `SearchBar`, `SearchRow`/`RecentRow`/`SearchSectionTitle`/`Highlight`, `EmptyState`,
+  `BottomSheet` (+ `SheetSection`, `SheetFooter`), `StickyHeader`; композиция
+  `src/components/FilterSheets.tsx` (FacetSheet = `facet="taste"`, FilterSheet = `facet={null}`);
+  `Button` размер `s`.
+- Токены/утилиты: `bg-scrim`, `max-h-sheet-medium` (62svh), `h-sheet-large` (92svh),
+  `pb-safe-sm`, `pt-safe-stuck`, `sticky-glass`, `animate-sheet-in`, `animate-fade-in`.
+- Шторки открываются через хэш (`#filters`, `#facet-<key>`), «Назад» их закрывает;
+  фильтры — в query (`q, base, taste, strength, ing`), логика — `src/lib/filters.ts`.
+- Футер шторки: текстовое «Сбросить» (ghost M) + primary-пилюля «Показать N» —
+  иначе «Показать 13 коктейлей» не помещается в одну строку.
+- Скриншоты состояний каталога: `node scripts/shots-catalog.mjs dark|light`,
+  склейка — `python3 scripts/montage.py out.png a.png b.png …`.
+
 ## 9. Чек-лист визуальной проверки (для `/look` и `ui-inspector`)
 
 - [ ] Ничего не выходит за 390px, нет горизонтального скролла.

@@ -45,10 +45,10 @@ export function FilterSheet({ open, facet, value, count, onApply, onClose, inlin
       title={facet ? FACETS[facet].title : 'Фильтры'}
       footer={
         <SheetFooter>
-          <Button variant="secondary" size="m" className="rounded-full" onClick={reset} disabled={!dirty}>
+          <Button variant="ghost" size="m" className="px-2" onClick={reset} disabled={!dirty}>
             Сбросить
           </Button>
-          <Button size="m" className="rounded-full" onClick={() => onApply(draft)} disabled={n === 0}>
+          <Button size="m" className="rounded-full whitespace-nowrap" onClick={() => onApply(draft)} disabled={n === 0}>
             {n === 0 ? 'Ничего не найдено' : `Показать ${countLabel(n)}`}
           </Button>
         </SheetFooter>

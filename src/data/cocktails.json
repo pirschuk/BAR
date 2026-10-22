@@ -6,11 +6,13 @@
     "description": "Строгая классика: ледяной джин с каплей сухого вермута. Чистый, сухой и ароматный.",
     "ingredients": [
       {
+        "ref": "gin",
         "name": "Джин",
         "amountMl": 60,
         "category": "spirit"
       },
       {
+        "ref": "dry-vermouth",
         "name": "Сухой вермут",
         "amountMl": 10,
         "category": "wine"
@@ -49,21 +51,25 @@
     "description": "Освежающий джин с лимоном и сахаром, вытянутый содовой. Лёгкий лонг для жаркого дня.",
     "ingredients": [
       {
+        "ref": "gin",
         "name": "Джин",
         "amountMl": 45,
         "category": "spirit"
       },
       {
+        "ref": "lemon",
         "name": "Сок лимона",
         "amountMl": 30,
         "category": "juice"
       },
       {
+        "ref": "simple-syrup",
         "name": "Сахарный сироп",
         "amountMl": 15,
         "category": "syrup"
       },
       {
+        "ref": "soda",
         "name": "Содовая",
         "unit": "top",
         "category": "soda"
@@ -98,22 +104,296 @@
     }
   },
   {
+    "id": "gin-tonic",
+    "name": "Джин-тоник",
+    "nameEn": "Gin & Tonic",
+    "description": "Джин и горьковатый тоник со льдом и лаймом. Самый простой и любимый хайбол.",
+    "ingredients": [
+      {
+        "ref": "gin",
+        "name": "Джин",
+        "amountMl": 50,
+        "category": "spirit"
+      },
+      {
+        "ref": "tonic",
+        "name": "Тоник",
+        "unit": "top",
+        "category": "soda"
+      }
+    ],
+    "method": "build",
+    "steps": [
+      "Наполни хайбол льдом доверху.",
+      "Влей джин.",
+      "Долей охлаждённый тоник и аккуратно перемешай барной ложкой.",
+      "Укрась долькой лайма."
+    ],
+    "glass": "highball",
+    "ice": "cubes",
+    "garnish": "Долька лайма",
+    "abv": 10,
+    "strength": "light",
+    "difficulty": 1,
+    "timeMin": 2,
+    "tags": [
+      "bitter",
+      "refreshing",
+      "summer",
+      "easy"
+    ],
+    "iba": false,
+    "base": "gin",
+    "cover": {
+      "from": "#E4F0EC",
+      "to": "#1F3A3A"
+    }
+  },
+  {
+    "id": "gimlet",
+    "name": "Гимлет",
+    "nameEn": "Gimlet",
+    "description": "Джин с лаймом и сахаром — терпкий, прохладный и прозрачный. Флотская классика.",
+    "ingredients": [
+      {
+        "ref": "gin",
+        "name": "Джин",
+        "amountMl": 60,
+        "category": "spirit"
+      },
+      {
+        "ref": "lime",
+        "name": "Сок лайма",
+        "amountMl": 15,
+        "category": "juice"
+      },
+      {
+        "ref": "simple-syrup",
+        "name": "Сахарный сироп",
+        "amountMl": 15,
+        "category": "syrup"
+      }
+    ],
+    "method": "shake",
+    "steps": [
+      "Охлади коктейльный бокал.",
+      "Влей джин, сок лайма и сахарный сироп в шейкер со льдом.",
+      "Энергично взбивай 10–15 секунд.",
+      "Дважды процеди в охлаждённый бокал, укрась долькой лайма."
+    ],
+    "glass": "coupe",
+    "ice": "none",
+    "garnish": "Долька лайма",
+    "abv": 22,
+    "strength": "medium",
+    "difficulty": 1,
+    "timeMin": 3,
+    "tags": [
+      "classic",
+      "sour",
+      "citrus",
+      "easy"
+    ],
+    "iba": true,
+    "base": "gin",
+    "cover": {
+      "from": "#E2EDB8",
+      "to": "#2E3E1E"
+    }
+  },
+  {
+    "id": "french-75",
+    "name": "Френч 75",
+    "nameEn": "French 75",
+    "description": "Джин, лимон и сахар, долитые шампанским. Праздничный и искристый.",
+    "ingredients": [
+      {
+        "ref": "gin",
+        "name": "Джин",
+        "amountMl": 30,
+        "category": "spirit"
+      },
+      {
+        "ref": "lemon",
+        "name": "Сок лимона",
+        "amountMl": 15,
+        "category": "juice"
+      },
+      {
+        "ref": "simple-syrup",
+        "name": "Сахарный сироп",
+        "amountMl": 15,
+        "category": "syrup"
+      },
+      {
+        "ref": "sparkling-wine",
+        "name": "Шампанское",
+        "amountMl": 60,
+        "category": "wine"
+      }
+    ],
+    "method": "shake",
+    "steps": [
+      "Охлади бокал.",
+      "Влей джин, сок лимона и сахарный сироп в шейкер со льдом.",
+      "Взбивай 10 секунд и процеди в бокал.",
+      "Долей охлаждённое шампанское, укрась лимонной цедрой."
+    ],
+    "glass": "coupe",
+    "ice": "none",
+    "garnish": "Лимонная цедра",
+    "abv": 14,
+    "strength": "medium",
+    "difficulty": 2,
+    "timeMin": 3,
+    "tags": [
+      "classic",
+      "sour",
+      "citrus",
+      "brunch",
+      "party"
+    ],
+    "iba": true,
+    "base": "gin",
+    "cover": {
+      "from": "#F5EBC0",
+      "to": "#3E3818"
+    }
+  },
+  {
+    "id": "bramble",
+    "name": "Брамбл",
+    "nameEn": "Bramble",
+    "description": "Джин с лимоном на колотом льду и струйкой ежевичного ликёра. Лондонская классика 80-х.",
+    "ingredients": [
+      {
+        "ref": "gin",
+        "name": "Джин",
+        "amountMl": 50,
+        "category": "spirit"
+      },
+      {
+        "ref": "lemon",
+        "name": "Сок лимона",
+        "amountMl": 25,
+        "category": "juice"
+      },
+      {
+        "ref": "simple-syrup",
+        "name": "Сахарный сироп",
+        "amountMl": 10,
+        "category": "syrup"
+      },
+      {
+        "ref": "creme-de-mure",
+        "name": "Ежевичный ликёр",
+        "amountMl": 15,
+        "category": "liqueur"
+      }
+    ],
+    "method": "shake",
+    "steps": [
+      "Влей джин, сок лимона и сахарный сироп в шейкер со льдом.",
+      "Взбивай 10 секунд.",
+      "Процеди в рокс с колотым льдом.",
+      "Медленно влей ежевичный ликёр сверху, укрась ежевикой и долькой лимона."
+    ],
+    "glass": "rocks",
+    "ice": "crushed",
+    "garnish": "Ежевика и долька лимона",
+    "abv": 15,
+    "strength": "medium",
+    "difficulty": 2,
+    "timeMin": 4,
+    "tags": [
+      "classic",
+      "fruity",
+      "sour"
+    ],
+    "iba": true,
+    "base": "gin",
+    "cover": {
+      "from": "#C04A7A",
+      "to": "#33102A"
+    }
+  },
+  {
+    "id": "clover-club",
+    "name": "Кловер Клаб",
+    "nameEn": "Clover Club",
+    "description": "Джин, лимон и малиновый сироп с шелковистой пенкой из белка. Розовая довоенная классика.",
+    "ingredients": [
+      {
+        "ref": "gin",
+        "name": "Джин",
+        "amountMl": 45,
+        "category": "spirit"
+      },
+      {
+        "ref": "lemon",
+        "name": "Сок лимона",
+        "amountMl": 15,
+        "category": "juice"
+      },
+      {
+        "ref": "raspberry-syrup",
+        "name": "Малиновый сироп",
+        "amountMl": 15,
+        "category": "syrup"
+      },
+      {
+        "ref": "egg-white",
+        "name": "Яичный белок",
+        "amountMl": 20,
+        "category": "egg"
+      }
+    ],
+    "method": "dry-shake",
+    "steps": [
+      "Влей джин, сок лимона, малиновый сироп и белок в шейкер.",
+      "Взбей 10 секунд без льда.",
+      "Добавь лёд и взбивай ещё 10–15 секунд.",
+      "Дважды процеди в охлаждённый бокал, укрась малиной."
+    ],
+    "glass": "coupe",
+    "ice": "none",
+    "garnish": "Малина",
+    "abv": 14,
+    "strength": "medium",
+    "difficulty": 3,
+    "timeMin": 5,
+    "tags": [
+      "classic",
+      "fruity",
+      "sour"
+    ],
+    "iba": true,
+    "base": "gin",
+    "cover": {
+      "from": "#F27A93",
+      "to": "#4A1626"
+    }
+  },
+  {
     "id": "daiquiri",
     "name": "Дайкири",
     "nameEn": "Daiquiri",
     "description": "Кубинская классика из рома, лайма и сахара. Идеальный баланс кислого и сладкого.",
     "ingredients": [
       {
+        "ref": "white-rum",
         "name": "Белый ром",
         "amountMl": 60,
         "category": "spirit"
       },
       {
+        "ref": "lime",
         "name": "Сок лайма",
         "amountMl": 20,
         "category": "juice"
       },
       {
+        "ref": "simple-syrup",
         "name": "Сахарный сироп",
         "amountMl": 10,
         "category": "syrup"
@@ -154,28 +434,33 @@
     "description": "Кубинский хайбол с ромом, лаймом и мятой. Свежий, сладковато-кислый и очень летний.",
     "ingredients": [
       {
+        "ref": "white-rum",
         "name": "Белый ром",
         "amountMl": 45,
         "category": "spirit"
       },
       {
+        "ref": "lime",
         "name": "Сок лайма",
         "amountMl": 20,
         "category": "juice"
       },
       {
+        "ref": "mint",
         "name": "Мята",
         "amount": 12,
         "unit": "leaf",
         "category": "garnish"
       },
       {
+        "ref": "sugar",
         "name": "Сахар",
         "amount": 2,
         "unit": "barspoon",
         "category": "other"
       },
       {
+        "ref": "soda",
         "name": "Содовая",
         "unit": "top",
         "category": "soda"
@@ -211,29 +496,251 @@
     }
   },
   {
+    "id": "pina-colada",
+    "name": "Пина колада",
+    "nameEn": "Piña Colada",
+    "description": "Ром, ананас и кокосовые сливки, взбитые со льдом. Сливочный пуэрто-риканский тики.",
+    "ingredients": [
+      {
+        "ref": "white-rum",
+        "name": "Белый ром",
+        "amountMl": 50,
+        "category": "spirit"
+      },
+      {
+        "ref": "coconut-cream",
+        "name": "Кокосовые сливки",
+        "amountMl": 30,
+        "category": "other"
+      },
+      {
+        "ref": "pineapple-juice",
+        "name": "Ананасовый сок",
+        "amountMl": 50,
+        "category": "juice"
+      }
+    ],
+    "method": "blend",
+    "steps": [
+      "Положи в блендер ром, кокосовые сливки и ананасовый сок.",
+      "Добавь горсть колотого льда и взбивай до гладкости.",
+      "Перелей в высокий бокал.",
+      "Укрась долькой ананаса и коктейльной вишней."
+    ],
+    "glass": "collins",
+    "ice": "crushed",
+    "garnish": "Долька ананаса и коктейльная вишня",
+    "abv": 11,
+    "strength": "light",
+    "difficulty": 2,
+    "timeMin": 4,
+    "tags": [
+      "classic",
+      "creamy",
+      "sweet",
+      "fruity",
+      "tiki",
+      "summer"
+    ],
+    "iba": true,
+    "base": "rum",
+    "cover": {
+      "from": "#F6E7B8",
+      "to": "#4A3A14"
+    }
+  },
+  {
+    "id": "mai-tai",
+    "name": "Май Тай",
+    "nameEn": "Mai Tai",
+    "description": "Выдержанный ром, лайм, кюрасао и миндальный сироп. Главный тики-коктейль Трейдера Вика.",
+    "ingredients": [
+      {
+        "ref": "dark-rum",
+        "name": "Тёмный ром",
+        "amountMl": 60,
+        "category": "spirit"
+      },
+      {
+        "ref": "lime",
+        "name": "Сок лайма",
+        "amountMl": 30,
+        "category": "juice"
+      },
+      {
+        "ref": "triple-sec",
+        "name": "Апельсиновый кюрасао",
+        "amountMl": 15,
+        "category": "liqueur"
+      },
+      {
+        "ref": "orgeat",
+        "name": "Миндальный сироп",
+        "amountMl": 7.5,
+        "category": "syrup"
+      },
+      {
+        "ref": "simple-syrup",
+        "name": "Сахарный сироп",
+        "amountMl": 7.5,
+        "category": "syrup"
+      }
+    ],
+    "method": "shake",
+    "steps": [
+      "Влей все ингредиенты в шейкер со льдом.",
+      "Энергично взбивай 10–15 секунд.",
+      "Процеди в рокс с колотым льдом.",
+      "Укрась веточкой мяты и долькой лайма."
+    ],
+    "glass": "rocks",
+    "ice": "crushed",
+    "garnish": "Веточка мяты и долька лайма",
+    "abv": 19,
+    "strength": "medium",
+    "difficulty": 2,
+    "timeMin": 4,
+    "tags": [
+      "classic",
+      "fruity",
+      "sour",
+      "tiki",
+      "summer"
+    ],
+    "iba": true,
+    "base": "rum",
+    "cover": {
+      "from": "#F0A85A",
+      "to": "#4A2410"
+    }
+  },
+  {
+    "id": "dark-n-stormy",
+    "name": "Дарк энд Сторми",
+    "nameEn": "Dark ’n’ Stormy",
+    "description": "Тёмный ром поверх острого имбирного пива. Бермудский хайбол с пряным характером.",
+    "ingredients": [
+      {
+        "ref": "dark-rum",
+        "name": "Тёмный ром",
+        "amountMl": 60,
+        "category": "spirit"
+      },
+      {
+        "ref": "ginger-beer",
+        "name": "Имбирное пиво",
+        "amountMl": 100,
+        "category": "soda"
+      }
+    ],
+    "method": "build",
+    "steps": [
+      "Наполни хайбол льдом.",
+      "Влей имбирное пиво.",
+      "Медленно влей тёмный ром сверху, чтобы он лёг слоем.",
+      "Укрась долькой лайма."
+    ],
+    "glass": "highball",
+    "ice": "cubes",
+    "garnish": "Долька лайма",
+    "abv": 14,
+    "strength": "medium",
+    "difficulty": 1,
+    "timeMin": 2,
+    "tags": [
+      "classic",
+      "spicy",
+      "refreshing",
+      "easy"
+    ],
+    "iba": true,
+    "base": "rum",
+    "cover": {
+      "from": "#C98A4A",
+      "to": "#2E1A0C"
+    }
+  },
+  {
+    "id": "cuba-libre",
+    "name": "Куба Либре",
+    "nameEn": "Cuba Libre",
+    "description": "Белый ром, кола и сок лайма со льдом. Простой и сладкий кубинский хайбол.",
+    "ingredients": [
+      {
+        "ref": "white-rum",
+        "name": "Белый ром",
+        "amountMl": 50,
+        "category": "spirit"
+      },
+      {
+        "ref": "lime",
+        "name": "Сок лайма",
+        "amountMl": 10,
+        "category": "juice"
+      },
+      {
+        "ref": "cola",
+        "name": "Кола",
+        "amountMl": 120,
+        "category": "soda"
+      }
+    ],
+    "method": "build",
+    "steps": [
+      "Наполни хайбол льдом.",
+      "Влей ром и сок лайма.",
+      "Долей колу и аккуратно перемешай.",
+      "Укрась долькой лайма."
+    ],
+    "glass": "highball",
+    "ice": "cubes",
+    "garnish": "Долька лайма",
+    "abv": 10,
+    "strength": "light",
+    "difficulty": 1,
+    "timeMin": 2,
+    "tags": [
+      "classic",
+      "sweet",
+      "refreshing",
+      "party",
+      "easy"
+    ],
+    "iba": true,
+    "base": "rum",
+    "cover": {
+      "from": "#B9774A",
+      "to": "#2A140A"
+    }
+  },
+  {
     "id": "old-fashioned",
     "name": "Олд Фэшн",
     "nameEn": "Old Fashioned",
     "description": "Виски, сахар и биттер — прародитель всех коктейлей. Крепкий, пряный и тёплый.",
     "ingredients": [
       {
+        "ref": "bourbon",
         "name": "Бурбон",
         "amountMl": 45,
         "category": "spirit"
       },
       {
+        "ref": "sugar",
         "name": "Сахар-рафинад",
         "amount": 1,
         "unit": "piece",
         "category": "other"
       },
       {
+        "ref": "angostura",
         "name": "Ангостура",
         "amount": 2,
         "unit": "dash",
         "category": "bitter"
       },
       {
+        "ref": "water",
         "name": "Вода",
         "amount": 1,
         "unit": "dash",
@@ -276,21 +783,25 @@
     "description": "Бурбон, лимон и сахар с бархатной пенкой из белка. Кисло-сладкая классика.",
     "ingredients": [
       {
+        "ref": "bourbon",
         "name": "Бурбон",
         "amountMl": 45,
         "category": "spirit"
       },
       {
+        "ref": "lemon",
         "name": "Сок лимона",
         "amountMl": 25,
         "category": "juice"
       },
       {
+        "ref": "simple-syrup",
         "name": "Сахарный сироп",
         "amountMl": 20,
         "category": "syrup"
       },
       {
+        "ref": "egg-white",
         "name": "Яичный белок",
         "amountMl": 20,
         "optional": true,
@@ -325,22 +836,315 @@
     }
   },
   {
+    "id": "manhattan",
+    "name": "Манхэттен",
+    "nameEn": "Manhattan",
+    "description": "Ржаной виски, красный вермут и ангостура. Бархатная нью-йоркская классика.",
+    "ingredients": [
+      {
+        "ref": "rye-whiskey",
+        "name": "Ржаной виски",
+        "amountMl": 50,
+        "category": "spirit"
+      },
+      {
+        "ref": "sweet-vermouth",
+        "name": "Красный вермут",
+        "amountMl": 20,
+        "category": "wine"
+      },
+      {
+        "ref": "angostura",
+        "name": "Ангостура",
+        "amount": 1,
+        "unit": "dash",
+        "category": "bitter"
+      }
+    ],
+    "method": "stir",
+    "steps": [
+      "Охлади коктейльный бокал.",
+      "Наполни смесительный стакан льдом, влей виски, вермут и ангостуру.",
+      "Перемешивай 30 секунд.",
+      "Процеди в охлаждённый бокал, укрась коктейльной вишней."
+    ],
+    "glass": "coupe",
+    "ice": "none",
+    "garnish": "Коктейльная вишня",
+    "abv": 28,
+    "strength": "strong",
+    "difficulty": 2,
+    "timeMin": 3,
+    "tags": [
+      "classic",
+      "sweet",
+      "bitter",
+      "digestif"
+    ],
+    "iba": true,
+    "base": "whiskey",
+    "cover": {
+      "from": "#C2402E",
+      "to": "#3A0E0A"
+    }
+  },
+  {
+    "id": "sazerac",
+    "name": "Сазерак",
+    "nameEn": "Sazerac",
+    "description": "Ржаной виски с биттером Пейшо в бокале, ополоснутом абсентом. Новоорлеанская легенда.",
+    "ingredients": [
+      {
+        "ref": "rye-whiskey",
+        "name": "Ржаной виски",
+        "amountMl": 50,
+        "category": "spirit"
+      },
+      {
+        "ref": "absinthe",
+        "name": "Абсент",
+        "amountMl": 10,
+        "category": "spirit"
+      },
+      {
+        "ref": "sugar",
+        "name": "Сахар-рафинад",
+        "amount": 1,
+        "unit": "piece",
+        "category": "other"
+      },
+      {
+        "ref": "peychauds",
+        "name": "Биттер Пейшо",
+        "amount": 3,
+        "unit": "dash",
+        "category": "bitter"
+      },
+      {
+        "ref": "water",
+        "name": "Вода",
+        "amount": 1,
+        "unit": "dash",
+        "category": "other"
+      }
+    ],
+    "method": "stir",
+    "steps": [
+      "Ополосни охлаждённый рокс абсентом и вылей излишек.",
+      "В смесительном стакане разомни сахар с биттером и дэшем воды.",
+      "Добавь виски и лёд, перемешивай 30 секунд.",
+      "Процеди в бокал без льда, выжми над ним лимонную цедру."
+    ],
+    "glass": "rocks",
+    "ice": "none",
+    "garnish": "Лимонная цедра",
+    "abv": 32,
+    "strength": "strong",
+    "difficulty": 3,
+    "timeMin": 5,
+    "tags": [
+      "classic",
+      "herbal",
+      "bitter",
+      "digestif"
+    ],
+    "iba": true,
+    "base": "whiskey",
+    "cover": {
+      "from": "#D9733A",
+      "to": "#3E160A"
+    }
+  },
+  {
+    "id": "mint-julep",
+    "name": "Мятный джулеп",
+    "nameEn": "Mint Julep",
+    "description": "Бурбон, мята и сахар на горке колотого льда. Летний напиток Кентукки Дерби.",
+    "ingredients": [
+      {
+        "ref": "bourbon",
+        "name": "Бурбон",
+        "amountMl": 60,
+        "category": "spirit"
+      },
+      {
+        "ref": "mint",
+        "name": "Мята",
+        "amount": 8,
+        "unit": "leaf",
+        "category": "garnish"
+      },
+      {
+        "ref": "simple-syrup",
+        "name": "Сахарный сироп",
+        "amountMl": 10,
+        "category": "syrup"
+      }
+    ],
+    "method": "muddle",
+    "steps": [
+      "Положи мяту и сахарный сироп в бокал и аккуратно разомни мадлером.",
+      "Влей бурбон и наполни бокал колотым льдом.",
+      "Перемешивай, пока бокал не покроется инеем.",
+      "Досыпь льда горкой и укрась пучком мяты."
+    ],
+    "glass": "rocks",
+    "ice": "crushed",
+    "garnish": "Пучок мяты",
+    "abv": 20,
+    "strength": "medium",
+    "difficulty": 2,
+    "timeMin": 5,
+    "tags": [
+      "classic",
+      "herbal",
+      "sweet",
+      "refreshing",
+      "summer"
+    ],
+    "iba": true,
+    "base": "whiskey",
+    "cover": {
+      "from": "#B8D98A",
+      "to": "#22381A"
+    }
+  },
+  {
+    "id": "penicillin",
+    "name": "Пенициллин",
+    "nameEn": "Penicillin",
+    "description": "Скотч, лимон и медово-имбирный сироп с дымным торфяным флоатом. Современная классика.",
+    "ingredients": [
+      {
+        "ref": "scotch",
+        "name": "Купажированный скотч",
+        "amountMl": 60,
+        "category": "spirit"
+      },
+      {
+        "ref": "lemon",
+        "name": "Сок лимона",
+        "amountMl": 20,
+        "category": "juice"
+      },
+      {
+        "ref": "honey-ginger-syrup",
+        "name": "Медово-имбирный сироп",
+        "amountMl": 20,
+        "category": "syrup"
+      },
+      {
+        "ref": "peated-scotch",
+        "name": "Торфяной скотч",
+        "amountMl": 7.5,
+        "category": "spirit"
+      }
+    ],
+    "method": "shake",
+    "steps": [
+      "Влей купажированный скотч, сок лимона и сироп в шейкер со льдом.",
+      "Взбивай 10–15 секунд.",
+      "Процеди в рокс на большой кубик льда.",
+      "Аккуратно влей торфяной скотч сверху, укрась засахаренным имбирём."
+    ],
+    "glass": "rocks",
+    "ice": "big-cube",
+    "garnish": "Засахаренный имбирь",
+    "abv": 20,
+    "strength": "medium",
+    "difficulty": 3,
+    "timeMin": 5,
+    "tags": [
+      "spicy",
+      "sour",
+      "winter"
+    ],
+    "iba": true,
+    "base": "whiskey",
+    "cover": {
+      "from": "#E8B45A",
+      "to": "#4A2E0E"
+    }
+  },
+  {
+    "id": "irish-coffee",
+    "name": "Айриш кофе",
+    "nameEn": "Irish Coffee",
+    "description": "Горячий кофе с ирландским виски и сахаром под шапкой холодных сливок.",
+    "ingredients": [
+      {
+        "ref": "irish-whiskey",
+        "name": "Ирландский виски",
+        "amountMl": 50,
+        "category": "spirit"
+      },
+      {
+        "ref": "coffee",
+        "name": "Горячий кофе",
+        "amountMl": 120,
+        "category": "other"
+      },
+      {
+        "ref": "sugar",
+        "name": "Коричневый сахар",
+        "amount": 1,
+        "unit": "barspoon",
+        "category": "other"
+      },
+      {
+        "ref": "cream",
+        "name": "Сливки",
+        "amountMl": 50,
+        "category": "dairy"
+      }
+    ],
+    "method": "build",
+    "steps": [
+      "Прогрей бокал горячей водой и вылей её.",
+      "Влей горячий кофе и размешай в нём сахар.",
+      "Добавь виски.",
+      "Выложи сверху слой слегка взбитых сливок по ложке."
+    ],
+    "glass": "wine",
+    "ice": "none",
+    "abv": 9,
+    "strength": "light",
+    "difficulty": 2,
+    "timeMin": 5,
+    "tags": [
+      "classic",
+      "creamy",
+      "sweet",
+      "winter",
+      "digestif"
+    ],
+    "iba": true,
+    "base": "whiskey",
+    "cover": {
+      "from": "#C8A07A",
+      "to": "#2A1A10"
+    }
+  },
+  {
     "id": "margarita",
     "name": "Маргарита",
     "nameEn": "Margarita",
     "description": "Текила, апельсиновый ликёр и лайм с соляным ободком. Главный мексиканский коктейль.",
     "ingredients": [
       {
+        "ref": "tequila",
         "name": "Текила бланко",
         "amountMl": 50,
         "category": "spirit"
       },
       {
+        "ref": "triple-sec",
         "name": "Трипл сек",
         "amountMl": 20,
         "category": "liqueur"
       },
       {
+        "ref": "lime",
         "name": "Сок лайма",
         "amountMl": 15,
         "category": "juice"
@@ -380,22 +1184,26 @@
     "description": "Текила с грейпфрутовой содовой, лаймом и щепоткой соли. Самый популярный хайбол Мексики.",
     "ingredients": [
       {
+        "ref": "tequila",
         "name": "Текила бланко",
         "amountMl": 50,
         "category": "spirit"
       },
       {
+        "ref": "lime",
         "name": "Сок лайма",
         "amountMl": 5,
         "category": "juice"
       },
       {
+        "ref": "salt",
         "name": "Соль",
         "amount": 1,
         "unit": "pinch",
         "category": "other"
       },
       {
+        "ref": "grapefruit-soda",
         "name": "Грейпфрутовая содовая",
         "unit": "top",
         "category": "soda"
@@ -430,22 +1238,246 @@
     }
   },
   {
+    "id": "tequila-sunrise",
+    "name": "Текила Санрайз",
+    "nameEn": "Tequila Sunrise",
+    "description": "Текила с апельсиновым соком и гренадином, оседающим «рассветом». Сладкий и фруктовый.",
+    "ingredients": [
+      {
+        "ref": "tequila",
+        "name": "Текила бланко",
+        "amountMl": 45,
+        "category": "spirit"
+      },
+      {
+        "ref": "orange",
+        "name": "Апельсиновый сок",
+        "amountMl": 90,
+        "category": "juice"
+      },
+      {
+        "ref": "grenadine",
+        "name": "Гренадин",
+        "amountMl": 15,
+        "category": "syrup"
+      }
+    ],
+    "method": "build",
+    "steps": [
+      "Наполни хайбол льдом.",
+      "Влей текилу и апельсиновый сок, перемешай.",
+      "Медленно влей гренадин, чтобы он опустился на дно.",
+      "Укрась долькой апельсина."
+    ],
+    "glass": "highball",
+    "ice": "cubes",
+    "garnish": "Долька апельсина",
+    "abv": 10,
+    "strength": "light",
+    "difficulty": 1,
+    "timeMin": 2,
+    "tags": [
+      "classic",
+      "fruity",
+      "sweet",
+      "summer",
+      "party",
+      "easy"
+    ],
+    "iba": true,
+    "base": "tequila",
+    "cover": {
+      "from": "#FFB347",
+      "to": "#5A1A0E"
+    }
+  },
+  {
+    "id": "tommys-margarita",
+    "name": "Маргарита Томми",
+    "nameEn": "Tommy’s Margarita",
+    "description": "Текила, лайм и сироп агавы без ликёра. Чистая и кислая сан-францисская версия.",
+    "ingredients": [
+      {
+        "ref": "tequila",
+        "name": "Текила бланко",
+        "amountMl": 60,
+        "category": "spirit"
+      },
+      {
+        "ref": "lime",
+        "name": "Сок лайма",
+        "amountMl": 30,
+        "category": "juice"
+      },
+      {
+        "ref": "agave-syrup",
+        "name": "Сироп агавы",
+        "amountMl": 15,
+        "category": "syrup"
+      }
+    ],
+    "method": "shake",
+    "steps": [
+      "Влей текилу, сок лайма и сироп агавы в шейкер со льдом.",
+      "Энергично взбивай 10–15 секунд.",
+      "Процеди в рокс со свежим льдом.",
+      "Укрась долькой лайма."
+    ],
+    "glass": "rocks",
+    "ice": "cubes",
+    "garnish": "Долька лайма",
+    "abv": 18,
+    "strength": "medium",
+    "difficulty": 1,
+    "timeMin": 3,
+    "tags": [
+      "sour",
+      "citrus",
+      "easy"
+    ],
+    "iba": true,
+    "base": "tequila",
+    "cover": {
+      "from": "#DDEBA8",
+      "to": "#34401A"
+    }
+  },
+  {
+    "id": "el-diablo",
+    "name": "Эль Дьябло",
+    "nameEn": "El Diablo",
+    "description": "Текила, черносмородиновый ликёр и лайм с имбирным пивом. Ягодный и пряный хайбол.",
+    "ingredients": [
+      {
+        "ref": "tequila",
+        "name": "Текила репосадо",
+        "amountMl": 45,
+        "category": "spirit"
+      },
+      {
+        "ref": "creme-de-cassis",
+        "name": "Черносмородиновый ликёр",
+        "amountMl": 15,
+        "category": "liqueur"
+      },
+      {
+        "ref": "lime",
+        "name": "Сок лайма",
+        "amountMl": 15,
+        "category": "juice"
+      },
+      {
+        "ref": "ginger-beer",
+        "name": "Имбирное пиво",
+        "unit": "top",
+        "category": "soda"
+      }
+    ],
+    "method": "build",
+    "steps": [
+      "Наполни хайбол льдом.",
+      "Влей текилу и сок лайма.",
+      "Долей имбирное пиво и перемешай.",
+      "Медленно влей ликёр сверху, укрась долькой лайма."
+    ],
+    "glass": "highball",
+    "ice": "cubes",
+    "garnish": "Долька лайма",
+    "abv": 11,
+    "strength": "light",
+    "difficulty": 1,
+    "timeMin": 3,
+    "tags": [
+      "fruity",
+      "spicy",
+      "refreshing"
+    ],
+    "iba": false,
+    "base": "tequila",
+    "cover": {
+      "from": "#B0457A",
+      "to": "#2E0E22"
+    }
+  },
+  {
+    "id": "oaxaca-old-fashioned",
+    "name": "Оахака Олд Фэшн",
+    "nameEn": "Oaxaca Old Fashioned",
+    "description": "Текила репосадо и мескаль с агавой и ангостурой. Дымный двоюродный брат Олд Фэшна.",
+    "ingredients": [
+      {
+        "ref": "tequila",
+        "name": "Текила репосадо",
+        "amountMl": 45,
+        "category": "spirit"
+      },
+      {
+        "ref": "mezcal",
+        "name": "Мескаль",
+        "amountMl": 15,
+        "category": "spirit"
+      },
+      {
+        "ref": "agave-syrup",
+        "name": "Сироп агавы",
+        "amount": 1,
+        "unit": "barspoon",
+        "category": "syrup"
+      },
+      {
+        "ref": "angostura",
+        "name": "Ангостура",
+        "amount": 2,
+        "unit": "dash",
+        "category": "bitter"
+      }
+    ],
+    "method": "stir",
+    "steps": [
+      "Наполни смесительный стакан льдом.",
+      "Влей текилу, мескаль, сироп агавы и ангостуру.",
+      "Перемешивай 20–30 секунд.",
+      "Процеди в рокс на большой кубик льда, укрась фламбированной апельсиновой цедрой."
+    ],
+    "glass": "rocks",
+    "ice": "big-cube",
+    "garnish": "Апельсиновая цедра",
+    "abv": 30,
+    "strength": "strong",
+    "difficulty": 2,
+    "timeMin": 3,
+    "tags": [
+      "bitter",
+      "spicy",
+      "digestif"
+    ],
+    "iba": false,
+    "base": "tequila",
+    "cover": {
+      "from": "#D8964A",
+      "to": "#3A1E0C"
+    }
+  },
+  {
     "id": "moscow-mule",
     "name": "Московский мул",
     "nameEn": "Moscow Mule",
     "description": "Водка, имбирное пиво и лайм. Пряный и бодрящий, традиционно — в медной кружке.",
     "ingredients": [
       {
+        "ref": "vodka",
         "name": "Водка",
         "amountMl": 45,
         "category": "spirit"
       },
       {
+        "ref": "lime",
         "name": "Сок лайма",
         "amountMl": 10,
         "category": "juice"
       },
       {
+        "ref": "ginger-beer",
         "name": "Имбирное пиво",
         "amountMl": 120,
         "category": "soda"
@@ -485,21 +1517,25 @@
     "description": "Цитрусовая водка, апельсиновый ликёр, лайм и клюква. Розовая икона 90-х.",
     "ingredients": [
       {
+        "ref": "citrus-vodka",
         "name": "Водка-цитрон",
         "amountMl": 40,
         "category": "spirit"
       },
       {
+        "ref": "triple-sec",
         "name": "Трипл сек",
         "amountMl": 15,
         "category": "liqueur"
       },
       {
+        "ref": "lime",
         "name": "Сок лайма",
         "amountMl": 15,
         "category": "juice"
       },
       {
+        "ref": "cranberry-juice",
         "name": "Клюквенный сок",
         "amountMl": 30,
         "category": "juice"
@@ -533,22 +1569,598 @@
     }
   },
   {
+    "id": "bloody-mary",
+    "name": "Кровавая Мэри",
+    "nameEn": "Bloody Mary",
+    "description": "Водка с томатным соком, лимоном и острыми специями. Главный коктейль бранча.",
+    "ingredients": [
+      {
+        "ref": "vodka",
+        "name": "Водка",
+        "amountMl": 45,
+        "category": "spirit"
+      },
+      {
+        "ref": "tomato-juice",
+        "name": "Томатный сок",
+        "amountMl": 90,
+        "category": "juice"
+      },
+      {
+        "ref": "lemon",
+        "name": "Сок лимона",
+        "amountMl": 15,
+        "category": "juice"
+      },
+      {
+        "ref": "worcestershire",
+        "name": "Вустерширский соус",
+        "amount": 2,
+        "unit": "dash",
+        "category": "other"
+      },
+      {
+        "ref": "tabasco",
+        "name": "Табаско",
+        "amount": 2,
+        "unit": "dash",
+        "category": "other"
+      },
+      {
+        "ref": "salt",
+        "name": "Соль",
+        "amount": 1,
+        "unit": "pinch",
+        "category": "other"
+      },
+      {
+        "ref": "black-pepper",
+        "name": "Чёрный перец",
+        "amount": 1,
+        "unit": "pinch",
+        "category": "other"
+      }
+    ],
+    "method": "stir",
+    "steps": [
+      "Наполни хайбол льдом.",
+      "Влей водку, томатный сок и сок лимона.",
+      "Добавь вустерширский соус, табаско, соль и перец.",
+      "Аккуратно перемешай и укрась стеблем сельдерея."
+    ],
+    "glass": "highball",
+    "ice": "cubes",
+    "garnish": "Стебель сельдерея и долька лимона",
+    "abv": 10,
+    "strength": "light",
+    "difficulty": 2,
+    "timeMin": 4,
+    "tags": [
+      "classic",
+      "spicy",
+      "brunch"
+    ],
+    "iba": true,
+    "base": "vodka",
+    "cover": {
+      "from": "#D0382E",
+      "to": "#3E0A08"
+    }
+  },
+  {
+    "id": "espresso-martini",
+    "name": "Эспрессо Мартини",
+    "nameEn": "Espresso Martini",
+    "description": "Водка, кофейный ликёр и свежий эспрессо с плотной пенкой. Бодрит и согревает.",
+    "ingredients": [
+      {
+        "ref": "vodka",
+        "name": "Водка",
+        "amountMl": 50,
+        "category": "spirit"
+      },
+      {
+        "ref": "coffee-liqueur",
+        "name": "Кофейный ликёр",
+        "amountMl": 30,
+        "category": "liqueur"
+      },
+      {
+        "ref": "coffee",
+        "name": "Эспрессо",
+        "amountMl": 30,
+        "category": "other"
+      },
+      {
+        "ref": "simple-syrup",
+        "name": "Сахарный сироп",
+        "amountMl": 10,
+        "category": "syrup"
+      }
+    ],
+    "method": "shake",
+    "steps": [
+      "Охлади коктейльный бокал.",
+      "Влей водку, ликёр, эспрессо и сироп в шейкер со льдом.",
+      "Энергично взбивай 15 секунд до пены.",
+      "Дважды процеди в бокал, укрась тремя кофейными зёрнами."
+    ],
+    "glass": "martini",
+    "ice": "none",
+    "garnish": "Кофейные зёрна",
+    "abv": 17,
+    "strength": "medium",
+    "difficulty": 2,
+    "timeMin": 4,
+    "tags": [
+      "classic",
+      "bitter",
+      "sweet",
+      "party"
+    ],
+    "iba": true,
+    "base": "vodka",
+    "cover": {
+      "from": "#A07650",
+      "to": "#1E120A"
+    }
+  },
+  {
+    "id": "white-russian",
+    "name": "Белый русский",
+    "nameEn": "White Russian",
+    "description": "Водка и кофейный ликёр под слоем сливок. Мягкий десертный коктейль.",
+    "ingredients": [
+      {
+        "ref": "vodka",
+        "name": "Водка",
+        "amountMl": 50,
+        "category": "spirit"
+      },
+      {
+        "ref": "coffee-liqueur",
+        "name": "Кофейный ликёр",
+        "amountMl": 20,
+        "category": "liqueur"
+      },
+      {
+        "ref": "cream",
+        "name": "Сливки",
+        "amountMl": 30,
+        "category": "dairy"
+      }
+    ],
+    "method": "build",
+    "steps": [
+      "Наполни рокс льдом.",
+      "Влей водку и кофейный ликёр.",
+      "Аккуратно влей сливки сверху.",
+      "Перемешай перед тем, как пить."
+    ],
+    "glass": "rocks",
+    "ice": "cubes",
+    "abv": 20,
+    "strength": "medium",
+    "difficulty": 1,
+    "timeMin": 2,
+    "tags": [
+      "classic",
+      "creamy",
+      "sweet",
+      "digestif",
+      "easy"
+    ],
+    "iba": true,
+    "base": "vodka",
+    "cover": {
+      "from": "#E6D3B8",
+      "to": "#3A2A1A"
+    }
+  },
+  {
+    "id": "screwdriver",
+    "name": "Отвёртка",
+    "nameEn": "Screwdriver",
+    "description": "Водка и апельсиновый сок со льдом. Проще не бывает.",
+    "ingredients": [
+      {
+        "ref": "vodka",
+        "name": "Водка",
+        "amountMl": 50,
+        "category": "spirit"
+      },
+      {
+        "ref": "orange",
+        "name": "Апельсиновый сок",
+        "amountMl": 100,
+        "category": "juice"
+      }
+    ],
+    "method": "build",
+    "steps": [
+      "Наполни хайбол льдом.",
+      "Влей водку и апельсиновый сок.",
+      "Перемешай и укрась долькой апельсина."
+    ],
+    "glass": "highball",
+    "ice": "cubes",
+    "garnish": "Долька апельсина",
+    "abv": 11,
+    "strength": "light",
+    "difficulty": 1,
+    "timeMin": 1,
+    "tags": [
+      "classic",
+      "fruity",
+      "refreshing",
+      "brunch",
+      "easy"
+    ],
+    "iba": true,
+    "base": "vodka",
+    "cover": {
+      "from": "#FFC24A",
+      "to": "#5A2E08"
+    }
+  },
+  {
+    "id": "sidecar",
+    "name": "Сайдкар",
+    "nameEn": "Sidecar",
+    "description": "Коньяк, апельсиновый ликёр и лимон. Парижская классика 1920-х.",
+    "ingredients": [
+      {
+        "ref": "cognac",
+        "name": "Коньяк",
+        "amountMl": 50,
+        "category": "spirit"
+      },
+      {
+        "ref": "triple-sec",
+        "name": "Трипл сек",
+        "amountMl": 20,
+        "category": "liqueur"
+      },
+      {
+        "ref": "lemon",
+        "name": "Сок лимона",
+        "amountMl": 20,
+        "category": "juice"
+      }
+    ],
+    "method": "shake",
+    "steps": [
+      "Охлади коктейльный бокал, по желанию сделай сахарный ободок.",
+      "Влей коньяк, трипл сек и сок лимона в шейкер со льдом.",
+      "Энергично взбивай 10–15 секунд.",
+      "Дважды процеди в бокал, укрась апельсиновой цедрой."
+    ],
+    "glass": "coupe",
+    "ice": "none",
+    "garnish": "Апельсиновая цедра",
+    "abv": 24,
+    "strength": "strong",
+    "difficulty": 2,
+    "timeMin": 3,
+    "tags": [
+      "classic",
+      "sour",
+      "citrus"
+    ],
+    "iba": true,
+    "base": "brandy",
+    "cover": {
+      "from": "#E8A84A",
+      "to": "#4A240A"
+    }
+  },
+  {
+    "id": "brandy-alexander",
+    "name": "Бренди Александр",
+    "nameEn": "Brandy Alexander",
+    "description": "Коньяк, ликёр какао и сливки с мускатным орехом. Десерт в бокале.",
+    "ingredients": [
+      {
+        "ref": "cognac",
+        "name": "Коньяк",
+        "amountMl": 30,
+        "category": "spirit"
+      },
+      {
+        "ref": "creme-de-cacao",
+        "name": "Ликёр какао",
+        "amountMl": 30,
+        "category": "liqueur"
+      },
+      {
+        "ref": "cream",
+        "name": "Сливки",
+        "amountMl": 30,
+        "category": "dairy"
+      }
+    ],
+    "method": "shake",
+    "steps": [
+      "Охлади коктейльный бокал.",
+      "Влей коньяк, ликёр и сливки в шейкер со льдом.",
+      "Энергично взбивай 15 секунд.",
+      "Процеди в бокал и натри сверху мускатный орех."
+    ],
+    "glass": "coupe",
+    "ice": "none",
+    "garnish": "Тёртый мускатный орех",
+    "abv": 16,
+    "strength": "medium",
+    "difficulty": 2,
+    "timeMin": 3,
+    "tags": [
+      "classic",
+      "creamy",
+      "sweet",
+      "digestif",
+      "winter"
+    ],
+    "iba": true,
+    "base": "brandy",
+    "cover": {
+      "from": "#D8B48A",
+      "to": "#3A2412"
+    }
+  },
+  {
+    "id": "pisco-sour",
+    "name": "Писко Сауэр",
+    "nameEn": "Pisco Sour",
+    "description": "Писко, лимон и сахар с пенкой из белка и каплями ангостуры. Гордость Перу.",
+    "ingredients": [
+      {
+        "ref": "pisco",
+        "name": "Писко",
+        "amountMl": 60,
+        "category": "spirit"
+      },
+      {
+        "ref": "lemon",
+        "name": "Сок лимона",
+        "amountMl": 30,
+        "category": "juice"
+      },
+      {
+        "ref": "simple-syrup",
+        "name": "Сахарный сироп",
+        "amountMl": 20,
+        "category": "syrup"
+      },
+      {
+        "ref": "egg-white",
+        "name": "Яичный белок",
+        "amountMl": 20,
+        "category": "egg"
+      },
+      {
+        "ref": "angostura",
+        "name": "Ангостура",
+        "amount": 3,
+        "unit": "dash",
+        "category": "bitter"
+      }
+    ],
+    "method": "dry-shake",
+    "steps": [
+      "Влей писко, сок лимона, сироп и белок в шейкер.",
+      "Взбей 10 секунд без льда.",
+      "Добавь лёд и взбивай ещё 10–15 секунд.",
+      "Процеди в охлаждённый бокал, капни ангостуру на пенку."
+    ],
+    "glass": "coupe",
+    "ice": "none",
+    "garnish": "Капли ангостуры",
+    "abv": 15,
+    "strength": "medium",
+    "difficulty": 3,
+    "timeMin": 5,
+    "tags": [
+      "classic",
+      "sour",
+      "citrus"
+    ],
+    "iba": true,
+    "base": "brandy",
+    "cover": {
+      "from": "#F2E6B0",
+      "to": "#3E3618"
+    }
+  },
+  {
+    "id": "french-connection",
+    "name": "Френч Коннекшн",
+    "nameEn": "French Connection",
+    "description": "Коньяк и амаретто поровну со льдом. Мягкий миндальный дижестив.",
+    "ingredients": [
+      {
+        "ref": "cognac",
+        "name": "Коньяк",
+        "amountMl": 35,
+        "category": "spirit"
+      },
+      {
+        "ref": "amaretto",
+        "name": "Амаретто",
+        "amountMl": 35,
+        "category": "liqueur"
+      }
+    ],
+    "method": "build",
+    "steps": [
+      "Наполни рокс льдом.",
+      "Влей коньяк и амаретто.",
+      "Перемешай барной ложкой."
+    ],
+    "glass": "rocks",
+    "ice": "cubes",
+    "abv": 28,
+    "strength": "strong",
+    "difficulty": 1,
+    "timeMin": 1,
+    "tags": [
+      "sweet",
+      "digestif",
+      "easy"
+    ],
+    "iba": true,
+    "base": "brandy",
+    "cover": {
+      "from": "#C8803E",
+      "to": "#3A1A08"
+    }
+  },
+  {
+    "id": "horses-neck",
+    "name": "Конская шея",
+    "nameEn": "Horse’s Neck",
+    "description": "Бренди и имбирный эль с длинной спиралью лимонной цедры. Лёгкий освежающий лонг.",
+    "ingredients": [
+      {
+        "ref": "cognac",
+        "name": "Коньяк",
+        "amountMl": 40,
+        "category": "spirit"
+      },
+      {
+        "ref": "ginger-ale",
+        "name": "Имбирный эль",
+        "amountMl": 120,
+        "category": "soda"
+      },
+      {
+        "ref": "angostura",
+        "name": "Ангостура",
+        "amount": 2,
+        "unit": "dash",
+        "category": "bitter",
+        "optional": true
+      }
+    ],
+    "method": "build",
+    "steps": [
+      "Положи в хайбол длинную спираль лимонной цедры, свесив её через край.",
+      "Наполни бокал льдом и влей коньяк.",
+      "Долей имбирный эль, по желанию добавь ангостуру.",
+      "Аккуратно перемешай."
+    ],
+    "glass": "highball",
+    "ice": "cubes",
+    "garnish": "Длинная спираль лимонной цедры",
+    "abv": 9,
+    "strength": "light",
+    "difficulty": 1,
+    "timeMin": 3,
+    "tags": [
+      "classic",
+      "refreshing",
+      "spicy",
+      "easy"
+    ],
+    "iba": true,
+    "base": "brandy",
+    "cover": {
+      "from": "#E8C070",
+      "to": "#3E2A0C"
+    }
+  },
+  {
+    "id": "vieux-carre",
+    "name": "Вье Карре",
+    "nameEn": "Vieux Carré",
+    "description": "Коньяк, ржаной виски, вермут и бенедиктин с двумя биттерами. Пряный новоорлеанский дижестив.",
+    "ingredients": [
+      {
+        "ref": "cognac",
+        "name": "Коньяк",
+        "amountMl": 30,
+        "category": "spirit"
+      },
+      {
+        "ref": "rye-whiskey",
+        "name": "Ржаной виски",
+        "amountMl": 30,
+        "category": "spirit"
+      },
+      {
+        "ref": "sweet-vermouth",
+        "name": "Красный вермут",
+        "amountMl": 30,
+        "category": "wine"
+      },
+      {
+        "ref": "benedictine",
+        "name": "Бенедиктин",
+        "amount": 1,
+        "unit": "barspoon",
+        "category": "liqueur"
+      },
+      {
+        "ref": "peychauds",
+        "name": "Биттер Пейшо",
+        "amount": 2,
+        "unit": "dash",
+        "category": "bitter"
+      },
+      {
+        "ref": "angostura",
+        "name": "Ангостура",
+        "amount": 2,
+        "unit": "dash",
+        "category": "bitter"
+      }
+    ],
+    "method": "stir",
+    "steps": [
+      "Наполни смесительный стакан льдом.",
+      "Влей коньяк, виски, вермут, бенедиктин и биттеры.",
+      "Перемешивай 30 секунд.",
+      "Процеди в рокс на большой кубик льда, укрась лимонной цедрой и вишней."
+    ],
+    "glass": "rocks",
+    "ice": "big-cube",
+    "garnish": "Лимонная цедра и коктейльная вишня",
+    "abv": 27,
+    "strength": "strong",
+    "difficulty": 3,
+    "timeMin": 4,
+    "tags": [
+      "classic",
+      "herbal",
+      "bitter",
+      "digestif"
+    ],
+    "iba": true,
+    "base": "brandy",
+    "cover": {
+      "from": "#B8562E",
+      "to": "#33120A"
+    }
+  },
+  {
     "id": "negroni",
     "name": "Негрони",
     "nameEn": "Negroni",
     "description": "Горько-сладкий итальянский аперитив в равных пропорциях.",
     "ingredients": [
       {
+        "ref": "gin",
         "name": "Джин",
         "amountMl": 30,
         "category": "spirit"
       },
       {
+        "ref": "campari",
         "name": "Кампари",
         "amountMl": 30,
         "category": "bitter"
       },
       {
+        "ref": "sweet-vermouth",
         "name": "Красный вермут",
         "amountMl": 30,
         "category": "wine"
@@ -588,16 +2200,19 @@
     "description": "Апероль, просекко и капля содовой. Лёгкий горьковато-апельсиновый аперитив.",
     "ingredients": [
       {
+        "ref": "sparkling-wine",
         "name": "Просекко",
         "amountMl": 90,
         "category": "wine"
       },
       {
+        "ref": "aperol",
         "name": "Апероль",
         "amountMl": 60,
         "category": "bitter"
       },
       {
+        "ref": "soda",
         "name": "Содовая",
         "unit": "top",
         "category": "soda"
@@ -630,6 +2245,601 @@
     "cover": {
       "from": "#FF9A4D",
       "to": "#6A2208"
+    }
+  },
+  {
+    "id": "americano",
+    "name": "Американо",
+    "nameEn": "Americano",
+    "description": "Кампари и красный вермут с содовой. Лёгкий предок Негрони.",
+    "ingredients": [
+      {
+        "ref": "campari",
+        "name": "Кампари",
+        "amountMl": 30,
+        "category": "bitter"
+      },
+      {
+        "ref": "sweet-vermouth",
+        "name": "Красный вермут",
+        "amountMl": 30,
+        "category": "wine"
+      },
+      {
+        "ref": "soda",
+        "name": "Содовая",
+        "unit": "top",
+        "category": "soda"
+      }
+    ],
+    "method": "build",
+    "steps": [
+      "Наполни хайбол льдом.",
+      "Влей кампари и вермут.",
+      "Долей содовую и аккуратно перемешай.",
+      "Укрась долькой апельсина и лимонной цедрой."
+    ],
+    "glass": "highball",
+    "ice": "cubes",
+    "garnish": "Долька апельсина и лимонная цедра",
+    "abv": 7,
+    "strength": "light",
+    "difficulty": 1,
+    "timeMin": 2,
+    "tags": [
+      "classic",
+      "bitter",
+      "refreshing",
+      "aperitif",
+      "easy"
+    ],
+    "iba": true,
+    "base": "aperitif",
+    "cover": {
+      "from": "#E8503A",
+      "to": "#4A120C"
+    }
+  },
+  {
+    "id": "garibaldi",
+    "name": "Гарибальди",
+    "nameEn": "Garibaldi",
+    "description": "Кампари со взбитым апельсиновым соком. Горько-фруктовый аперитив в два ингредиента.",
+    "ingredients": [
+      {
+        "ref": "campari",
+        "name": "Кампари",
+        "amountMl": 45,
+        "category": "bitter"
+      },
+      {
+        "ref": "orange",
+        "name": "Апельсиновый сок",
+        "amountMl": 120,
+        "category": "juice"
+      }
+    ],
+    "method": "build",
+    "steps": [
+      "Наполни хайбол льдом.",
+      "Влей кампари.",
+      "Долей свежий апельсиновый сок, взбитый до пышности.",
+      "Укрась долькой апельсина."
+    ],
+    "glass": "highball",
+    "ice": "cubes",
+    "garnish": "Долька апельсина",
+    "abv": 7,
+    "strength": "light",
+    "difficulty": 1,
+    "timeMin": 2,
+    "tags": [
+      "bitter",
+      "fruity",
+      "aperitif",
+      "brunch",
+      "easy"
+    ],
+    "iba": false,
+    "base": "aperitif",
+    "cover": {
+      "from": "#FF7A3A",
+      "to": "#5A1A08"
+    }
+  },
+  {
+    "id": "negroni-sbagliato",
+    "name": "Негрони Сбальято",
+    "nameEn": "Negroni Sbagliato",
+    "description": "«Ошибочный» Негрони: игристое вместо джина. Легче и искристее оригинала.",
+    "ingredients": [
+      {
+        "ref": "campari",
+        "name": "Кампари",
+        "amountMl": 30,
+        "category": "bitter"
+      },
+      {
+        "ref": "sweet-vermouth",
+        "name": "Красный вермут",
+        "amountMl": 30,
+        "category": "wine"
+      },
+      {
+        "ref": "sparkling-wine",
+        "name": "Просекко",
+        "unit": "top",
+        "category": "wine"
+      }
+    ],
+    "method": "build",
+    "steps": [
+      "Наполни рокс льдом.",
+      "Влей кампари и вермут.",
+      "Долей просекко и аккуратно перемешай.",
+      "Укрась долькой апельсина."
+    ],
+    "glass": "rocks",
+    "ice": "cubes",
+    "garnish": "Долька апельсина",
+    "abv": 13,
+    "strength": "medium",
+    "difficulty": 1,
+    "timeMin": 2,
+    "tags": [
+      "bitter",
+      "sweet",
+      "aperitif",
+      "easy"
+    ],
+    "iba": false,
+    "base": "aperitif",
+    "cover": {
+      "from": "#D93A48",
+      "to": "#420C16"
+    }
+  },
+  {
+    "id": "kir-royal",
+    "name": "Кир Рояль",
+    "nameEn": "Kir Royal",
+    "description": "Шампанское с каплей черносмородинового ликёра. Бургундский аперитив.",
+    "ingredients": [
+      {
+        "ref": "creme-de-cassis",
+        "name": "Черносмородиновый ликёр",
+        "amountMl": 10,
+        "category": "liqueur"
+      },
+      {
+        "ref": "sparkling-wine",
+        "name": "Шампанское",
+        "amountMl": 90,
+        "category": "wine"
+      }
+    ],
+    "method": "build",
+    "steps": [
+      "Влей черносмородиновый ликёр в охлаждённый бокал.",
+      "Медленно долей охлаждённое шампанское.",
+      "Не перемешивай — игристое смешает само."
+    ],
+    "glass": "wine",
+    "ice": "none",
+    "abv": 12,
+    "strength": "medium",
+    "difficulty": 1,
+    "timeMin": 1,
+    "tags": [
+      "fruity",
+      "sweet",
+      "aperitif",
+      "party",
+      "easy"
+    ],
+    "iba": true,
+    "base": "aperitif",
+    "cover": {
+      "from": "#B03A6A",
+      "to": "#300A20"
+    }
+  },
+  {
+    "id": "bamboo",
+    "name": "Бамбук",
+    "nameEn": "Bamboo",
+    "description": "Сухой херес и сухой вермут с биттерами. Лёгкий, ореховый и сухой аперитив.",
+    "ingredients": [
+      {
+        "ref": "sherry",
+        "name": "Херес фино",
+        "amountMl": 45,
+        "category": "wine"
+      },
+      {
+        "ref": "dry-vermouth",
+        "name": "Сухой вермут",
+        "amountMl": 45,
+        "category": "wine"
+      },
+      {
+        "ref": "orange-bitters",
+        "name": "Апельсиновый биттер",
+        "amount": 2,
+        "unit": "dash",
+        "category": "bitter"
+      },
+      {
+        "ref": "angostura",
+        "name": "Ангостура",
+        "amount": 1,
+        "unit": "dash",
+        "category": "bitter"
+      }
+    ],
+    "method": "stir",
+    "steps": [
+      "Охлади коктейльный бокал.",
+      "Наполни смесительный стакан льдом, влей херес, вермут и биттеры.",
+      "Перемешивай 20–30 секунд.",
+      "Процеди в охлаждённый бокал, укрась лимонной цедрой."
+    ],
+    "glass": "coupe",
+    "ice": "none",
+    "garnish": "Лимонная цедра",
+    "abv": 13,
+    "strength": "medium",
+    "difficulty": 2,
+    "timeMin": 3,
+    "tags": [
+      "classic",
+      "herbal",
+      "aperitif"
+    ],
+    "iba": true,
+    "base": "aperitif",
+    "cover": {
+      "from": "#E6D08A",
+      "to": "#3A3014"
+    }
+  },
+  {
+    "id": "virgin-mojito",
+    "name": "Мохито б/а",
+    "nameEn": "Virgin Mojito",
+    "description": "Мята, лайм и сахар с содовой — всё от Мохито, кроме рома.",
+    "ingredients": [
+      {
+        "ref": "lime",
+        "name": "Сок лайма",
+        "amountMl": 20,
+        "category": "juice"
+      },
+      {
+        "ref": "mint",
+        "name": "Мята",
+        "amount": 12,
+        "unit": "leaf",
+        "category": "garnish"
+      },
+      {
+        "ref": "sugar",
+        "name": "Сахар",
+        "amount": 2,
+        "unit": "barspoon",
+        "category": "other"
+      },
+      {
+        "ref": "soda",
+        "name": "Содовая",
+        "amountMl": 120,
+        "category": "soda"
+      }
+    ],
+    "method": "muddle",
+    "steps": [
+      "Положи в хайбол мяту, сахар и сок лайма.",
+      "Аккуратно разомни мадлером, не перетирая листья.",
+      "Заполни бокал колотым льдом.",
+      "Долей содовую, перемешай и укрась веточкой мяты."
+    ],
+    "glass": "highball",
+    "ice": "crushed",
+    "garnish": "Веточка мяты и долька лайма",
+    "abv": 0,
+    "strength": "non-alcoholic",
+    "difficulty": 2,
+    "timeMin": 4,
+    "tags": [
+      "non-alcoholic",
+      "herbal",
+      "citrus",
+      "refreshing",
+      "summer"
+    ],
+    "iba": false,
+    "base": "non-alcoholic",
+    "cover": {
+      "from": "#C6EBA0",
+      "to": "#1E4228"
+    }
+  },
+  {
+    "id": "shirley-temple",
+    "name": "Ширли Темпл",
+    "nameEn": "Shirley Temple",
+    "description": "Имбирный эль с гренадином и коктейльной вишней. Детская классика из Голливуда.",
+    "ingredients": [
+      {
+        "ref": "ginger-ale",
+        "name": "Имбирный эль",
+        "amountMl": 150,
+        "category": "soda"
+      },
+      {
+        "ref": "grenadine",
+        "name": "Гренадин",
+        "amountMl": 15,
+        "category": "syrup"
+      }
+    ],
+    "method": "build",
+    "steps": [
+      "Наполни хайбол льдом.",
+      "Влей имбирный эль.",
+      "Добавь гренадин и слегка перемешай.",
+      "Укрась коктейльной вишней и долькой апельсина."
+    ],
+    "glass": "highball",
+    "ice": "cubes",
+    "garnish": "Коктейльная вишня и долька апельсина",
+    "abv": 0,
+    "strength": "non-alcoholic",
+    "difficulty": 1,
+    "timeMin": 2,
+    "tags": [
+      "non-alcoholic",
+      "sweet",
+      "fruity",
+      "easy"
+    ],
+    "iba": false,
+    "base": "non-alcoholic",
+    "cover": {
+      "from": "#FF8A8A",
+      "to": "#4A1018"
+    }
+  },
+  {
+    "id": "arnold-palmer",
+    "name": "Арнольд Палмер",
+    "nameEn": "Arnold Palmer",
+    "description": "Холодный чай пополам с лимонадом. Освежающий американский классический микс.",
+    "ingredients": [
+      {
+        "ref": "black-tea",
+        "name": "Холодный чёрный чай",
+        "amountMl": 90,
+        "category": "other"
+      },
+      {
+        "ref": "lemonade",
+        "name": "Лимонад",
+        "amountMl": 90,
+        "category": "soda"
+      }
+    ],
+    "method": "build",
+    "steps": [
+      "Наполни коллинз льдом.",
+      "Влей холодный чай.",
+      "Долей лимонад и перемешай.",
+      "Укрась долькой лимона."
+    ],
+    "glass": "collins",
+    "ice": "cubes",
+    "garnish": "Долька лимона",
+    "abv": 0,
+    "strength": "non-alcoholic",
+    "difficulty": 1,
+    "timeMin": 2,
+    "tags": [
+      "non-alcoholic",
+      "refreshing",
+      "sweet",
+      "summer",
+      "easy"
+    ],
+    "iba": false,
+    "base": "non-alcoholic",
+    "cover": {
+      "from": "#E8B868",
+      "to": "#3E2408"
+    }
+  },
+  {
+    "id": "virgin-mary",
+    "name": "Вирджин Мэри",
+    "nameEn": "Virgin Mary",
+    "description": "Томатный сок с лимоном, табаско и вустерширским соусом. Кровавая Мэри без водки.",
+    "ingredients": [
+      {
+        "ref": "tomato-juice",
+        "name": "Томатный сок",
+        "amountMl": 120,
+        "category": "juice"
+      },
+      {
+        "ref": "lemon",
+        "name": "Сок лимона",
+        "amountMl": 15,
+        "category": "juice"
+      },
+      {
+        "ref": "worcestershire",
+        "name": "Вустерширский соус",
+        "amount": 2,
+        "unit": "dash",
+        "category": "other"
+      },
+      {
+        "ref": "tabasco",
+        "name": "Табаско",
+        "amount": 2,
+        "unit": "dash",
+        "category": "other"
+      },
+      {
+        "ref": "salt",
+        "name": "Соль",
+        "amount": 1,
+        "unit": "pinch",
+        "category": "other"
+      },
+      {
+        "ref": "black-pepper",
+        "name": "Чёрный перец",
+        "amount": 1,
+        "unit": "pinch",
+        "category": "other"
+      }
+    ],
+    "method": "stir",
+    "steps": [
+      "Наполни хайбол льдом.",
+      "Влей томатный сок и сок лимона.",
+      "Добавь вустерширский соус, табаско, соль и перец.",
+      "Аккуратно перемешай и укрась стеблем сельдерея."
+    ],
+    "glass": "highball",
+    "ice": "cubes",
+    "garnish": "Стебель сельдерея",
+    "abv": 0,
+    "strength": "non-alcoholic",
+    "difficulty": 1,
+    "timeMin": 3,
+    "tags": [
+      "non-alcoholic",
+      "spicy",
+      "brunch"
+    ],
+    "iba": false,
+    "base": "non-alcoholic",
+    "cover": {
+      "from": "#E04A3A",
+      "to": "#3E0C08"
+    }
+  },
+  {
+    "id": "virgin-colada",
+    "name": "Вирджин Колада",
+    "nameEn": "Virgin Colada",
+    "description": "Ананасовый сок и кокосовые сливки, взбитые со льдом. Пина колада без рома.",
+    "ingredients": [
+      {
+        "ref": "pineapple-juice",
+        "name": "Ананасовый сок",
+        "amountMl": 90,
+        "category": "juice"
+      },
+      {
+        "ref": "coconut-cream",
+        "name": "Кокосовые сливки",
+        "amountMl": 45,
+        "category": "other"
+      }
+    ],
+    "method": "blend",
+    "steps": [
+      "Положи в блендер ананасовый сок и кокосовые сливки.",
+      "Добавь горсть колотого льда и взбивай до гладкости.",
+      "Перелей в высокий бокал.",
+      "Укрась долькой ананаса."
+    ],
+    "glass": "collins",
+    "ice": "crushed",
+    "garnish": "Долька ананаса",
+    "abv": 0,
+    "strength": "non-alcoholic",
+    "difficulty": 1,
+    "timeMin": 3,
+    "tags": [
+      "non-alcoholic",
+      "creamy",
+      "sweet",
+      "fruity",
+      "tiki",
+      "summer"
+    ],
+    "iba": false,
+    "base": "non-alcoholic",
+    "cover": {
+      "from": "#F8EBC4",
+      "to": "#42361A"
+    }
+  },
+  {
+    "id": "cinderella",
+    "name": "Золушка",
+    "nameEn": "Cinderella",
+    "description": "Апельсин, ананас и лимон с гренадином и содовой. Кисло-фруктовый безалкогольный классик.",
+    "ingredients": [
+      {
+        "ref": "orange",
+        "name": "Апельсиновый сок",
+        "amountMl": 30,
+        "category": "juice"
+      },
+      {
+        "ref": "pineapple-juice",
+        "name": "Ананасовый сок",
+        "amountMl": 30,
+        "category": "juice"
+      },
+      {
+        "ref": "lemon",
+        "name": "Сок лимона",
+        "amountMl": 30,
+        "category": "juice"
+      },
+      {
+        "ref": "grenadine",
+        "name": "Гренадин",
+        "amountMl": 5,
+        "category": "syrup"
+      },
+      {
+        "ref": "soda",
+        "name": "Содовая",
+        "unit": "top",
+        "category": "soda"
+      }
+    ],
+    "method": "shake",
+    "steps": [
+      "Влей соки и гренадин в шейкер со льдом.",
+      "Взбивай 10 секунд.",
+      "Процеди в коллинз со свежим льдом.",
+      "Долей содовую, укрась долькой апельсина."
+    ],
+    "glass": "collins",
+    "ice": "cubes",
+    "garnish": "Долька апельсина",
+    "abv": 0,
+    "strength": "non-alcoholic",
+    "difficulty": 1,
+    "timeMin": 3,
+    "tags": [
+      "non-alcoholic",
+      "fruity",
+      "sour",
+      "refreshing"
+    ],
+    "iba": false,
+    "base": "non-alcoholic",
+    "cover": {
+      "from": "#FFC870",
+      "to": "#4A2A0A"
     }
   }
 ]

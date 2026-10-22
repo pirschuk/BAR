@@ -183,6 +183,10 @@
 @utility top-safe {
   top: calc(env(safe-area-inset-top, 0px) + var(--spacing) * 2);
 }
+/* липкая шапка: при прилипании уходит под статус-бар (PWA, black-translucent) */
+@utility pt-safe-stuck {
+  padding-top: env(safe-area-inset-top, 0px);
+}
 @utility pb-safe {
   padding-bottom: max(env(safe-area-inset-bottom, 0px), var(--spacing) * 8);
 }

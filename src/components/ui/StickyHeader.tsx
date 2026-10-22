@@ -27,7 +27,7 @@ export function StickyHeader({ children, forceStuck, className }: { children: Re
         className={cn(
           'top-0 z-20 border-b transition-colors',
           forceStuck === undefined && 'sticky',
-          isStuck ? 'sticky-glass border-border' : 'border-transparent bg-bg',
+          isStuck ? 'sticky-glass pt-safe-stuck border-border' : 'border-transparent bg-bg',
           className,
         )}
       >

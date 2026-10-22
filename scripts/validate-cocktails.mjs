@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Валидация src/data/cocktails.json по правилам скилла cocktail-data.
+// Валидация src/data/cocktails.json и src/data/ingredients.json по правилам скилла cocktail-data.
 // Запуск: node scripts/validate-cocktails.mjs  (код выхода 1 при ошибках)
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -7,6 +7,7 @@ import { dirname, resolve } from 'node:path';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const file = resolve(root, 'src/data/cocktails.json');
+const dictFile = resolve(root, 'src/data/ingredients.json');
 
 const METHODS = ['build', 'stir', 'shake', 'dry-shake', 'blend', 'muddle', 'layer', 'throw'];
 const GLASSES_MVP = ['rocks', 'coupe', 'highball', 'collins', 'martini', 'wine'];
@@ -14,15 +15,18 @@ const ICE = ['none', 'cubes', 'big-cube', 'crushed', 'sphere'];
 const UNITS = ['ml', 'dash', 'barspoon', 'piece', 'slice', 'leaf', 'pinch', 'top'];
 const CATEGORIES = ['spirit', 'liqueur', 'wine', 'bitter', 'syrup', 'juice', 'soda', 'dairy', 'egg', 'garnish', 'other'];
 const STRENGTHS = ['non-alcoholic', 'light', 'medium', 'strong'];
-const BASES = ['gin', 'rum', 'whiskey', 'tequila', 'vodka', 'aperitif'];
+const BASES = ['gin', 'rum', 'whiskey', 'tequila', 'vodka', 'brandy', 'aperitif', 'non-alcoholic'];
+const TASTES = ['sour', 'sweet', 'bitter', 'fruity', 'herbal', 'refreshing', 'creamy', 'spicy'];
+const GROUPS = ['spirit', 'liqueur', 'bitter', 'syrup', 'juice-fruit', 'soda', 'other'];
+const DICT_KEYS = ['id', 'name', 'aliases', 'group', 'pantry', 'popular'];
 const TAGS = ['classic', 'sour', 'bitter', 'sweet', 'fruity', 'herbal', 'citrus', 'creamy', 'spicy',
   'refreshing', 'summer', 'winter', 'brunch', 'aperitif', 'digestif', 'tiki', 'party', 'easy', 'non-alcoholic'];
 const NO_ICE_GLASSES = ['coupe', 'martini', 'nick-and-nora'];
-const PER_BASE = 2;
+const MIN_PER_BASE = 5;
 const MAX_TO_LUMINANCE = 0.15;
 const ALLOWED_KEYS = ['id', 'name', 'nameEn', 'description', 'image', 'ingredients', 'method', 'steps', 'glass',
   'ice', 'garnish', 'abv', 'strength', 'difficulty', 'timeMin', 'tags', 'iba', 'base', 'cover'];
-const ING_KEYS = ['name', 'amountMl', 'amount', 'unit', 'optional', 'category'];
+const ING_KEYS = ['ref', 'name', 'amountMl', 'amount', 'unit', 'optional', 'category'];
 const METHOD_WORDS = {
   shake: /взб|шейк/i, 'dry-shake': /без льда/i, stir: /перемеш/i, muddle: /разомн|мадлер/i,
   blend: /блендер/i, layer: /сло/i, build: /влей|долей/i, throw: /перелив/i,
@@ -31,6 +35,7 @@ const METHOD_WORDS = {
 const errors = [];
 const warnings = [];
 const err = (id, msg) => errors.push(`${id}: ${msg}`);
+const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 function strengthFor(abv) {
   if (abv === 0) return 'non-alcoholic';
@@ -58,6 +63,49 @@ if (!Array.isArray(data)) {
   process.exit(1);
 }
 
+// словарь ингредиентов
+let dict;
+try {
+  dict = JSON.parse(readFileSync(dictFile, 'utf8'));
+} catch (e) {
+  console.error(`Не удалось прочитать ${dictFile}: ${e.message}`);
+  process.exit(1);
+}
+if (!Array.isArray(dict)) {
+  console.error('ingredients.json должен быть массивом');
+  process.exit(1);
+}
+const dictById = new Map();
+const aliasOwner = new Map(); // alias -> id (для информации о пересечениях)
+for (const [idx, d] of dict.entries()) {
+  const did = `словарь ${d?.id ?? `#${idx}`}`;
+  for (const k of Object.keys(d)) if (!DICT_KEYS.includes(k)) err(did, `лишнее поле "${k}"`);
+  if (typeof d.id !== 'string' || !KEBAB.test(d.id)) err(did, 'id не kebab-case');
+  if (dictById.has(d.id)) err(did, 'id словаря не уникален');
+  dictById.set(d.id, d);
+  if (typeof d.name !== 'string' || !d.name.trim()) err(did, 'пустое name');
+  else if (d.name[0] !== d.name[0].toLocaleUpperCase('ru')) err(did, 'name с заглавной');
+  if (!GROUPS.includes(d.group)) err(did, `group "${d.group}" вне словаря`);
+  if (d.pantry !== undefined && d.pantry !== true) err(did, 'pantry — только true или нет поля');
+  if (d.popular !== undefined && d.popular !== true) err(did, 'popular — только true или нет поля');
+  if (d.pantry && d.popular) err(did, 'pantry и popular одновременно');
+  if (!Array.isArray(d.aliases) || d.aliases.length === 0) err(did, 'aliases пусты');
+  else {
+    if (new Set(d.aliases).size !== d.aliases.length) err(did, 'дубли в aliases');
+    for (const a of d.aliases) {
+      if (typeof a !== 'string' || !a.trim()) { err(did, 'пустой alias'); continue; }
+      if (a !== a.toLocaleLowerCase('ru')) err(did, `alias "${a}" не в нижнем регистре`);
+      if (!aliasOwner.has(a)) aliasOwner.set(a, []);
+      aliasOwner.get(a).push(d.id);
+    }
+    if (typeof d.name === 'string' && !d.aliases.includes(d.name.toLocaleLowerCase('ru'))) {
+      warnings.push(`${did}: name "${d.name}" не входит в aliases`);
+    }
+  }
+}
+const usedRefs = new Map(); // ref -> count
+const nameRef = new Map(); // name -> Set(ref)
+
 const ids = new Set();
 const ingredientNames = new Map(); // name -> Set(category)
 const baseCount = Object.fromEntries(BASES.map((b) => [b, 0]));
@@ -67,7 +115,7 @@ for (const [idx, c] of data.entries()) {
   for (const k of Object.keys(c)) if (!ALLOWED_KEYS.includes(k)) err(id, `лишнее поле "${k}"`);
 
   // 1. id
-  if (typeof c.id !== 'string' || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(c.id)) err(id, 'id не kebab-case');
+  if (typeof c.id !== 'string' || !KEBAB.test(c.id)) err(id, 'id не kebab-case');
   if (ids.has(c.id)) err(id, 'id не уникален');
   ids.add(c.id);
 
@@ -92,6 +140,7 @@ for (const [idx, c] of data.entries()) {
   else {
     if (new Set(c.tags).size !== c.tags.length) err(id, 'дубли в tags');
     for (const t of c.tags) if (!TAGS.includes(t)) warnings.push(`${id}: тег "${t}" вне словаря`);
+    if (!c.tags.some((t) => TASTES.includes(t))) err(id, `нет вкусового тега (${TASTES.join(', ')})`);
   }
 
   // steps
@@ -109,6 +158,7 @@ for (const [idx, c] of data.entries()) {
     if (c.strength !== strengthFor(c.abv)) err(id, `strength "${c.strength}" не согласован с abv ${c.abv} (ожидается ${strengthFor(c.abv)})`);
     const na = Array.isArray(c.tags) && c.tags.includes('non-alcoholic');
     if ((c.abv === 0) !== na) err(id, 'abv: 0 ⇔ тег non-alcoholic');
+    if ((c.base === 'non-alcoholic') !== (c.abv === 0)) err(id, 'base non-alcoholic ⇔ abv: 0');
   }
 
   // 6. ice ↔ glass
@@ -124,6 +174,13 @@ for (const [idx, c] of data.entries()) {
       for (const k of Object.keys(ing)) if (!ING_KEYS.includes(k)) err(id, `${n}: лишнее поле "${k}"`);
       if (typeof ing.name !== 'string' || !ing.name.trim()) { err(id, 'ингредиент без name'); continue; }
       if (ing.name[0] !== ing.name[0].toLocaleUpperCase('ru')) err(id, `${n}: название с заглавной`);
+      if (typeof ing.ref !== 'string' || !ing.ref) err(id, `${n}: нет ref`);
+      else if (!dictById.has(ing.ref)) err(id, `${n}: ref "${ing.ref}" нет в словаре`);
+      else {
+        usedRefs.set(ing.ref, (usedRefs.get(ing.ref) ?? 0) + 1);
+        if (!nameRef.has(ing.name)) nameRef.set(ing.name, new Set());
+        nameRef.get(ing.name).add(ing.ref);
+      }
       if (!CATEGORIES.includes(ing.category)) err(id, `${n}: category "${ing.category}" вне словаря`);
       if (ing.unit !== undefined && !UNITS.includes(ing.unit)) err(id, `${n}: unit "${ing.unit}" вне словаря`);
       if (ing.optional !== undefined && typeof ing.optional !== 'boolean') err(id, `${n}: optional не boolean`);
@@ -175,8 +232,18 @@ for (const [idx, c] of data.entries()) {
   }
 }
 
-// 2 коктейля на каждую базу
-for (const [b, n] of Object.entries(baseCount)) if (n !== PER_BASE) errors.push(`база ${b}: ${n} коктейлей, нужно ${PER_BASE}`);
+// не меньше MIN_PER_BASE коктейлей на каждую базу
+for (const [b, n] of Object.entries(baseCount)) if (n < MIN_PER_BASE) errors.push(`база ${b}: ${n} коктейлей, нужно ≥ ${MIN_PER_BASE}`);
+
+// словарь: каждый id используется; одно название — один ref
+for (const d of dict) {
+  if (usedRefs.has(d.id)) continue;
+  if (d.pantry) warnings.push(`словарь ${d.id}: не используется (pantry)`);
+  else errors.push(`словарь ${d.id}: не используется ни в одном рецепте`);
+}
+for (const [name, refs] of nameRef) {
+  if (refs.size > 1) errors.push(`ингредиент "${name}" с разными ref: ${[...refs].join(', ')}`);
+}
 
 // порядок массива по базам
 const order = data.map((c) => BASES.indexOf(c.base));
@@ -194,7 +261,9 @@ for (const name of ingredientNames.keys()) {
   else seen.set(k, name);
 }
 
-console.log(`Коктейлей: ${data.length}; ингредиентов (уникальных): ${ingredientNames.size}`);
+console.log(`Коктейлей: ${data.length}; ингредиентов (уникальных названий): ${ingredientNames.size}`);
+console.log(`По базам: ${BASES.map((b) => `${b} ${baseCount[b]}`).join(', ')}`);
+console.log(`Словарь: ${dict.length} (popular ${dict.filter((d) => d.popular).length}, pantry ${dict.filter((d) => d.pantry).length})`);
 console.log(`Ингредиенты: ${[...ingredientNames.keys()].sort((a, b) => a.localeCompare(b, 'ru')).join(', ')}`);
 for (const w of warnings) console.warn(`WARN  ${w}`);
 if (errors.length) {

@@ -39,10 +39,10 @@ function Section({ id, title, note, children }: { id: string; title: string; not
   );
 }
 
-function State({ label, children, className }: { label: string; children: ReactNode; className?: string }) {
+function State({ label, children, className, inset }: { label: string; children: ReactNode; className?: string; inset?: boolean }) {
   return (
     <div className={className}>
-      <p className="mb-2 text-caption text-fg-3 uppercase">{label}</p>
+      <p className={`mb-2 text-caption text-fg-3 uppercase ${inset ? 'px-4' : ''}`}>{label}</p>
       {children}
     </div>
   );
@@ -264,7 +264,7 @@ export function DesignSystemPage() {
               <Chip variant="facet" pressed>Крепость</Chip>
             </div>
           </State>
-          <State label="option — «+» не выбран / «✓» выбран (интерактивно)">
+          <State inset label="option — «+» не выбран / «✓» выбран (интерактивно)">
             <ChipWrap label="Вкус">
               {['Кислый', 'Сладкий', 'Горький', 'Фруктовый', 'Травяной'].map((o) => (
                 <Chip
@@ -367,8 +367,8 @@ export function DesignSystemPage() {
                 title="Заголовок"
                 footer={
                   <SheetFooter>
-                    <Button variant="secondary" size="m" className="rounded-full">Сбросить</Button>
-                    <Button size="m" className="rounded-full">Показать 12 коктейлей</Button>
+                    <Button variant="ghost" size="m" className="px-2">Сбросить</Button>
+                    <Button size="m" className="rounded-full whitespace-nowrap">Показать 12 коктейлей</Button>
                   </SheetFooter>
                 }
               >
@@ -399,7 +399,7 @@ export function DesignSystemPage() {
       <Section id="sticky" title="StickyHeader" note="До прилипания — фон экрана; после — стекло и линия снизу. Large title уезжает, поиск и фильтры остаются.">
         <div className="flex flex-col gap-5">
           {[false, true].map((stuck) => (
-            <State key={String(stuck)} label={stuck ? 'прилипла' : 'в потоке'}>
+            <State inset key={String(stuck)} label={stuck ? 'прилипла' : 'в потоке'}>
               <div className="cover-gradient" style={coverStyle(must('negroni'))}>
                 <StickyHeader forceStuck={stuck}>
                   <div className="px-4 pt-2">
@@ -512,7 +512,7 @@ export function DesignSystemPage() {
             <IngredientRow
               name="Яичный белок"
               optional
-              amount={scaleIngredient(sour.ingredients[3] ?? { name: '', category: 'egg' }, servings)}
+              amount={scaleIngredient(sour.ingredients[3] ?? { ref: 'egg-white', name: '', category: 'egg' }, servings)}
               checked={false}
               onToggle={() => {}}
               pressed

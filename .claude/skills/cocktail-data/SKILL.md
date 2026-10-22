@@ -1,11 +1,12 @@
 ---
 name: cocktail-data
-description: Схема и правила данных рецептов коктейлей в src/data/cocktails.json — поля, единицы (мл), ингредиенты, метод, бокал, лёд, теги, словари и правила валидации. Использовать при добавлении, правке или проверке рецептов и при типизации данных в коде.
+description: Схема и правила данных рецептов коктейлей в src/data/cocktails.json и словаря ингредиентов src/data/ingredients.json — поля, единицы (мл), ингредиенты и их ref, метод, бокал, лёд, теги и вкусы, словари и правила валидации. Использовать при добавлении, правке или проверке рецептов и при типизации данных в коде.
 ---
 
 # Данные коктейлей
 
-Файл: `src/data/cocktails.json` — массив объектов `Cocktail`.
+Файлы: `src/data/cocktails.json` — массив объектов `Cocktail`;
+`src/data/ingredients.json` — словарь ингредиентов `IngredientDef[]`.
 Типы в коде: `src/types/cocktail.ts` должны совпадать с этой схемой.
 
 ## Схема
@@ -33,7 +34,7 @@ type Cocktail = {
   cover: Cover;            // градиент обложки (данные, не UI-токены — см. ниже)
 };
 
-type Base = "gin" | "rum" | "whiskey" | "tequila" | "vodka" | "aperitif";
+type Base = "gin" | "rum" | "whiskey" | "tequila" | "vodka" | "brandy" | "aperitif" | "non-alcoholic";
 
 type Cover = {
   from: string;            // "#RRGGBB" — верх градиента, светлее/ярче
@@ -41,7 +42,8 @@ type Cover = {
 };
 
 type Ingredient = {
-  name: string;            // "Джин", с заглавной
+  ref: string;             // id из словаря ingredients.json: "gin", "lime"
+  name: string;            // "Джин", с заглавной — для отображения
   amountMl?: number;       // объём в мл — основная единица
   amount?: number;         // для штучных: 1, 2, 0.5
   unit?: "ml" | "dash" | "barspoon" | "piece" | "slice" | "leaf" | "pinch" | "top";
@@ -50,6 +52,33 @@ type Ingredient = {
   category: "spirit" | "liqueur" | "wine" | "bitter" | "syrup" | "juice" | "soda" | "dairy" | "egg" | "garnish" | "other";
 };
 ```
+
+## Словарь ингредиентов (`src/data/ingredients.json`)
+
+```ts
+type IngredientDef = {
+  id: string;        // kebab-case латиницей: "campari"
+  name: string;      // "Кампари", с заглавной
+  aliases: string[]; // нижний регистр, латиница и рус.: ["campari", "кампари"]; включает name в нижнем регистре
+  group: "spirit" | "liqueur" | "bitter" | "syrup" | "juice-fruit" | "soda" | "other";
+  pantry?: true;     // всегда есть дома: вода, сахар, соль, перец
+  popular?: true;    // ~12 самых ходовых (не pantry): группа «Популярное», быстрый старт
+};
+```
+
+- **Один продукт — один id.** «Сок лайма» и «Долька лайма» → `lime`;
+  «Сахар», «Сахар-рафинад», «Коричневый сахар» → `sugar` (pantry);
+  «Текила бланко»/«Текила репосадо» → `tequila`; «Просекко»/«Шампанское» →
+  `sparkling-wine`; «Трипл сек»/«Апельсиновый кюрасао» → `triple-sec`;
+  «Эспрессо»/«Горячий кофе» → `coffee`. Название в рецепте (`name`) может
+  уточнять продукт, `ref` — нет.
+- Группы: вермуты, херес, игристое — `liqueur` (модификаторы на вине);
+  свежие фрукты, соки и мята — `juice-fruit`; молочное, яйцо, кофе, чай,
+  соусы, пряности — `other`.
+- Гарнир (`garnish`) — свободная строка, `ref` не имеет; в словарь попадает
+  только то, что есть в `ingredients[]` (например, мята в Мохито).
+- Новый `ref` заводится в словаре одновременно с рецептом; неиспользуемых
+  id в словаре нет (кроме pantry).
 
 ## Словари
 
@@ -62,9 +91,10 @@ type Ingredient = {
   маппятся на ближайший (`double-rocks`→`rocks`, `nick-and-nora`→`coupe`,
   `copper-mug`→`highball`, `flute`→`wine`, `hurricane`/`tiki`→`collins`,
   `shot`→`rocks`); в данные MVP их не заносим.
-- `Base`: `gin`, `rum`, `whiskey`, `tequila`, `vodka`, `aperitif` — главная база
+- `Base` (в этом порядке — и порядок массива): `gin`, `rum`, `whiskey`,
+  `tequila`, `vodka`, `brandy`, `aperitif`, `non-alcoholic` — главная база
   для чипсов, не обязательно крепчайший ингредиент (Негрони, Апероль Шприц →
-  `aperitif`).
+  `aperitif`; писко, коньяк, Вье Карре → `brandy`).
 - `Ingredient.unit`: `ml` (по умолчанию для `amountMl`), `dash` (дэш), `barspoon`
   (бар. л.), `piece` (шт.), `slice` (долька), `leaf` (лист), `pinch` (щепотка),
   `top` — «долить»: количество не указывается, при пересчёте порций
@@ -74,6 +104,11 @@ type Ingredient = {
   `bitter`, `sweet`, `fruity`, `herbal`, `citrus`, `creamy`, `spicy`,
   `refreshing`, `summer`, `winter`, `brunch`, `aperitif`, `digestif`,
   `tiki`, `party`, `easy`, `non-alcoholic`.
+- **Вкус** (фасет фильтра) — подмножество тегов: `sour`, `sweet`, `bitter`,
+  `fruity`, `herbal`, `refreshing`, `creamy`, `spicy`. У каждого коктейля
+  ≥ 1 вкусовой тег.
+- Безалкогольные: `base: "non-alcoholic"`, `abv: 0`,
+  `strength: "non-alcoholic"`, тег `non-alcoholic`.
 
 ## Правила валидации
 
@@ -88,13 +123,20 @@ type Ingredient = {
 7. Ингредиенты в порядке добавления/важности: база → модификаторы → доливка.
 8. Названия ингредиентов единообразны по всей базе (один «Сахарный сироп»,
    а не «Простой сироп»/«Сироп сахарный»).
-9. `base` — из словаря `Base`; в MVP-наборе по 2 коктейля на каждую базу.
+9. `base` — из словаря `Base`; на каждую базу ≥ 5 коктейлей; массив
+   упорядочен по базам.
 10. `cover.from` и `cover.to` — hex `^#[0-9A-Fa-f]{6}$`;
     относительная яркость `cover.to` (WCAG, sRGB) < 0.15, чтобы белый текст
     названия читался; `from` светлее `to`.
 11. `glass` — из 6 силуэтов MVP (см. словари).
 12. Рецепты — классические спецификации (IBA/общепринятые); при сомнении —
    пометка в отчёте, а не выдумка.
+13. У каждого ингредиента есть `ref`, он существует в словаре; одно
+    `name` — всегда один и тот же `ref`.
+14. Словарь: `id` уникальны и kebab-case, `aliases` непусты и в нижнем
+    регистре, `group` из списка; каждый id используется хотя бы в одном
+    рецепте (pantry — только предупреждение).
+15. ≥ 1 вкусовой тег; `base: non-alcoholic` ⇔ `abv: 0`.
 
 ## Исключение из правила «только токены»
 
@@ -108,7 +150,7 @@ type Ingredient = {
 ## Проверка
 
 `node scripts/validate-cocktails.mjs` — валидирует всю базу по правилам выше,
-ненулевой код выхода при ошибках.
+ненулевой код выхода при ошибках. Проверяет и словарь `ingredients.json`.
 
 ## Пример
 
@@ -119,9 +161,9 @@ type Ingredient = {
   "nameEn": "Negroni",
   "description": "Горько-сладкий итальянский аперитив в равных пропорциях.",
   "ingredients": [
-    { "name": "Джин", "amountMl": 30, "category": "spirit" },
-    { "name": "Кампари", "amountMl": 30, "category": "bitter" },
-    { "name": "Красный вермут", "amountMl": 30, "category": "wine" }
+    { "ref": "gin", "name": "Джин", "amountMl": 30, "category": "spirit" },
+    { "ref": "campari", "name": "Кампари", "amountMl": 30, "category": "bitter" },
+    { "ref": "sweet-vermouth", "name": "Красный вермут", "amountMl": 30, "category": "wine" }
   ],
   "method": "stir",
   "steps": [
