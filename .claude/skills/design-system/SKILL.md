@@ -48,13 +48,13 @@ description: Правила дизайн-системы приложения-к�
 | `--surface-2` | поля, чипсы | `#26262A` | `#EFEDE8` |
 | `--text` | основной текст | `#F5F5F7` | `#141414` |
 | `--text-2` | вторичный | `#A1A1A8` | `#6B6B70` |
-| `--text-3` | плейсхолдеры, подписи | `#6C6C73` | `#9A9A9F` |
-| `--accent` | акцент, CTA | `#FF8A3D` (цедра) | `#E8661A` |
+| `--text-3` | плейсхолдеры, подписи | `#6C6C73` | `#7C7C81` |
+| `--accent` | акцент, CTA | `#FF8A3D` (цедра) | `#C2500E` |
 | `--accent-fg` | текст на акценте | `#1A0E05` | `#FFFFFF` |
 | `--border` | разделители | `rgba(255,255,255,.08)` | `rgba(0,0,0,.08)` |
 | `--danger` / `--success` | статусы | `#FF5A5F` / `#3DDC84` | `#D93A3F` / `#1E9E5A` |
 
-Контраст: основной текст ≥ 4.5:1 к фону, крупный (≥ 18px bold) ≥ 3:1.
+Контраст: основной текст ≥ 4.5:1 к фону, крупный (≥ 18px bold) ≥ 3:1. Проверено (Итерация 1): `accent-fg` на `accent` — 8.1 (dark) / 4.7 (light); `text-2` — 7.5 / 4.9; `text-3` — 3.7 / 3.8 (только подписи и вычеркнутое).
 
 ## 5. Типографика
 
@@ -213,6 +213,27 @@ description: Правила дизайн-системы приложения-к�
 - Светлые «бумажные» фоны (NYT, Blue Apron) — только в светлой теме.
 
 _Пополняется командой `/ref`._
+
+## 8½. Реализация в коде (Итерация 1)
+
+- Токены — `src/styles/index.css`: CSS-переменные в `:root` / `:root[data-theme='light']`,
+  проброшены в Tailwind через `@theme inline`. Дефолтная палитра Tailwind отключена
+  (`--color-*: initial`) — «чужой» цвет в классе просто не соберётся.
+- Классы цвета: `bg-bg`, `bg-surface`, `bg-surface-2`, текст — `text-fg` / `text-fg-2` /
+  `text-fg-3` (= `--text`, `--text-2`, `--text-3`), `bg-accent` / `text-accent-fg`,
+  `border-border`; поверх обложек — `text-on-media` / `text-on-media-2`.
+- Типографика — классы `text-large-title` … `text-caption` (размер + line-height + вес).
+- Размеры: `h-tap` 44, `min-h-row` 48, `h-btn-l` 50, `h-chip` 36, `size-glass-btn` 36,
+  `max-w-app` 430; радиусы `rounded-card` 20, `rounded-control` 12, `rounded-thumb` 8,
+  `rounded-check` 7; `aspect-card` 3:4; `h-hero` 55svh.
+- Утилиты: `pressable` (оверлей 8%), `pressable-scale` (+ scale .97), `hit-44`
+  (тач-зона 44 вокруг меньшего элемента), `glass`, `scrim-top` / `scrim-bottom`,
+  `hero-fade`, `cover-gradient` (цвета из данных через `--cover-from/--cover-to`),
+  `pt-safe` / `top-safe` / `pb-safe`, `no-scrollbar`.
+- Состояние «pressed» на витрине — проп `pressed` → `data-pressed`.
+- Тема: `src/lib/theme.ts` (`data-theme` на `<html>`, ключ `bar-theme` в localStorage);
+  скриншот в нужной теме — `node scripts/screenshot.mjs <роут> <имя> --theme light`.
+- Компоненты — `src/components/ui/`, витрина — `src/pages/DesignSystemPage.tsx`.
 
 ## 9. Чек-лист визуальной проверки (для `/look` и `ui-inspector`)
 

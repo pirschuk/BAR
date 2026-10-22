@@ -18,7 +18,12 @@ Claude Code: план → дизайн-система → экран → виз�
 - `npm run dev` — dev-сервер, http://127.0.0.1:5173 (порт фиксированный, `--strictPort`).
 - `npm run build` — `tsc` + сборка в `dist/`.
 - `npx tsc --noEmit` — проверка типов (её же запускает хук после каждой правки `.ts/.tsx`).
-- `node scripts/screenshot.mjs <роут> [имя]` — скриншот 390×844 @2x в `.screenshots/`.
+- `npm test` — unit-тесты (vitest, `src/**/*.test.ts`): порции, склонения, фильтр.
+- `node scripts/screenshot.mjs <роут> [имя] [--full] [--theme light] [--click <локатор>]` —
+  скриншот 390×844 @2x в `.screenshots/`; `--click` повторяемый (Playwright-локатор).
+- `python3 scripts/split-shot.py <png>` — нарезать длинный скриншот на экраны по 844.
+- `node scripts/validate-cocktails.mjs` — валидация `cocktails.json`.
+- `node scripts/make-icons.mjs` — иконки PWA из `public/favicon.svg`.
 
 ## Процесс (обязателен)
 

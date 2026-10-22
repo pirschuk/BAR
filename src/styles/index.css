@@ -1,0 +1,253 @@
+@import 'tailwindcss';
+
+/*
+ * Токены дизайн-системы — источник: .claude/skills/design-system/SKILL.md.
+ * Компоненты используют только классы, сгенерированные из @theme ниже.
+ */
+
+:root {
+  color-scheme: dark;
+  --bg: #0e0e10;
+  --surface: #1a1a1d;
+  --surface-2: #26262a;
+  --text: #f5f5f7;
+  --text-2: #a1a1a8;
+  --text-3: #6c6c73;
+  --accent: #ff8a3d;
+  --accent-fg: #1a0e05;
+  --border: rgb(255 255 255 / 0.08);
+  --danger: #ff5a5f;
+  --success: #3ddc84;
+  /* оверлей нажатия 8% */
+  --press: rgb(255 255 255 / 0.08);
+  /* обложка рецепта уходит в фон только в тёмной теме */
+  --hero-fade: var(--bg);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f7f6f3;
+  --surface: #ffffff;
+  --surface-2: #efede8;
+  --text: #141414;
+  --text-2: #6b6b70;
+  --text-3: #7c7c81;
+  --accent: #c2500e;
+  --accent-fg: #ffffff;
+  --border: rgb(0 0 0 / 0.08);
+  --danger: #d93a3f;
+  --success: #1e9e5a;
+  --press: rgb(0 0 0 / 0.06);
+  --hero-fade: transparent;
+}
+
+@theme inline {
+  --color-*: initial;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-fg: var(--text);
+  --color-fg-2: var(--text-2);
+  --color-fg-3: var(--text-3);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-border: var(--border);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  /* текст и обводки поверх обложек — обложки тёмные в обеих темах */
+  --color-on-media: #ffffff;
+  --color-on-media-2: rgb(255 255 255 / 0.72);
+  --color-transparent: transparent;
+
+  --font-sans: -apple-system, 'SF Pro Text', BlinkMacSystemFont, Inter, Roboto, system-ui, sans-serif;
+
+  /* Типографика: размер / line-height / вес */
+  --text-*: initial;
+  --text-large-title: 34px;
+  --text-large-title--line-height: 41px;
+  --text-large-title--font-weight: 700;
+  --text-large-title--letter-spacing: 0.01em;
+  --text-title-1: 28px;
+  --text-title-1--line-height: 34px;
+  --text-title-1--font-weight: 700;
+  --text-title-2: 22px;
+  --text-title-2--line-height: 28px;
+  --text-title-2--font-weight: 700;
+  --text-headline: 17px;
+  --text-headline--line-height: 22px;
+  --text-headline--font-weight: 600;
+  --text-body: 17px;
+  --text-body--line-height: 22px;
+  --text-body--font-weight: 400;
+  --text-callout: 16px;
+  --text-callout--line-height: 21px;
+  --text-callout--font-weight: 400;
+  --text-subhead: 15px;
+  --text-subhead--line-height: 20px;
+  --text-subhead--font-weight: 400;
+  --text-footnote: 13px;
+  --text-footnote--line-height: 18px;
+  --text-footnote--font-weight: 400;
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
+  --text-caption--font-weight: 500;
+
+  /* Размеры (шаг сетки 4px — стандартная шкала --spacing) */
+  --spacing-tap: 44px;
+  --spacing-row: 48px;
+  --spacing-btn-l: 50px;
+  --spacing-chip: 36px;
+  --spacing-glass-btn: 36px;
+  --spacing-app: 430px;
+
+  --radius-*: initial;
+  --radius-full: 9999px;
+  --radius-card: 20px;
+  --radius-control: 12px;
+  --radius-thumb: 8px;
+  --radius-sheet: 28px;
+  --radius-check: 7px;
+
+  --aspect-card: 3 / 4;
+
+  --ease-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Отклик на нажатие: оверлей 8% (100ms нажатие / 200ms отпускание). data-pressed — для витрины. */
+@utility pressable {
+  position: relative;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--press);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms var(--ease-soft);
+  }
+  &:active::after,
+  &[data-pressed]::after {
+    opacity: 1;
+    transition-duration: 100ms;
+  }
+}
+
+/* То же + scale(.97) — для карточек и кнопок */
+@utility pressable-scale {
+  @apply pressable;
+  transition: transform 200ms var(--ease-soft);
+  &:active,
+  &[data-pressed] {
+    transform: scale(0.97);
+    transition-duration: 100ms;
+  }
+}
+
+/* Стекло поверх обложек */
+@utility glass {
+  background: rgb(20 20 22 / 0.45);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(16px) saturate(1.4);
+}
+
+/* Скрим под текст поверх обложки */
+@utility scrim-bottom {
+  background: linear-gradient(to top, rgb(0 0 0 / 0.72), transparent 60%);
+}
+@utility scrim-top {
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0.35), transparent 30%);
+}
+@utility hero-fade {
+  background: linear-gradient(to bottom, transparent, var(--hero-fade));
+}
+
+/* Safe-area */
+@utility pt-safe {
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--spacing) * 3);
+}
+@utility top-safe {
+  top: calc(env(safe-area-inset-top, 0px) + var(--spacing) * 2);
+}
+@utility pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), var(--spacing) * 8);
+}
+
+@utility h-hero {
+  height: 55svh;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer base {
+  html {
+    background: var(--bg);
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-bg font-sans text-body text-fg antialiased;
+    margin: 0;
+    min-height: 100svh;
+  }
+  #root {
+    @apply mx-auto min-h-svh max-w-app bg-bg;
+  }
+  button {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}
+
+/* Тач-зона ≥ 44×44 вокруг визуально меньшего элемента (чипс 36, сегмент 32, стеклянная кнопка 36) */
+@utility hit-44 {
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max(100%, var(--spacing-tap));
+    height: max(100%, var(--spacing-tap));
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Обложка коктейля: цвета — данные (cover.from / cover.to), задаются через --cover-from / --cover-to */
+@utility cover-gradient {
+  background:
+    radial-gradient(60% 45% at 50% 42%, rgb(255 255 255 / 0.16), transparent 70%),
+    linear-gradient(170deg, var(--cover-from), var(--cover-to) 80%);
+}
+
+@layer components {
+  /* GlassIllustration: тень отделяет белый контур от светлого верха градиента */
+  .glass-illustration {
+    filter: drop-shadow(0 2px 6px rgb(0 0 0 / 0.25));
+  }
+  .glass-illustration .ice {
+    fill: currentColor;
+    fill-opacity: 0.16;
+    stroke: currentColor;
+    stroke-opacity: 0.75;
+    stroke-width: 1.5;
+  }
+}

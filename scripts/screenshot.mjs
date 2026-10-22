@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Скриншот роута в мобильном вьюпорте 390×844 @2x → .screenshots/<имя>.png
-// Использование: node scripts/screenshot.mjs <роут> [имя] [--full] [--theme light|dark] [--url http://...]
+// Использование: node scripts/screenshot.mjs <роут> [имя] [--full] [--theme light|dark] [--url http://...] [--click <локатор> ...]
+// --click можно повторять; локатор Playwright, например: --click 'role=radio[name="2×"]' --click 'text=Белый ром'
 import { mkdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 
@@ -21,6 +22,8 @@ const flag = (name) => {
   args.splice(i, 2);
   return value;
 };
+const clicks = [];
+for (let c = flag('--click'); c !== undefined; c = flag('--click')) clicks.push(c);
 const full = args.includes('--full');
 if (full) args.splice(args.indexOf('--full'), 1);
 const theme = flag('--theme');
@@ -41,13 +44,15 @@ const context = await browser.newContext({
   colorScheme: theme === 'light' ? 'light' : 'dark',
   reducedMotion: 'reduce',
 });
+// тема — как у пользователя: через localStorage до загрузки (см. src/lib/theme.ts)
+if (theme) await context.addInitScript((t) => localStorage.setItem('bar-theme', t), theme);
 const page = await context.newPage();
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
 
 await page.goto(new URL(route, base).href, { waitUntil: 'networkidle' });
-if (theme) await page.evaluate((t) => (document.documentElement.dataset.theme = t), theme);
+for (const selector of clicks) await page.locator(selector).first().click();
 await page.evaluate(() => document.fonts.ready);
 await page.waitForTimeout(300);
 

@@ -29,6 +29,15 @@ type Cocktail = {
   timeMin: number;         // минуты приготовления
   tags: Tag[];
   iba?: boolean;           // входит в список IBA
+  base: Base;              // главная база для чипсов каталога (Негрони → "aperitif")
+  cover: Cover;            // градиент обложки (данные, не UI-токены — см. ниже)
+};
+
+type Base = "gin" | "rum" | "whiskey" | "tequila" | "vodka" | "aperitif";
+
+type Cover = {
+  from: string;            // "#RRGGBB" — верх градиента, светлее/ярче
+  to: string;              // "#RRGGBB" — низ градиента, тёмный: относительная яркость < 0.15
 };
 
 type Ingredient = {
@@ -36,6 +45,7 @@ type Ingredient = {
   amountMl?: number;       // объём в мл — основная единица
   amount?: number;         // для штучных: 1, 2, 0.5
   unit?: "ml" | "dash" | "barspoon" | "piece" | "slice" | "leaf" | "pinch" | "top";
+  // unit "top" — «долить»: без amountMl/amount, при пересчёте порций не умножается
   optional?: boolean;
   category: "spirit" | "liqueur" | "wine" | "bitter" | "syrup" | "juice" | "soda" | "dairy" | "egg" | "garnish" | "other";
 };
@@ -47,6 +57,18 @@ type Ingredient = {
   `dry-shake`, `blend`, `muddle`, `layer`, `throw`.
 - `Glass`: `rocks`, `double-rocks`, `highball`, `collins`, `coupe`, `martini`,
   `nick-and-nora`, `hurricane`, `wine`, `flute`, `copper-mug`, `tiki`, `shot`.
+- `Glass` в MVP — только 6 силуэтов: `rocks`, `coupe`, `highball`, `collins`,
+  `martini`, `wine`. Остальные значения словаря допустимы в схеме, но в UI
+  маппятся на ближайший (`double-rocks`→`rocks`, `nick-and-nora`→`coupe`,
+  `copper-mug`→`highball`, `flute`→`wine`, `hurricane`/`tiki`→`collins`,
+  `shot`→`rocks`); в данные MVP их не заносим.
+- `Base`: `gin`, `rum`, `whiskey`, `tequila`, `vodka`, `aperitif` — главная база
+  для чипсов, не обязательно крепчайший ингредиент (Негрони, Апероль Шприц →
+  `aperitif`).
+- `Ingredient.unit`: `ml` (по умолчанию для `amountMl`), `dash` (дэш), `barspoon`
+  (бар. л.), `piece` (шт.), `slice` (долька), `leaf` (лист), `pinch` (щепотка),
+  `top` — «долить»: количество не указывается, при пересчёте порций
+  (`amountMl × n`, `amount × n`) не умножается.
 - `Ice`: `none` (подача без льда), `cubes`, `big-cube`, `crushed`, `sphere`.
 - `Tag` (свободный список, но предпочтительно из словаря): `classic`, `sour`,
   `bitter`, `sweet`, `fruity`, `herbal`, `citrus`, `creamy`, `spicy`,
@@ -66,8 +88,27 @@ type Ingredient = {
 7. Ингредиенты в порядке добавления/важности: база → модификаторы → доливка.
 8. Названия ингредиентов единообразны по всей базе (один «Сахарный сироп»,
    а не «Простой сироп»/«Сироп сахарный»).
-9. Рецепты — классические спецификации (IBA/общепринятые); при сомнении —
+9. `base` — из словаря `Base`; в MVP-наборе по 2 коктейля на каждую базу.
+10. `cover.from` и `cover.to` — hex `^#[0-9A-Fa-f]{6}$`;
+    относительная яркость `cover.to` (WCAG, sRGB) < 0.15, чтобы белый текст
+    названия читался; `from` светлее `to`.
+11. `glass` — из 6 силуэтов MVP (см. словари).
+12. Рецепты — классические спецификации (IBA/общепринятые); при сомнении —
    пометка в отчёте, а не выдумка.
+
+## Исключение из правила «только токены»
+
+`cover.from` / `cover.to` — это **данные** конкретного напитка (атмосферный
+цвет, близкий к реальному: Негрони — рубиново-красный → тёмно-бордовый,
+Дайкири — бледный лаймово-кремовый → тёмный оливково-зелёный), а не UI-токены.
+Компоненты применяют их как inline-градиент обложки; это разрешённое
+исключение из правила «никаких #hex в компонентах». Сами hex живут только
+в `cocktails.json`, не в коде компонентов.
+
+## Проверка
+
+`node scripts/validate-cocktails.mjs` — валидирует всю базу по правилам выше,
+ненулевой код выхода при ошибках.
 
 ## Пример
 
@@ -97,6 +138,8 @@ type Ingredient = {
   "difficulty": 1,
   "timeMin": 3,
   "tags": ["classic", "bitter", "aperitif", "easy"],
-  "iba": true
+  "iba": true,
+  "base": "aperitif",
+  "cover": { "from": "#E2343F", "to": "#4A0A14" }
 }
 ```
