@@ -28,6 +28,7 @@ export function CocktailPage() {
   // отметки живут, пока открыта страница; смена порций их не сбрасывает
   const [checked, setChecked] = useState<ReadonlySet<number>>(new Set());
   const { inv, add } = useInventory();
+  const [justAdded, setJustAdded] = useState(false);
 
   if (!cocktail) return <NotFoundPage title="Коктейль не найден" />;
 
@@ -54,9 +55,9 @@ export function CocktailPage() {
         {inv.size === 0 ? (
           <AvailabilityBanner state="empty-bar" />
         ) : lacking.length === 0 ? (
-          <AvailabilityBanner state="all" />
+          <AvailabilityBanner state="all" focusOnMount={justAdded} />
         ) : (
-          <AvailabilityBanner state="missing" names={lacking.map((m) => m.name)} onHave={() => add(lacking.map((m) => m.ref))} />
+          <AvailabilityBanner state="missing" names={lacking.map((m) => m.name)} onHave={() => (add(lacking.map((m) => m.ref)), setJustAdded(true))} />
         )}
       </div>
 

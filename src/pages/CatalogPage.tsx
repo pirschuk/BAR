@@ -64,6 +64,7 @@ export function CatalogPage() {
   const { inv } = useInventory();
   const isAvailable = useMemo(() => (c: Cocktail) => canMake(c, inv), [inv]);
   const list = useMemo(() => applyFilters(cocktails, f, isAvailable), [f, isAvailable]);
+  const markAvailable = f.can ? () => false : isAvailable;
   const sheet = sheetFromHash(location.hash);
 
   const input = useRef<HTMLInputElement>(null);
@@ -152,15 +153,15 @@ export function CatalogPage() {
         </form>
         {!showSearchPanel && (
           <ChipRow label="Фильтры" className="mt-2 pb-2">
-            <Chip icon={SlidersHorizontal} badge={activeCount(f)} onClick={() => openSheet('#filters')}>
+            <Chip
+              icon={SlidersHorizontal}
+              badge={activeCount(f)}
+              aria-label={activeCount(f) ? `Фильтры, активно: ${activeCount(f)}` : 'Фильтры'}
+              onClick={() => openSheet('#filters')}
+            >
               Фильтры
             </Chip>
             <ChipDivider />
-            {f.can && (
-              <Chip variant="removable" aria-label="Убрать фильтр «Могу сделать»" onClick={() => setFilters({ ...f, can: false })}>
-                Могу сделать
-              </Chip>
-            )}
             {f.ing && (
               <Chip variant="removable" aria-label={`Убрать ингредиент ${getIngredient(f.ing)?.name}`} onClick={() => setFilters({ ...f, ing: null })}>
                 {getIngredient(f.ing)?.name}
@@ -235,7 +236,7 @@ export function CatalogPage() {
 
           {list.length > 0 ? (
             <div className="mt-3">
-              <Grid list={list} onOpen={remember} isAvailable={isAvailable} />
+              <Grid list={list} onOpen={remember} isAvailable={markAvailable} />
             </div>
           ) : f.can && !applyFilters(cocktails, { ...EMPTY_FILTERS, can: true }, isAvailable).length ? (
             <EmptyState

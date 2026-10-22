@@ -320,6 +320,12 @@ _Пополняется командой `/ref`._
   акцент) + primary L «Показать N» — иначе «Показать 13 коктейлей» не помещается.
 - Шторка: на время открытия `#root` получает `inert`, фокус — в диалог, после
   закрытия — обратно на открывший элемент.
+- Срез 2b: `TabBar` (+ утилиты `tabbar-glass` 90%, `pb-tabbar`, `pb-tabbar-gap`), `SwitchRow`,
+  `CheckRow`, `SwitchTrack`/`CheckBox`, `AvailabilityBanner` (на `surface`, кнопка под текстом),
+  `BarSummary`, `InfoNote`, `CocktailCard available` (✓ цвета `on-media-accent` — поверх обложек
+  всегда яркий оранжевый), `IngredientRow missing` (тег, не текст). Токены: `--spacing-switch-*`,
+  `--spacing-row-l` 52. Логика наличия — `src/lib/inventory.ts`; сценарии — `scripts/shots-bar.mjs`.
+- «Отмена» в поиске — `text-fg`: акцент на экране один (CTA или выбранный фильтр).
 - Скриншоты состояний каталога: `node scripts/shots-catalog.mjs dark|light`,
   склейка — `python3 scripts/montage.py out.png a.png b.png …`.
 

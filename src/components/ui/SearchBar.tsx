@@ -50,7 +50,7 @@ export const SearchBar = forwardRef<HTMLInputElement, Props>(function SearchBar(
         {!value && <span className="w-1" aria-hidden />}
       </label>
       {showCancel && (
-        <button type="button" onClick={onCancel} className="pressable h-tap shrink-0 text-body text-accent">
+        <button type="button" onClick={onCancel} className="pressable h-tap shrink-0 text-body text-fg">
           Отмена
         </button>
       )}

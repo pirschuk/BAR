@@ -174,7 +174,7 @@
 
 /* Таб-бар: стекло плотнее шапки — под ним проезжают яркие обложки */
 @utility tabbar-glass {
-  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
   -webkit-backdrop-filter: blur(24px) saturate(1.8);
   backdrop-filter: blur(24px) saturate(1.8);
   box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);

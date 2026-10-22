@@ -50,7 +50,7 @@ export function BarPage() {
           <h1 className="text-large-title text-fg">Мой бар</h1>
         </div>
         <p className="text-footnote text-fg-2" aria-live="polite">
-          {inv.size ? `${inv.size} ${plural(inv.size, ['позиция', 'позиции', 'позиций'])}` : 'Отметьте, что есть дома'}
+          {`${inv.size} ${plural(inv.size, ['позиция', 'позиции', 'позиций'])}`}
         </p>
       </header>
 
@@ -77,7 +77,7 @@ export function BarPage() {
         </div>
       )}
 
-      <div className="mt-6 px-4">
+      <div className={`${inv.size ? 'mt-6' : 'mt-0'} px-4`}>
         <SearchBar value={query} onChange={setQuery} placeholder="Найти ингредиент" aria-label="Найти ингредиент" showCancel={!!query} onCancel={() => setQuery('')} />
       </div>
 
@@ -124,7 +124,8 @@ export function BarPage() {
         </>
       )}
 
-      <section className="mt-8 border-t border-border pt-2">
+      <section className="mt-8">
+        <SectionHeader title="Оформление" />
         <SwitchRow title="Светлая тема" subtitle="Тёмная — по умолчанию" on={theme === 'light'} onToggle={toggleTheme} />
       </section>
     </main>

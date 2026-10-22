@@ -20,6 +20,12 @@
 | Шаг 4a | [step4a-filter-sheet-dark.png](step4a-filter-sheet-dark.png) · [light](step4a-filter-sheet-light.png) · [N=0](step4a-filter-sheet-zero-light.png) | Шторка всех фильтров; N = 0 → «Ничего не найдено» | 2026-10-22 |
 | Шаг 4a | [step4a-empty-dark.png](step4a-empty-dark.png) · [light](step4a-empty-light.png) | Пустая выдача: одна подсказка, «Сбросить всё», «Похожие» | 2026-10-22 |
 | Шаг 4a | [step4a-design-system-dark.png](step4a-design-system-dark.png) · [light](step4a-design-system-light.png) | Витрина v0.2: + Chip v2, поиск, EmptyState, шторки, StickyHeader | 2026-10-22 |
+| Шаг 4b · `/code` срез 2b | [step4b-bar-empty-dark.png](step4b-bar-empty-dark.png) · [light](step4b-bar-empty-light.png) | «Мой бар» пустой: EmptyState + «Быстрый старт» | 2026-10-22 |
+| Шаг 4b | [step4b-bar-dark.png](step4b-bar-dark.png) · [light](step4b-bar-light.png) · [поиск](step4b-bar-search-dark.png) | Итог «Можно приготовить N», «+»/«✓» по группам, поиск с «Отмечено», таб-бар | 2026-10-22 |
+| Шаг 4b | [step4b-catalog-marks-dark.png](step4b-catalog-marks-dark.png) · [light](step4b-catalog-marks-light.png) | Каталог: отметка ✓ на карточках, для которых всё есть дома | 2026-10-22 |
+| Шаг 4b | [step4b-filter-can-dark.png](step4b-filter-can-dark.png) · [light](step4b-filter-can-light.png) · [результат](step4b-catalog-can-dark.png) | Галочка «Могу сделать» в фильтрах → только подходящие | 2026-10-22 |
+| Шаг 4b | [step4b-recipe-missing-dark.png](step4b-recipe-missing-dark.png) · [light](step4b-recipe-missing-light.png) · [всё есть](step4b-recipe-all-dark.png) | Рецепт: «Не хватает 1» + «Это есть», тег «нет дома»; «Всё есть дома» + подсказка про шейкер | 2026-10-22 |
+| Шаг 4b | [step4b-design-system-dark.png](step4b-design-system-dark.png) · [light](step4b-design-system-light.png) | Витрина: + TabBar, SwitchRow/CheckRow, баннеры наличия, итог бара | 2026-10-22 |
 
 ![Шаг 1 — референсы](step1-refs-board.png)
 
@@ -34,3 +40,9 @@
 | Каталог | Поиск | Шторка фасета | Пусто |
 |---|---|---|---|
 | ![](step4a-catalog-dark.png) | ![](step4a-search-query-dark.png) | ![](step4a-facet-sheet-dark.png) | ![](step4a-empty-light.png) |
+
+## Шаг 4b — «Мой бар»
+
+| Мой бар | Каталог ✓ | Могу сделать | Рецепт |
+|---|---|---|---|
+| ![](step4b-bar-dark.png) | ![](step4b-catalog-marks-dark.png) | ![](step4b-filter-can-dark.png) | ![](step4b-recipe-missing-light.png) |

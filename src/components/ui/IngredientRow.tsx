@@ -36,8 +36,12 @@ export function IngredientRow({ name, amount, optional, checked, onToggle, press
       <span className="min-w-0 flex-1">
         <span className={cn('block text-body', checked ? 'text-fg-3 line-through' : 'text-fg')}>{name}</span>
         {(optional || missing) && (
-          <span className="block text-footnote text-fg-2">
-            {[optional && 'по желанию', missing && 'нет дома'].filter(Boolean).join(' · ')}
+          <span className="mt-0.5 flex items-center gap-2">
+            {missing && (
+              // тег, а не текст: «нет дома» ≠ «по желанию»; без зачёркивания
+              <span className="inline-flex h-5 items-center rounded-full border border-border px-2 text-caption text-fg-2">нет дома</span>
+            )}
+            {optional && <span className="text-footnote text-fg-3">по желанию</span>}
           </span>
         )}
       </span>

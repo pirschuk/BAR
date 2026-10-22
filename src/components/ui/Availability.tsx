@@ -1,5 +1,5 @@
-import { CircleCheck, CircleDashed, Wine, type LucideIcon } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { ChevronRight, CircleCheck, CircleDashed, Wine, type LucideIcon } from 'lucide-react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import { countLabel } from '../../lib/cocktails';
 import { cn } from '../../lib/cn';
@@ -11,33 +11,42 @@ type BannerProps =
   | { state: 'missing'; names: string[]; onHave: () => void };
 
 /** Наличие в рецепте: «Всё есть дома» / «Не хватает N: …» + «Это есть» / приглашение заполнить бар */
-export function AvailabilityBanner(props: BannerProps) {
-  const base = 'flex items-center gap-3 rounded-control px-4 py-3';
+export function AvailabilityBanner(props: BannerProps & { focusOnMount?: boolean }) {
+  // подложка surface — кнопка «Это есть» на surface-2 видна в обеих темах
+  const base = 'flex gap-3 rounded-control bg-surface px-4 py-3';
+  const ref = useRef<HTMLDivElement>(null);
+  // после «Это есть» кнопка исчезает — фокус переводим на новый баннер, а не теряем на <body>
+  useEffect(() => {
+    if (props.focusOnMount) ref.current?.focus();
+  }, [props.focusOnMount]);
   if (props.state === 'all')
     return (
-      <div className={cn(base, 'bg-surface-2')} role="status">
+      <div ref={ref} tabIndex={-1} className={cn(base, 'items-center outline-none')} role="status">
         <CircleCheck className="size-5 shrink-0 text-success" aria-hidden />
         <p className="text-subhead text-fg">Всё есть дома</p>
       </div>
     );
   if (props.state === 'empty-bar')
     return (
-      <Link to="/bar" className={cn(base, 'pressable bg-surface-2')}>
+      <Link to="/bar" className={cn(base, 'pressable items-center')}>
         <Wine className="size-5 shrink-0 text-fg-2" aria-hidden />
         <p className="min-w-0 flex-1 text-subhead text-fg">Отметьте свой бар — покажем, чего не хватает</p>
+        <ChevronRight className="size-4 shrink-0 text-fg-3" aria-hidden />
       </Link>
     );
   const n = props.names.length;
   return (
-    <div className={cn(base, 'bg-surface-2')} role="status">
-      <CircleDashed className="size-5 shrink-0 text-fg-2" aria-hidden />
-      <p className="min-w-0 flex-1 text-subhead text-fg">
-        Не хватает {n}:{' '}
-        <span className="text-fg-2">{props.names.join(', ')}</span>
-      </p>
-      <Button variant="secondary" size="s" className="bg-surface" onClick={props.onHave}>
-        Это есть
-      </Button>
+    <div className={cn(base, 'items-start')} role="status">
+      <CircleDashed className="mt-px size-5 shrink-0 text-fg-2" aria-hidden />
+      {/* две строки: текст на всю ширину, кнопка под ним — название не рвётся */}
+      <div className="flex min-w-0 flex-1 flex-col items-start gap-2">
+        <p className="text-subhead text-fg">
+          Не хватает {n}: <span className="text-fg-2">{props.names.join(', ')}</span>
+        </p>
+        <Button variant="secondary" size="s" onClick={props.onHave}>
+          Это есть
+        </Button>
+      </div>
     </div>
   );
 }
