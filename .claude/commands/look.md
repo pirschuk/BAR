@@ -10,7 +10,6 @@ argument-hint: <роут, например / или /design-system>
 2. Сними скриншоты:
    - первый экран: `node scripts/screenshot.mjs <роут> look`;
    - вся страница: `node scripts/screenshot.mjs <роут> look-full --full`;
-   - вторая тема, если есть: `--theme light`.
 3. Открой каждый `.png` через `Read`. Пройди чек-лист из раздела 9 скилла
    `design-system`. Выпиши найденное (P0/P1/P2) с конкретными правками.
 4. Исправь P0 и P1 в коде (только токенами дизайн-системы).

@@ -19,12 +19,13 @@ type Props = {
 export function CocktailHero({ cocktail, onBack, height = 'screen' }: Props) {
   return (
     <header
-      className={cn('cover-gradient relative flex flex-col overflow-hidden', height === 'screen' ? 'hero-shape h-hero pt-safe' : 'h-80 pt-3')}
+      className={cn('cover-gradient relative flex flex-col overflow-hidden', height === 'screen' ? 'h-hero pt-safe' : 'h-80 pt-3')}
       style={coverStyle(cocktail)}
     >
       <span className="scrim-top absolute inset-0" aria-hidden />
       <span className="scrim-bottom absolute inset-0" aria-hidden />
-      <span className="hero-fade absolute inset-x-0 bottom-0 h-16" aria-hidden />
+      {/* низ обложки растворяется в тинт напитка — тело страницы продолжает градиент */}
+      <span className="hero-fade absolute inset-x-0 bottom-0 h-24" aria-hidden />
 
       {/* под кнопкой «Назад» (44) — отступ 48, бокал вписывается в оставшуюся высоту */}
       <div className="relative mt-12 mb-3 min-h-0 flex-1">
@@ -38,8 +39,8 @@ export function CocktailHero({ cocktail, onBack, height = 'screen' }: Props) {
       )}
 
       <div className="relative px-4 pb-5">
-        <h1 className="line-clamp-2 text-title-1 text-on-media">{cocktail.name}</h1>
-        <p className="mt-0.5 text-footnote text-on-media-2">{cocktail.nameEn}</p>
+        <h1 className="line-clamp-2 font-display text-display text-balance text-on-media">{cocktail.name}</h1>
+        <p className="mt-1 text-subhead text-on-media-2">{cocktail.nameEn}</p>
       </div>
     </header>
   );

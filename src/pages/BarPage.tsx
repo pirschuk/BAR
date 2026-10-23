@@ -3,14 +3,12 @@ import { HardDriveDownload, Sparkles, Wine } from 'lucide-react';
 import { cocktails, plural } from '../lib/cocktails';
 import { getIngredient, ingredients, normalize, popularIngredients } from '../lib/filters';
 import { BAR_GROUPS, QUICK_START, TOOLS, barItems, barSummary, inventoryPersisted, useInventory } from '../lib/inventory';
-import { useTheme } from '../lib/theme';
 import { BarSummary, InfoNote } from '../components/ui/Availability';
 import { Button } from '../components/ui/Button';
 import { Chip, ChipWrap } from '../components/ui/Chip';
 import { EmptyState } from '../components/ui/EmptyState';
 import { SearchBar } from '../components/ui/SearchBar';
 import { SectionHeader } from '../components/ui/SectionHeader';
-import { SwitchRow } from '../components/ui/Toggles';
 
 type Item = { id: string; name: string; aliases?: string[] };
 
@@ -30,7 +28,6 @@ function OptionChips({ label, items, has, toggle }: { label: string; items: Item
 
 export function BarPage() {
   const { inv, toggle, add, remove } = useInventory();
-  const { theme, toggle: toggleTheme } = useTheme();
   const [query, setQuery] = useState('');
   const summary = useMemo(() => barSummary(cocktails, inv), [inv]);
   const has = (id: string) => inv.has(id);
@@ -124,10 +121,6 @@ export function BarPage() {
         </>
       )}
 
-      <section className="mt-8">
-        <SectionHeader title="Оформление" />
-        <SwitchRow title="Светлая тема" subtitle="Тёмная — по умолчанию" on={theme === 'light'} onToggle={toggleTheme} />
-      </section>
     </main>
   );
 }

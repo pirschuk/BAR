@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru" data-theme="dark">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -10,12 +10,6 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <title>BAR — коктейли</title>
-    <script>
-      // Тема до первого кадра, чтобы не мигало. Ключ — src/lib/theme.ts
-      try {
-        if (localStorage.getItem('bar-theme') === 'light') document.documentElement.dataset.theme = 'light';
-      } catch {}
-    </script>
   </head>
   <body>
     <div id="root"></div>

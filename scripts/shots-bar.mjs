@@ -1,4 +1,4 @@
-// Состояния «Моего бара» (срез 2b): node scripts/shots-bar.mjs [dark|light] [--url http://...]
+// Состояния «Моего бара» (срез 2b): node scripts/shots-bar.mjs [--url http://...]
 import { mkdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
@@ -21,7 +21,6 @@ const errors = [];
 async function session(inventory, fn) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
   await ctx.addInitScript(([t, inv]) => {
-    localStorage.setItem('bar-theme', t);
     if (inv && !sessionStorage.getItem('seeded')) {
       localStorage.setItem('bar-inventory-v1', JSON.stringify(inv));
       sessionStorage.setItem('seeded', '1');

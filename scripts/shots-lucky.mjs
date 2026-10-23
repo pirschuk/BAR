@@ -1,4 +1,4 @@
-// «Мне повезёт» (срез 2c): node scripts/shots-lucky.mjs [dark|light] [--url http://...]
+// «Мне повезёт» (срез 2c): node scripts/shots-lucky.mjs [--url http://...]
 import { mkdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
@@ -16,7 +16,6 @@ mkdirSync('.screenshots', { recursive: true });
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
 await ctx.addInitScript((t) => {
-  localStorage.setItem('bar-theme', t);
   if (!sessionStorage.getItem('seeded')) {
     localStorage.setItem('bar-inventory-v1', JSON.stringify(['gin', 'white-rum', 'vodka', 'lime', 'lemon', 'simple-syrup', 'soda']));
     sessionStorage.setItem('seeded', '1');

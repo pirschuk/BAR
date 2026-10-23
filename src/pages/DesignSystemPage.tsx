@@ -1,8 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { ChevronLeft, HardDriveDownload, Moon, SearchX, SlidersHorizontal, Wine, Wrench } from 'lucide-react';
+import { ChevronLeft, Citrus, HardDriveDownload, Moon, SearchX, SlidersHorizontal, Wine, Wrench } from 'lucide-react';
 import { Link } from 'react-router';
 import { GLASSES, cocktails, countLabel, getCocktail, scaleIngredient, type Servings } from '../lib/cocktails';
-import { useTheme } from '../lib/theme';
 import type { Cocktail, Glass } from '../types/cocktail';
 import { Button, IconButton, buttonClass } from '../components/ui/Button';
 import { Chip, ChipDivider, ChipRow, ChipWrap } from '../components/ui/Chip';
@@ -20,14 +19,13 @@ import { EMPTY_FILTERS, applyFilters, type FilterState } from '../lib/filters';
 import { GlassIllustration } from '../components/ui/GlassIllustration';
 import { CocktailCard, coverStyle } from '../components/ui/CocktailCard';
 import { CocktailHero } from '../components/ui/CocktailHero';
-import { StatGrid, StrengthMeter } from '../components/ui/StatGrid';
+import { ParamTiles, StrengthTicks } from '../components/ui/ParamTiles';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { SegmentedControl } from '../components/ui/SegmentedControl';
-import { IngredientRow } from '../components/ui/IngredientRow';
-import { StepList } from '../components/ui/StepList';
-import { ThemeToggle } from '../components/ThemeToggle';
-import { cocktailStats } from '../components/cocktailStats';
-import { SERVINGS } from './CocktailPage';
+import { IngredientTile } from '../components/ui/IngredientTile';
+import { Steps } from '../components/ui/Steps';
+import { cocktailParams } from '../components/cocktailStats';
+import { SERVINGS, stepsMeta } from './CocktailPage';
 
 // --- оболочка витрины ---
 
@@ -40,6 +38,15 @@ function Section({ id, title, note, children }: { id: string; title: string; not
       </div>
       <div className="mt-4">{children}</div>
     </section>
+  );
+}
+
+/** Секция витрины на тинте напитка — как на странице рецепта */
+function Tinted({ cocktail, ...props }: { id: string; title: string; note: string; children: ReactNode; cocktail: string }) {
+  return (
+    <div className="recipe-tint mt-10 pt-1 pb-6" style={coverStyle(must(cocktail))}>
+      <Section {...props} />
+    </div>
   );
 }
 
@@ -74,15 +81,20 @@ const PALETTE = [
   { token: '--border', cls: 'bg-border', note: 'разделители' },
   { token: '--danger', cls: 'bg-danger', note: 'ошибка' },
   { token: '--success', cls: 'bg-success', note: 'успех' },
+  { token: '--tile', cls: 'bg-tile', note: 'плитки на тинте' },
+  { token: '--tile-strong', cls: 'bg-tile-strong', note: 'круги, пилюли на тинте' },
 ] as const;
 
 const TYPE_SCALE = [
+  { cls: 'font-display text-display', name: 'display', spec: 'Unbounded 34/40 · 700', use: 'название на обложке' },
+  { cls: 'font-display text-section', name: 'section', spec: 'Unbounded 24/30 · 600', use: 'секции рецепта' },
   { cls: 'text-large-title', name: 'large-title', spec: '34/41 · 700', use: 'заголовок экрана' },
-  { cls: 'text-title-1', name: 'title-1', spec: '28/34 · 700', use: 'название коктейля' },
-  { cls: 'text-title-2', name: 'title-2', spec: '22/28 · 700', use: 'секции' },
+  { cls: 'text-title-1', name: 'title-1', spec: '28/34 · 700', use: 'карта «Мне повезёт»' },
+  { cls: 'text-title-2', name: 'title-2', spec: '22/28 · 700', use: 'секции каталога и бара' },
+  { cls: 'text-title-3', name: 'title-3', spec: '20/26 · 600', use: 'плитки параметров, шаги (400)' },
   { cls: 'text-headline', name: 'headline', spec: '17/22 · 600', use: 'карточки, кнопки' },
   { cls: 'text-body', name: 'body', spec: '17/22 · 400', use: 'основной текст' },
-  { cls: 'text-callout', name: 'callout', spec: '16/21 · 400', use: 'шаги' },
+  { cls: 'text-callout', name: 'callout', spec: '16/21 · 400', use: 'сегменты L' },
   { cls: 'text-subhead', name: 'subhead', spec: '15/20 · 400', use: 'чипсы' },
   { cls: 'text-footnote', name: 'footnote', spec: '13/18 · 400', use: 'подписи, мета' },
   { cls: 'text-caption', name: 'caption', spec: '12/16 · 500', use: 'плашки' },
@@ -103,11 +115,10 @@ const GLASS_SAMPLES: Record<Glass, string> = {
 };
 
 function useCssVar(name: string) {
-  const { theme } = useTheme();
   const [value, setValue] = useState('');
   useEffect(() => {
     setValue(getComputedStyle(document.documentElement).getPropertyValue(name).trim());
-  }, [name, theme]);
+  }, [name]);
   return value;
 }
 
@@ -137,25 +148,16 @@ export function DesignSystemPage() {
   const [sw, setSw] = useState(true);
   const [ck, setCk] = useState(false);
   const [servings, setServings] = useState<Servings>(2);
-  const [checked, setChecked] = useState<ReadonlySet<number>>(new Set([0]));
   const sour = must('whiskey-sour');
   const mojito = must('mojito');
-
-  const toggle = (i: number) =>
-    setChecked((prev) => {
-      const next = new Set(prev);
-      if (!next.delete(i)) next.add(i);
-      return next;
-    });
 
   return (
     <main className="pb-safe">
       <header className="pt-safe flex items-start justify-between gap-3 px-4">
         <div>
           <h1 className="text-large-title text-fg">Дизайн-система</h1>
-          <p className="mt-1 text-footnote text-fg-2">BAR v0.2 · компоненты итераций 1–2a</p>
+          <p className="mt-1 text-footnote text-fg-2">BAR v0.3 · язык рецепта v2 (Итерация 3)</p>
         </div>
-        <ThemeToggle />
       </header>
 
       <ChipRow label="Разделы" className="mt-4">
@@ -175,11 +177,12 @@ export function DesignSystemPage() {
           ['glass', 'Бокалы'],
           ['card', 'CocktailCard'],
           ['hero', 'CocktailHero'],
-          ['stats', 'StatGrid'],
+          ['tint', 'Тинт'],
+          ['params', 'ParamTiles'],
           ['section', 'SectionHeader'],
           ['segmented', 'Segmented'],
-          ['ingredient', 'IngredientRow'],
-          ['steps', 'StepList'],
+          ['ingredient', 'IngredientTile'],
+          ['steps', 'Steps'],
         ].map(([id, label]) => (
           <a key={id} href={`#${id}`} className="pressable hit-44 inline-flex h-chip shrink-0 items-center rounded-full border border-border bg-surface-2 px-3.5 text-subhead font-medium text-fg">
             {label}
@@ -187,7 +190,7 @@ export function DesignSystemPage() {
         ))}
       </ChipRow>
 
-      <Section id="palette" title="Палитра" note="CSS-переменные; значения меняются вместе с темой. Обложки коктейлей — данные (cover), не токены.">
+      <Section id="palette" title="Палитра" note="CSS-переменные, тема одна — тёмная. Обложки коктейлей — данные (cover), не токены.">
         <div className="grid grid-cols-2 items-start gap-x-3 gap-y-4 px-4">
           {PALETTE.map((p) => (
             <Swatch key={p.token} {...p} />
@@ -195,7 +198,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="type" title="Типографика" note="Системный шрифт (SF Pro на iOS). Числа объёмов — tabular-nums.">
+      <Section id="type" title="Типографика" note="Заголовки рецепта — Unbounded (локальный woff2, OFL), остальное — системный (SF Pro / Roboto). Числа объёмов — tabular-nums.">
         <div className="flex flex-col gap-4 px-4">
           {TYPE_SCALE.map((t) => (
             <div key={t.name} className="border-b border-border pb-3">
@@ -456,7 +459,7 @@ export function DesignSystemPage() {
 
       <Section id="toggles" title="SwitchRow / CheckRow" note="Строки ≥ 52, вся строка — тач-зона. Switch 51×31 — настройки; галочка — «Могу сделать» в фильтрах.">
         <div className="flex flex-col">
-          <SwitchRow title="Светлая тема" subtitle="Тёмная — по умолчанию" on={sw} onToggle={() => setSw(!sw)} />
+          <SwitchRow title="Подсказки по инструментам" subtitle="Пример строки-настройки" on={sw} onToggle={() => setSw(!sw)} />
           <SwitchRow title="Выключено" on={false} onToggle={() => {}} />
           <SwitchRow title="Pressed" on onToggle={() => {}} pressed />
           <SwitchRow title="Disabled" on={false} onToggle={() => {}} disabled />
@@ -559,72 +562,94 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="stats" title="StatGrid / StrengthMeter" note="4 колонки по содержимому, крайние — по краям; крепость — 4 деления по ABV: ≤10 · ≤18 · ≤26 · >26 %.">
+      <Section id="tint" title="Тинт напитка" note="recipe-tint: cover.to 45% поверх --bg под обложкой, дальше растворяется в фон. Плитки — --tile поверх тинта.">
+        <div className="grid grid-cols-3 gap-3 px-4">
+          {['negroni', 'daiquiri', 'aperol-spritz'].map((id) => (
+            <div key={id} className="recipe-tint h-40 overflow-hidden rounded-card p-2" style={coverStyle(must(id))}>
+              <div className="rounded-row bg-tile p-2 text-caption text-fg">{must(id).name}</div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Tinted id="params" title="ParamTiles" note="2×2, gap 12, плитка r 24: иконка в круге 32 → значение title-3 одной строкой → подпись. Крепость — словом + 4 деления по ABV: ≤10 · ≤18 · ≤26 · >26 %." cocktail="negroni">
         <div className="flex flex-col gap-5 px-4">
-          <State label="Олд Фэшн">
-            <StatGrid items={cocktailStats(must('old-fashioned'))} />
+          <State label="Негрони">
+            <ParamTiles items={cocktailParams(must('negroni'))} />
           </State>
-          <State label="Мохито">
-            <StatGrid items={cocktailStats(mojito)} />
+          <State label="Вирджин Колада — длинные слова">
+            <ParamTiles items={cocktailParams(must('virgin-colada'))} />
           </State>
-          <State label="StrengthMeter · уровни 1–4">
-            <div className="grid grid-cols-4 gap-3 text-headline text-fg">
-              {([[1, 8], [2, 15], [3, 24], [4, 30]] as const).map(([level, abv]) => (
-                <StrengthMeter key={level} level={level} abv={abv} />
+          <State label="Московский мул">
+            <ParamTiles items={cocktailParams(must('moscow-mule'))} />
+          </State>
+          <State label="StrengthTicks · уровни 0–4">
+            <div className="flex gap-4">
+              {([0, 1, 2, 3, 4] as const).map((level) => (
+                <StrengthTicks key={level} level={level} />
               ))}
             </div>
           </State>
         </div>
-      </Section>
+      </Tinted>
 
-      <Section id="section" title="SectionHeader" note="title-2 + контрол справа или без него.">
+      <Tinted id="section" title="SectionHeader" note="l — Unbounded 24/30 + контрол или мета-пилюля h 28; m — title-2 (каталог, бар)." cocktail="daiquiri">
         <div className="flex flex-col gap-3">
-          <SectionHeader title="Приготовление" />
-          <SectionHeader
-            title="Ингредиенты"
-            action={<SegmentedControl label="Порции" options={SERVINGS} value={servings} onChange={setServings} />}
-          />
+          <SectionHeader size="l" title="Ингредиенты" action={<SegmentedControl size="l" label="Порции" options={SERVINGS} value={servings} onChange={setServings} />} />
+          <SectionHeader size="l" title="Приготовление" meta={stepsMeta(4, 3)} />
+          <SectionHeader title="Похожие" />
         </div>
-      </Section>
+      </Tinted>
 
-      <Section id="segmented" title="SegmentedControl" note="Порции 1× / 2× / 4×. Активный — инверсия (fg на bg), не акцент: акцент на экране один.">
+      <Tinted id="segmented" title="SegmentedControl" note="Порции 1× / 2× / 4×. L — пилюля 44 на тинте, M — 36. Активный — инверсия (fg на bg), не акцент." cocktail="daiquiri">
         <div className="flex flex-col gap-5 px-4">
-          <State label="интерактивно">
+          <State label="L · интерактивно">
+            <SegmentedControl size="l" label="Порции" options={SERVINGS} value={servings} onChange={setServings} />
+          </State>
+          <State label="L · pressed (4×)">
+            <SegmentedControl size="l" label="Порции" options={SERVINGS} value={1} onChange={() => {}} pressedValue={4} />
+          </State>
+          <State label="M">
             <SegmentedControl label="Порции" options={SERVINGS} value={servings} onChange={setServings} />
           </State>
-          <State label="pressed (4×)">
-            <SegmentedControl label="Порции" options={SERVINGS} value={1} onChange={() => {}} pressedValue={4} />
-          </State>
         </div>
-      </Section>
+      </Tinted>
 
-      <Section id="ingredient" title="IngredientRow" note={`Чек-лист, пересчёт под порции (сейчас ${servings}×). Тап по строке — отметить.`}>
-        <ul>
-          {mojito.ingredients.map((ing, i) => (
+      <Tinted id="ingredient" title="IngredientTile" note={`Плитка r 16, min-h 52, gap 8; без чекбокса и тапа. Объём — колонкой справа (сейчас ${servings}×). Наличие — первой плиткой.`} cocktail="mojito">
+        <ul className="flex flex-col gap-2 px-4">
+          <li>
+            <AvailabilityBanner tile state="all" />
+          </li>
+          <li>
+            <AvailabilityBanner tile state="missing" names={['Кампари']} onHave={() => {}} />
+          </li>
+          <li>
+            <AvailabilityBanner tile state="empty-bar" />
+          </li>
+          {mojito.ingredients.map((ing) => (
             <li key={ing.name}>
-              <IngredientRow name={ing.name} amount={scaleIngredient(ing, servings)} checked={checked.has(i)} onToggle={() => toggle(i)} />
+              <IngredientTile name={ing.name} amount={scaleIngredient(ing, servings)} />
             </li>
           ))}
           <li>
-            <IngredientRow name="Кампари" amount={{ value: '30', unit: 'мл' }} checked={false} onToggle={() => {}} missing />
+            <IngredientTile name="Кампари" amount={{ value: '30', unit: 'мл' }} missing />
           </li>
           <li>
-            <IngredientRow
-              name="Яичный белок"
-              optional
-              amount={scaleIngredient(sour.ingredients[3] ?? { ref: 'egg-white', name: '', category: 'egg' }, servings)}
-              checked={false}
-              onToggle={() => {}}
-              pressed
-            />
+            <IngredientTile name="Яичный белок" optional amount={scaleIngredient(sour.ingredients[3] ?? { ref: 'egg-white', name: '', category: 'egg' }, servings)} />
+          </li>
+          <li>
+            <IngredientTile name={mojito.garnish ?? 'Веточка мяты'} note="Украшение" icon={Citrus} />
           </li>
         </ul>
-        <p className="mt-2 px-4 text-caption text-fg-3 uppercase">default · checked · единицы мл / лист / бар. л. / долить · нет дома · optional + pressed</p>
-      </Section>
+        <p className="mt-2 px-4 text-caption text-fg-3 uppercase">наличие: всё / не хватает / бар пуст · мл / лист / долить · нет дома · по желанию · украшение</p>
+      </Tinted>
 
-      <Section id="steps" title="StepList" note="Номер в круге 28 + callout; длинный шаг переносится.">
-        <StepList steps={must('whiskey-sour').steps} />
-      </Section>
+      <Tinted id="steps" title="Steps" note="«ШАГ N» caption капсом + текст title-3 (400), между шагами 24; без карточек. Подсказка — InfoNote-плитка." cocktail="whiskey-sour">
+        <Steps steps={sour.steps} />
+        <InfoNote tile icon={Wrench} className="mx-4 mt-6">
+          Нужен шейкер — подойдёт банка с плотной крышкой.
+        </InfoNote>
+      </Tinted>
 
       <p className="mt-12 px-4 text-center text-caption text-fg-3">В базе {countLabel(cocktails.length)}</p>
     </main>

@@ -41,7 +41,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,json}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,json,woff2}'],
         // офлайн-навигация по любому роуту SPA внутри base
         navigateFallback: `${base}index.html`,
       },

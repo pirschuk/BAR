@@ -1,4 +1,4 @@
-// Состояния каталога (срез 2a) одним прогоном: node scripts/shots-catalog.mjs [dark|light] [префикс] [--url http://...]
+// Состояния каталога (срез 2a) одним прогоном: node scripts/shots-catalog.mjs [префикс] [--url http://...]
 import { mkdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
@@ -14,7 +14,6 @@ mkdirSync('.screenshots', { recursive: true });
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
-await ctx.addInitScript((t) => localStorage.setItem('bar-theme', t), theme);
 const page = await ctx.newPage();
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));

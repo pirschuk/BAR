@@ -11,9 +11,9 @@ type BannerProps =
   | { state: 'missing'; names: string[]; onHave: () => void };
 
 /** Наличие в рецепте: «Всё есть дома» / «Не хватает N: …» + «Это есть» / приглашение заполнить бар */
-export function AvailabilityBanner(props: BannerProps & { focusOnMount?: boolean }) {
-  // подложка surface — кнопка «Это есть» на surface-2 видна в обеих темах
-  const base = 'flex gap-3 rounded-control bg-surface px-4 py-3';
+export function AvailabilityBanner(props: BannerProps & { focusOnMount?: boolean; tile?: boolean }) {
+  // tile — плитка r 16 поверх тинта рецепта (Итерация 3); иначе карточка на surface
+  const base = cn('flex gap-3 px-4 py-3', props.tile ? 'min-h-row-l rounded-row bg-tile' : 'rounded-control bg-surface');
   const ref = useRef<HTMLDivElement>(null);
   // после «Это есть» кнопка исчезает — фокус переводим на новый баннер, а не теряем на <body>
   useEffect(() => {
@@ -43,7 +43,7 @@ export function AvailabilityBanner(props: BannerProps & { focusOnMount?: boolean
         <p className="text-subhead text-fg">
           Не хватает {n}: <span className="text-fg-2">{props.names.join(', ')}</span>
         </p>
-        <Button variant="secondary" size="s" onClick={props.onHave}>
+        <Button variant="secondary" size="s" className={props.tile ? 'bg-tile-strong!' : undefined} onClick={props.onHave}>
           Это есть
         </Button>
       </div>
@@ -70,9 +70,9 @@ export function BarSummary({ can, nearly, to }: { can: number; nearly: number; t
 }
 
 /** Нейтральная подсказка: иконка 16 + текст subhead на surface-2 (инструменты, хранилище) */
-export function InfoNote({ icon: Icon, children, className }: { icon: LucideIcon; children: ReactNode; className?: string }) {
+export function InfoNote({ icon: Icon, children, className, tile }: { icon: LucideIcon; children: ReactNode; className?: string; tile?: boolean }) {
   return (
-    <p className={cn('flex items-start gap-2 rounded-control bg-surface-2 px-4 py-3 text-subhead text-fg-2', className)}>
+    <p className={cn('flex items-start gap-2 px-4 py-3 text-subhead text-fg-2', tile ? 'rounded-row bg-tile' : 'rounded-control bg-surface-2', className)}>
       <Icon className="mt-0.5 size-4 shrink-0" aria-hidden />
       <span>{children}</span>
     </p>
