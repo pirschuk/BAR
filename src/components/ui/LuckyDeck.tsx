@@ -1,6 +1,6 @@
 import { forwardRef, useImperativeHandle, useRef, useState, type PointerEvent } from 'react';
 import type { Cocktail } from '../../types/cocktail';
-import { BASES, glassLabel, glassShape, methodLabel } from '../../lib/cocktails';
+import { BASES, glassLabel, methodLabel, strengthLabel } from '../../lib/cocktails';
 import { cn } from '../../lib/cn';
 import { coverStyle } from './CocktailCard';
 import { GlassIllustration } from './GlassIllustration';
@@ -10,7 +10,7 @@ export function LuckyCard({ cocktail, className }: { cocktail: Cocktail; classNa
   const base = BASES.find((b) => b.id === cocktail.base)?.label;
   return (
     <article className={cn('cover-gradient relative h-full overflow-hidden rounded-card outline-1 -outline-offset-1 outline-border', className)} style={coverStyle(cocktail)}>
-      <GlassIllustration shape={glassShape(cocktail.glass)} ice={cocktail.ice} className="absolute inset-x-0 top-10 mx-auto h-1/2" />
+      <GlassIllustration shape={cocktail.glass} className="absolute inset-x-0 top-10 mx-auto h-1/2" />
       <span className="scrim-bottom absolute inset-0" aria-hidden />
       {base && (
         <span className="glass absolute top-3 left-3 inline-flex h-6 items-center rounded-full px-2.5 text-caption text-on-media">{base}</span>
@@ -18,7 +18,7 @@ export function LuckyCard({ cocktail, className }: { cocktail: Cocktail; classNa
       <div className="absolute inset-x-4 bottom-4">
         <h3 className="line-clamp-2 text-title-1 text-on-media">{cocktail.name}</h3>
         <p className="mt-1 text-footnote text-on-media-2">
-          {methodLabel(cocktail.method)} · {glassLabel(cocktail.glass)} · {cocktail.abv ? `~${cocktail.abv}%` : 'без алкоголя'}
+          {strengthLabel(cocktail.strength)} · {glassLabel(cocktail.glass)} · {methodLabel(cocktail.method)}
         </p>
       </div>
     </article>

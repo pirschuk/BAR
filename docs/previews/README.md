@@ -30,6 +30,8 @@
 | Шаг 4c | [step4c-lucky-swipe-dark.png](step4c-lucky-swipe-dark.png) · [light](step4c-lucky-swipe-light.png) | Кадр свайпа: карта наклоняется и улетает, под ней следующая | 2026-10-22 |
 | Шаг 4c | [step4c-lucky-filtered-dark.png](step4c-lucky-filtered-dark.png) · [бар](step4c-lucky-bar-dark.png) · [один](step4c-lucky-single-dark.png) · [пусто](step4c-lucky-empty-light.png) | По фильтрам, из «Моего бара», единственный вариант, «Не из чего выбирать» | 2026-10-22 |
 | Шаг 4c | [step4c-design-system-dark.png](step4c-design-system-dark.png) · [light](step4c-design-system-light.png) | Витрина: + LuckySheet / LuckyDeck | 2026-10-22 |
+| Шаг 5 · `/look` карточки | [до](step5-cards-before-dark.png) → [после dark](step5-cards-dark.png) · [light](step5-cards-light.png) · [харрикейн](step5-cards-hurricane-dark.png) | Карточки: крепость словом вместо «30%», бокал под названием | 2026-10-23 |
+| Шаг 5 | [step5-glasses.png](step5-glasses.png) | Утверждённый список — 10 бокалов, у каждого свой силуэт, без льда | 2026-10-23 |
 
 ![Шаг 1 — референсы](step1-refs-board.png)
 
@@ -56,3 +58,9 @@
 | Колода | Свайп | Один вариант | Пусто |
 |---|---|---|---|
 | ![](step4c-lucky-dark.png) | ![](step4c-lucky-swipe-light.png) | ![](step4c-lucky-single-dark.png) | ![](step4c-lucky-empty-light.png) |
+
+## Шаг 5 — карточки и бокалы
+
+| До | После | Бокалы |
+|---|---|---|
+| ![](step5-cards-before-dark.png) | ![](step5-cards-dark.png) | ![](step5-glasses.png) |

@@ -84,13 +84,14 @@ type IngredientDef = {
 
 - `Method`: `build` (в бокале), `stir` (смешать в стакане), `shake`,
   `dry-shake`, `blend`, `muddle`, `layer`, `throw`.
-- `Glass`: `rocks`, `double-rocks`, `highball`, `collins`, `coupe`, `martini`,
-  `nick-and-nora`, `hurricane`, `wine`, `flute`, `copper-mug`, `tiki`, `shot`.
-- `Glass` в MVP — только 6 силуэтов: `rocks`, `coupe`, `highball`, `collins`,
-  `martini`, `wine`. Остальные значения словаря допустимы в схеме, но в UI
-  маппятся на ближайший (`double-rocks`→`rocks`, `nick-and-nora`→`coupe`,
-  `copper-mug`→`highball`, `flute`→`wine`, `hurricane`/`tiki`→`collins`,
-  `shot`→`rocks`); в данные MVP их не заносим.
+- `Glass` — **утверждённый список из 10 бокалов** (решение владельца, 2026-10-23), у каждого
+  свой силуэт в `GlassIllustration`, без маппинга «на ближайший»:
+  `rocks` (Рокс), `highball` (Хайбол), `collins` (Коллинз), `coupe` (Купе),
+  `martini` (Мартини), `flute` (Флюте), `wine` (Винный), `hurricane` (Харрикейн),
+  `copper-mug` (Медная кружка), `irish-coffee` (Айриш-кофе).
+  Новый бокал — только вместе с новым силуэтом и записью в этот список.
+  Лёд на иконке не рисуется (поле `ice` — в параметрах рецепта), поэтому бокал
+  всегда выглядит одинаково.
 - `Base` (в этом порядке — и порядок массива): `gin`, `rum`, `whiskey`,
   `tequila`, `vodka`, `brandy`, `aperitif`, `non-alcoholic` — главная база
   для чипсов, не обязательно крепчайший ингредиент (Негрони, Апероль Шприц →
@@ -128,7 +129,7 @@ type IngredientDef = {
 10. `cover.from` и `cover.to` — hex `^#[0-9A-Fa-f]{6}$`;
     относительная яркость `cover.to` (WCAG, sRGB) < 0.15, чтобы белый текст
     названия читался; `from` светлее `to`.
-11. `glass` — из 6 силуэтов MVP (см. словари).
+11. `glass` — из утверждённого списка 10 бокалов (см. словари); `coupe`, `martini`, `flute` — без льда.
 12. Рецепты — классические спецификации (IBA/общепринятые); при сомнении —
    пометка в отчёте, а не выдумка.
 13. У каждого ингредиента есть `ref`, он существует в словаре; одно

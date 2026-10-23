@@ -1,6 +1,6 @@
 import ingredientsData from '../data/ingredients.json';
 import type { Base, Cocktail, IngredientDef, Strength, Taste } from '../types/cocktail';
-import { BASES } from './cocktails';
+import { BASES, STRENGTH_LABEL } from './cocktails';
 
 export const ingredients = ingredientsData as IngredientDef[];
 const byId = new Map(ingredients.map((i) => [i.id, i]));
@@ -22,12 +22,10 @@ export const TASTES: { id: Taste; label: string }[] = [
   { id: 'spicy', label: 'Пряный' },
 ];
 
-export const STRENGTHS: { id: Strength; label: string }[] = [
-  { id: 'non-alcoholic', label: 'Безалкогольный' },
-  { id: 'light', label: 'Лёгкий' },
-  { id: 'medium', label: 'Средний' },
-  { id: 'strong', label: 'Крепкий' },
-];
+export const STRENGTHS: { id: Strength; label: string }[] = (['non-alcoholic', 'light', 'medium', 'strong'] as const).map((id) => ({
+  id,
+  label: STRENGTH_LABEL[id],
+}));
 
 export type FacetKey = 'base' | 'taste' | 'strength';
 

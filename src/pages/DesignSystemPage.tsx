@@ -1,9 +1,9 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { ChevronLeft, HardDriveDownload, Moon, SearchX, SlidersHorizontal, Wine, Wrench } from 'lucide-react';
 import { Link } from 'react-router';
-import { cocktails, countLabel, getCocktail, scaleIngredient, type GlassShape, type Servings } from '../lib/cocktails';
+import { GLASSES, cocktails, countLabel, getCocktail, scaleIngredient, type Servings } from '../lib/cocktails';
 import { useTheme } from '../lib/theme';
-import type { Cocktail, Ice } from '../types/cocktail';
+import type { Cocktail, Glass } from '../types/cocktail';
 import { Button, IconButton, buttonClass } from '../components/ui/Button';
 import { Chip, ChipDivider, ChipRow, ChipWrap } from '../components/ui/Chip';
 import { SearchBar } from '../components/ui/SearchBar';
@@ -88,14 +88,19 @@ const TYPE_SCALE = [
   { cls: 'text-caption', name: 'caption', spec: '12/16 · 500', use: 'плашки' },
 ] as const;
 
-const SHAPES: { shape: GlassShape; label: string; ice: Ice; cocktail: string }[] = [
-  { shape: 'rocks', label: 'Рокс', ice: 'big-cube', cocktail: 'negroni' },
-  { shape: 'coupe', label: 'Купе', ice: 'none', cocktail: 'daiquiri' },
-  { shape: 'highball', label: 'Хайбол', ice: 'crushed', cocktail: 'mojito' },
-  { shape: 'collins', label: 'Коллинз', ice: 'cubes', cocktail: 'tom-collins' },
-  { shape: 'martini', label: 'Мартини', ice: 'none', cocktail: 'cosmopolitan' },
-  { shape: 'wine', label: 'Винный', ice: 'cubes', cocktail: 'aperol-spritz' },
-];
+// пример коктейля для каждого бокала из утверждённого списка
+const GLASS_SAMPLES: Record<Glass, string> = {
+  rocks: 'negroni',
+  highball: 'mojito',
+  collins: 'tom-collins',
+  coupe: 'daiquiri',
+  martini: 'cosmopolitan',
+  flute: 'kir-royal',
+  wine: 'aperol-spritz',
+  hurricane: 'pina-colada',
+  'copper-mug': 'moscow-mule',
+  'irish-coffee': 'irish-coffee',
+};
 
 function useCssVar(name: string) {
   const { theme } = useTheme();
@@ -505,18 +510,18 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="glass" title="GlassIllustration" note="6 силуэтов MVP; остальные бокалы маппятся на ближайший. Лёд: кубики, крупный, колотый.">
+      <Section id="glass" title="GlassIllustration" note="Утверждённый список — 10 бокалов, у каждого свой силуэт. Лёд не рисуем: один бокал всегда выглядит одинаково.">
         <div className="grid grid-cols-3 gap-3 px-4">
-          {SHAPES.map((s) => (
-            <figure key={s.shape} className="cover-gradient flex flex-col items-center rounded-card pt-3 pb-2" style={coverStyle(must(s.cocktail))}>
-              <GlassIllustration shape={s.shape} ice={s.ice} className="h-24" />
-              <figcaption className="mt-1 text-caption text-on-media">{s.label}</figcaption>
+          {GLASSES.map((g) => (
+            <figure key={g.id} className="cover-gradient flex flex-col items-center rounded-card pt-3 pb-2" style={coverStyle(must(GLASS_SAMPLES[g.id]))}>
+              <GlassIllustration shape={g.id} className="h-24" />
+              <figcaption className="mt-1 truncate px-1 text-caption text-on-media">{g.label}</figcaption>
             </figure>
           ))}
         </div>
       </Section>
 
-      <Section id="card" title="CocktailCard" note="3:4, 173×231 в сетке. Градиент напитка + бокал + стеклянная плашка + скрим под названием.">
+      <Section id="card" title="CocktailCard" note="3:4, 173×231 в сетке. Градиент напитка + бокал; плашка — крепость словом (как в фильтре); под названием — бокал.">
         <div className="grid grid-cols-2 gap-x-3 gap-y-5 px-4">
           <State label="default">
             <CocktailCard cocktail={must('negroni')} />

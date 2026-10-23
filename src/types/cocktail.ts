@@ -6,20 +6,18 @@ export type Taste = 'sour' | 'sweet' | 'bitter' | 'fruity' | 'herbal' | 'refresh
 
 export type Method = 'build' | 'stir' | 'shake' | 'dry-shake' | 'blend' | 'muddle' | 'layer' | 'throw';
 
+/** Утверждённый список бокалов (10): у каждого свой силуэт в GlassIllustration, без подмен */
 export type Glass =
   | 'rocks'
-  | 'double-rocks'
   | 'highball'
   | 'collins'
   | 'coupe'
   | 'martini'
-  | 'nick-and-nora'
-  | 'hurricane'
-  | 'wine'
   | 'flute'
+  | 'wine'
+  | 'hurricane'
   | 'copper-mug'
-  | 'tiki'
-  | 'shot';
+  | 'irish-coffee';
 
 export type Ice = 'none' | 'cubes' | 'big-cube' | 'crushed' | 'sphere';
 

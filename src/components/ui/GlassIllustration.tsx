@@ -1,106 +1,84 @@
 import { useId } from 'react';
-import type { GlassShape } from '../../lib/cocktails';
-import type { Ice } from '../../types/cocktail';
+import type { Glass } from '../../types/cocktail';
 import { cn } from '../../lib/cn';
 
 /**
  * Силуэт бокала поверх обложки. viewBox 120×160, бокал стоит на y=148.
- * body — контур чаши (он же маска жидкости), liquid — уровень напитка, extra — ножка/дно.
+ * Утверждённый список — 10 бокалов, у каждого свой силуэт; лёд не рисуем,
+ * чтобы один бокал всегда выглядел одинаково (лёд — в параметрах рецепта).
+ * body — контур чаши (он же маска жидкости), liquidTop — уровень напитка, extra — ножка, дно, ручка.
  */
-type GlassGeometry = { body: string; liquidTop: number; extra?: string; iceBox: [number, number, number, number] };
+type GlassGeometry = { body: string; liquidTop: number; extra?: string };
 
-const GEOMETRY: Record<GlassShape, GlassGeometry> = {
+const STEM = 'M40 148 Q60 140 80 148';
+
+const GEOMETRY: Record<Glass, GlassGeometry> = {
+  // низкий широкий стакан с толстым дном
   rocks: {
-    body: 'M30 78 L34 142 Q34 148 40 148 L80 148 Q86 148 86 142 L90 78 Z',
+    body: 'M28 80 L32 142 Q32 148 38 148 L82 148 Q88 148 88 142 L92 80 Z',
     liquidTop: 100,
-    extra: 'M35 136 L85 136',
-    iceBox: [38, 96, 82, 134],
+    extra: 'M33 134 L87 134',
   },
+  // средний стакан: шире и ниже коллинза
   highball: {
-    body: 'M38 36 L41 142 Q41 148 47 148 L73 148 Q79 148 79 142 L82 36 Z',
-    liquidTop: 58,
-    extra: 'M41 138 L79 138',
-    iceBox: [44, 60, 76, 136],
+    body: 'M34 46 L37 142 Q37 148 43 148 L77 148 Q83 148 83 142 L86 46 Z',
+    liquidTop: 66,
+    extra: 'M37 136 L83 136',
   },
+  // самый высокий и узкий стакан
   collins: {
-    body: 'M42 22 L44 142 Q44 148 50 148 L70 148 Q76 148 76 142 L78 22 Z',
-    liquidTop: 44,
-    extra: 'M44 138 L76 138',
-    iceBox: [47, 46, 73, 136],
+    body: 'M45 10 L46 142 Q46 148 52 148 L68 148 Q74 148 74 142 L75 10 Z',
+    liquidTop: 30,
+    extra: 'M46 138 L74 138',
   },
+  // широкая неглубокая чаша на ножке
   coupe: {
-    body: 'M22 60 Q24 96 60 98 Q96 96 98 60 Z',
-    liquidTop: 68,
-    extra: 'M60 98 L60 144 M40 148 Q60 140 80 148',
-    iceBox: [0, 0, 0, 0],
+    body: 'M22 62 Q24 96 60 98 Q96 96 98 62 Z',
+    liquidTop: 70,
+    extra: `M60 98 L60 144 ${STEM}`,
   },
+  // V-образная чаша на ножке
   martini: {
     body: 'M18 50 L60 100 L102 50 Z',
     liquidTop: 60,
-    extra: 'M60 100 L60 144 M40 148 Q60 140 80 148',
-    iceBox: [0, 0, 0, 0],
+    extra: `M60 100 L60 144 ${STEM}`,
   },
+  // узкая высокая чаша на длинной ножке
+  flute: {
+    body: 'M49 16 Q47 64 54 84 Q60 94 66 84 Q73 64 71 16 Z',
+    liquidTop: 30,
+    extra: `M60 92 L60 144 ${STEM}`,
+  },
+  // округлая чаша на ножке
   wine: {
     body: 'M36 28 Q31 70 40 86 Q60 108 80 86 Q89 70 84 28 Z',
-    liquidTop: 56,
-    extra: 'M60 104 L60 144 M40 148 Q60 140 80 148',
-    iceBox: [42, 58, 78, 92],
+    liquidTop: 58,
+    extra: `M60 104 L60 144 ${STEM}`,
+  },
+  // фигурный «тюльпан» на короткой ножке
+  hurricane: {
+    body: 'M42 14 Q32 40 44 62 Q52 76 47 96 Q44 112 52 122 L68 122 Q76 112 73 96 Q68 76 76 62 Q88 40 78 14 Z',
+    liquidTop: 34,
+    extra: `M60 122 L60 142 M44 148 Q60 140 76 148`,
+  },
+  // кружка-бочонок с ручкой
+  'copper-mug': {
+    body: 'M30 54 L32 142 Q32 148 38 148 L74 148 Q80 148 80 142 L82 54 Z',
+    liquidTop: 70,
+    extra: 'M82 72 Q100 72 100 96 Q100 120 81 120 M33 66 L81 66',
+  },
+  // кружка на ножке с ручкой; сверху слой сливок
+  'irish-coffee': {
+    body: 'M36 30 L40 100 Q42 110 52 110 L68 110 Q78 110 80 100 L84 30 Z',
+    liquidTop: 44,
+    extra: `M60 110 L60 142 M44 148 Q60 140 76 148 M84 44 Q100 46 99 66 Q98 86 81 88 M38 56 L82 56`,
   },
 };
 
-function IceCubes({ ice, box }: { ice: Ice; box: [number, number, number, number] }) {
-  const [x1, y1, x2, y2] = box;
-  if (ice === 'none' || x2 === 0) return null;
-  const w = x2 - x1;
-  const h = y2 - y1;
-  if (ice === 'big-cube' || ice === 'sphere') {
-    const s = Math.min(w, h) * 0.78;
-    const x = x1 + (w - s) / 2;
-    const y = y2 - s - 2;
-    return ice === 'sphere' ? (
-      <circle cx={x + s / 2} cy={y + s / 2} r={s / 2} className="ice" />
-    ) : (
-      <rect x={x} y={y} width={s} height={s} rx={5} className="ice" />
-    );
-  }
-  if (ice === 'crushed') {
-    // колотый лёд: россыпь неровных осколков; псевдослучайно, но стабильно между рендерами
-    let seed = 7;
-    const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
-    // плотность по площади: бокал заполнен колотым льдом
-    const shards = Array.from({ length: Math.round((w * h) / 70) }, () => {
-      const size = 6 + rnd() * 4;
-      return { x: x1 + rnd() * (w - size), y: y1 + 4 + rnd() * (h - size - 4), size, rot: rnd() * 90 - 45 };
-    });
-    return (
-      <g>
-        {shards.map((s, i) => (
-          <rect key={i} x={s.x} y={s.y} width={s.size} height={s.size * 0.8} rx={2} className="ice" transform={`rotate(${s.rot} ${s.x + s.size / 2} ${s.y + s.size / 2})`} />
-        ))}
-      </g>
-    );
-  }
-  // кубики: 1–2 колонки по ширине бокала, до 3 рядов от дна
-  const cols = w >= 40 ? 2 : 1;
-  const s = Math.min((w - 4) / cols - 3, 20);
-  const rows = Math.max(1, Math.min(3, Math.floor((h - 4) / (s + 3))));
-  const cubes: [number, number, number][] = [];
-  for (let r = 0; r < rows; r++)
-    for (let c = 0; c < cols; c++)
-      cubes.push([x1 + (w - cols * (s + 3)) / 2 + c * (s + 3) + (r % 2 ? 2 : -1), y2 - (r + 1) * (s + 3), r * 9 + c * 13 - 10]);
-  return (
-    <g>
-      {cubes.map(([x, y, rot], i) => (
-        <rect key={i} x={x} y={y} width={s} height={s} rx={3} transform={`rotate(${rot} ${x + s / 2} ${y + s / 2})`} className="ice" />
-      ))}
-    </g>
-  );
-}
+type Props = { shape: Glass; className?: string; title?: string };
 
-type Props = { shape: GlassShape; ice?: Ice; className?: string; title?: string };
-
-/** Силуэт бокала: белые линии + полупрозрачный напиток и лёд. Рисуется поверх cover-gradient. */
-export function GlassIllustration({ shape, ice = 'none', className, title }: Props) {
+/** Силуэт бокала: белые линии + полупрозрачный напиток. Рисуется поверх cover-gradient. */
+export function GlassIllustration({ shape, className, title }: Props) {
   const clip = useId();
   const g = GEOMETRY[shape];
   return (
@@ -119,7 +97,6 @@ export function GlassIllustration({ shape, ice = 'none', className, title }: Pro
       <g clipPath={`url(#${clip})`}>
         <rect x="0" y={g.liquidTop} width="120" height="160" fill="currentColor" opacity="0.22" />
         <rect x="0" y={g.liquidTop} width="120" height="2" fill="currentColor" opacity="0.5" />
-        <IceCubes ice={ice} box={g.iceBox} />
       </g>
       <path d={g.body} fill="currentColor" fillOpacity="0.06" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" />
       {g.extra && <path d={g.extra} fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />}

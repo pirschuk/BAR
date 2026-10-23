@@ -1,5 +1,5 @@
 import data from '../data/cocktails.json';
-import type { Base, Cocktail, Glass, Ice, Ingredient, Method } from '../types/cocktail';
+import type { Base, Cocktail, Glass, Ice, Ingredient, Method, Strength } from '../types/cocktail';
 
 export const cocktails = data as Cocktail[];
 
@@ -40,45 +40,22 @@ export function countLabel(n: number): string {
   return `${n} ${plural(n, ['коктейль', 'коктейля', 'коктейлей'])}`;
 }
 
-// --- Бокалы: в MVP 6 силуэтов, остальные — на ближайший ---
+// --- Бокалы: утверждённый список, у каждого свой силуэт ---
 
-export type GlassShape = 'rocks' | 'coupe' | 'highball' | 'collins' | 'martini' | 'wine';
+export const GLASSES: { id: Glass; label: string }[] = [
+  { id: 'rocks', label: 'Рокс' },
+  { id: 'highball', label: 'Хайбол' },
+  { id: 'collins', label: 'Коллинз' },
+  { id: 'coupe', label: 'Купе' },
+  { id: 'martini', label: 'Мартини' },
+  { id: 'flute', label: 'Флюте' },
+  { id: 'wine', label: 'Винный' },
+  { id: 'hurricane', label: 'Харрикейн' },
+  { id: 'copper-mug', label: 'Медная кружка' },
+  { id: 'irish-coffee', label: 'Айриш-кофе' },
+];
 
-const GLASS_SHAPE: Record<Glass, GlassShape> = {
-  rocks: 'rocks',
-  'double-rocks': 'rocks',
-  highball: 'highball',
-  collins: 'collins',
-  coupe: 'coupe',
-  martini: 'martini',
-  'nick-and-nora': 'coupe',
-  hurricane: 'collins',
-  wine: 'wine',
-  flute: 'wine',
-  'copper-mug': 'highball',
-  tiki: 'highball',
-  shot: 'rocks',
-};
-
-export function glassShape(glass: Glass): GlassShape {
-  return GLASS_SHAPE[glass];
-}
-
-const GLASS_LABEL: Record<Glass, string> = {
-  rocks: 'Рокс',
-  'double-rocks': 'Рокс',
-  highball: 'Хайбол',
-  collins: 'Коллинз',
-  coupe: 'Купе',
-  martini: 'Мартини',
-  'nick-and-nora': 'Ник-н-Нора',
-  hurricane: 'Харрикейн',
-  wine: 'Винный',
-  flute: 'Флюте',
-  'copper-mug': 'Кружка',
-  tiki: 'Тики',
-  shot: 'Шот',
-};
+const GLASS_LABEL = Object.fromEntries(GLASSES.map((g) => [g.id, g.label])) as Record<Glass, string>;
 
 const METHOD_LABEL: Record<Method, string> = {
   build: 'В бокале',
@@ -100,6 +77,15 @@ const ICE_LABEL: Record<Ice, string> = {
 };
 
 export const glassLabel = (g: Glass) => GLASS_LABEL[g];
+
+/** Крепость словом — те же слова, что в фильтре «Крепость» */
+export const STRENGTH_LABEL: Record<Strength, string> = {
+  'non-alcoholic': 'Безалкогольный',
+  light: 'Лёгкий',
+  medium: 'Средний',
+  strong: 'Крепкий',
+};
+export const strengthLabel = (s: Strength) => STRENGTH_LABEL[s];
 export const methodLabel = (m: Method) => METHOD_LABEL[m];
 export const iceLabel = (i: Ice) => ICE_LABEL[i];
 

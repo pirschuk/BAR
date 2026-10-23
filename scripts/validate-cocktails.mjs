@@ -10,7 +10,8 @@ const file = resolve(root, 'src/data/cocktails.json');
 const dictFile = resolve(root, 'src/data/ingredients.json');
 
 const METHODS = ['build', 'stir', 'shake', 'dry-shake', 'blend', 'muddle', 'layer', 'throw'];
-const GLASSES_MVP = ['rocks', 'coupe', 'highball', 'collins', 'martini', 'wine'];
+// утверждённый список бокалов (10), у каждого свой силуэт в GlassIllustration
+const GLASSES_MVP = ['rocks', 'highball', 'collins', 'coupe', 'martini', 'flute', 'wine', 'hurricane', 'copper-mug', 'irish-coffee'];
 const ICE = ['none', 'cubes', 'big-cube', 'crushed', 'sphere'];
 const UNITS = ['ml', 'dash', 'barspoon', 'piece', 'slice', 'leaf', 'pinch', 'top'];
 const CATEGORIES = ['spirit', 'liqueur', 'wine', 'bitter', 'syrup', 'juice', 'soda', 'dairy', 'egg', 'garnish', 'other'];
@@ -21,7 +22,7 @@ const GROUPS = ['spirit', 'liqueur', 'bitter', 'syrup', 'juice-fruit', 'soda', '
 const DICT_KEYS = ['id', 'name', 'aliases', 'group', 'pantry', 'popular'];
 const TAGS = ['classic', 'sour', 'bitter', 'sweet', 'fruity', 'herbal', 'citrus', 'creamy', 'spicy',
   'refreshing', 'summer', 'winter', 'brunch', 'aperitif', 'digestif', 'tiki', 'party', 'easy', 'non-alcoholic'];
-const NO_ICE_GLASSES = ['coupe', 'martini', 'nick-and-nora'];
+const NO_ICE_GLASSES = ['coupe', 'martini', 'flute'];
 const MIN_PER_BASE = 5;
 const MAX_TO_LUMINANCE = 0.15;
 const ALLOWED_KEYS = ['id', 'name', 'nameEn', 'description', 'image', 'ingredients', 'method', 'steps', 'glass',
@@ -128,7 +129,7 @@ for (const [idx, c] of data.entries()) {
 
   // словари
   if (!METHODS.includes(c.method)) err(id, `method "${c.method}" вне словаря`);
-  if (!GLASSES_MVP.includes(c.glass)) err(id, `glass "${c.glass}" не из 6 силуэтов MVP`);
+  if (!GLASSES_MVP.includes(c.glass)) err(id, `glass "${c.glass}" не из утверждённого списка бокалов`);
   if (!ICE.includes(c.ice)) err(id, `ice "${c.ice}" вне словаря`);
   if (!STRENGTHS.includes(c.strength)) err(id, `strength "${c.strength}" вне словаря`);
   if (![1, 2, 3].includes(c.difficulty)) err(id, 'difficulty не 1|2|3');

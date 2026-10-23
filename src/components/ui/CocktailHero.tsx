@@ -1,6 +1,5 @@
 import { ChevronLeft } from 'lucide-react';
 import type { Cocktail } from '../../types/cocktail';
-import { glassShape } from '../../lib/cocktails';
 import { cn } from '../../lib/cn';
 import { IconButton } from './Button';
 import { coverStyle } from './CocktailCard';
@@ -29,7 +28,7 @@ export function CocktailHero({ cocktail, onBack, height = 'screen' }: Props) {
 
       {/* под кнопкой «Назад» (44) — отступ 48, бокал вписывается в оставшуюся высоту */}
       <div className="relative mt-12 mb-3 min-h-0 flex-1">
-        <GlassIllustration shape={glassShape(cocktail.glass)} ice={cocktail.ice} className="absolute inset-0 size-full" />
+        <GlassIllustration shape={cocktail.glass} className="absolute inset-0 size-full" />
       </div>
 
       {onBack && (
