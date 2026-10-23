@@ -59,13 +59,13 @@ export function BottleForm({ initial, submitLabel, onSubmit, editing, pickingTyp
       <TextField label="Название" value={name} onChange={setName} placeholder="Laphroaig 10" />
 
       <div className="flex flex-col gap-1.5">
-        <p className="px-1 text-footnote text-fg-2">Что это?</p>
+        <p className="text-footnote text-fg-2">Что это?</p>
         {typeName && !open ? (
           <div className="flex flex-col items-start gap-1.5">
             <Chip variant="removable" onClick={() => setOpen(true)} aria-label={`Тип: ${typeName}. Изменить`}>
               {typeName}
             </Chip>
-            <span className="px-1 text-footnote text-fg-2">{type === OTHER ? 'Не участвует в рецептах' : 'Рецепты увидят бутылку как этот тип'}</span>
+            <span className="text-footnote text-fg-2">{type === OTHER ? 'Не участвует в рецептах' : 'Рецепты увидят бутылку как этот тип'}</span>
           </div>
         ) : (
           <div className="-mx-4 flex flex-col">

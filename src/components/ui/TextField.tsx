@@ -14,7 +14,7 @@ export function TextField({ label, value, onChange, hint, className, id, ...rest
   const inputId = id ?? `f-${label}`;
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
-      <label htmlFor={inputId} className="px-1 text-footnote text-fg-2">
+      <label htmlFor={inputId} className="text-footnote text-fg-2">
         {label}
       </label>
       <input
@@ -25,7 +25,7 @@ export function TextField({ label, value, onChange, hint, className, id, ...rest
         className="h-tap rounded-full bg-tile px-4 text-body text-fg outline-none placeholder:text-fg-3 focus:outline-1 focus:outline-fg-3"
         {...rest}
       />
-      {hint && <p className="px-1 text-footnote text-fg-3">{hint}</p>}
+      {hint && <p className="text-footnote text-fg-3">{hint}</p>}
     </div>
   );
 }

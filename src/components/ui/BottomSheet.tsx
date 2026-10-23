@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState, type PointerEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
+import { ChevronLeft, X } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { IconButton } from './Button';
 
@@ -10,6 +10,8 @@ type Props = {
   open: boolean;
   onClose: () => void;
   title: string;
+  /** шаг внутри шторки: шеврон «Назад» слева от заголовка */
+  onBack?: () => void;
   children: ReactNode;
   /** липкий футер (кнопки) */
   footer?: ReactNode;
@@ -26,7 +28,7 @@ const EXPAND_DRAG = -60;
  * свайп за хэндл/шапку вниз — закрыть (или large → medium), вверх — large;
  * тап по скриму и Esc закрывают. Футер липкий, с safe-area. [Fresha, Viator]
  */
-export function BottomSheet({ open, onClose, title, children, footer, initialDetent = 'medium', inline }: Props) {
+export function BottomSheet({ open, onClose, title, onBack, children, footer, initialDetent = 'medium', inline }: Props) {
   const [detent, setDetent] = useState<Detent>(initialDetent);
   const [drag, setDrag] = useState(0);
   const start = useRef<number | null>(null);
@@ -103,9 +105,12 @@ export function BottomSheet({ open, onClose, title, children, footer, initialDet
           <span className="h-[5px] w-9 rounded-full bg-fg-3/40" />
         </div>
         <div className={cn('flex items-center justify-between gap-3 border-b px-4 pb-3', scrolled ? 'border-border' : 'border-transparent')}>
-          <h2 id={titleId} className="text-title-2 text-fg">
-            {title}
-          </h2>
+          <div className="flex min-w-0 items-center gap-1">
+            {onBack && <IconButton icon={ChevronLeft} label="Назад" variant="tonal" className="-ml-1 bg-transparent!" onClick={onBack} />}
+            <h2 id={titleId} className="truncate text-title-2 text-fg">
+              {title}
+            </h2>
+          </div>
           <IconButton icon={X} label="Закрыть" onClick={onClose} />
         </div>
       </div>

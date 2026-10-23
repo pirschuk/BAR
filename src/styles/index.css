@@ -215,6 +215,11 @@
   backdrop-filter: blur(24px) saturate(1.8);
   box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
 }
+/* тост: непрозрачный (стекло сливалось с плитками --tile под ним) + тень отделяет от контента */
+@utility toast-surface {
+  background: var(--surface-2);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.4);
+}
 /* отступ таб-бара снизу: safe-area, но не меньше 16 */
 @utility pb-tabbar-gap {
   padding-bottom: max(env(safe-area-inset-bottom, 0px), var(--spacing) * 4);

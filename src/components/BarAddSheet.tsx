@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ChevronLeft } from 'lucide-react';
 import { ingredients, normalize, popularIngredients } from '../lib/filters';
 import { SHELVES, TOOLS, findBottle, shelfOf, shelfOrder, type Bottle, type Inventory, type ShelfKey } from '../lib/inventory';
 import { plural } from '../lib/cocktails';
@@ -81,10 +80,11 @@ export function BarAddSheet({ open, onClose, owned, bottles, onToggle, onCreateB
       inline={inline}
       initialDetent="large"
       title={step === 'bottle' ? 'Своя бутылка' : 'Добавить в бар'}
+      onBack={step === 'bottle' ? () => setStep('pick') : undefined}
       footer={
         step === 'pick' && (
           <SheetFooter>
-            <p className="px-1 text-subhead text-fg-2" aria-live="polite">
+            <p className="text-subhead text-fg-2" aria-live="polite">
               {added ? `Добавлено ${added} ${plural(added, ['позиция', 'позиции', 'позиций'])}` : 'Отметьте, что есть'}
             </p>
             <Button onClick={onClose}>Готово</Button>
@@ -93,10 +93,7 @@ export function BarAddSheet({ open, onClose, owned, bottles, onToggle, onCreateB
       }
     >
       {step === 'bottle' ? (
-        <div className="pb-6">
-          <Button variant="plain" size="s" icon={ChevronLeft} className="mb-2 ml-2" onClick={() => setStep('pick')}>
-            К поиску
-          </Button>
+        <div className="pt-2 pb-6">
           <BottleForm
             initial={{ name: q.trim(), ref: null }}
             submitLabel="Добавить в бар"
@@ -126,7 +123,7 @@ export function BarAddSheet({ open, onClose, owned, bottles, onToggle, onCreateB
             {popular.length > 0 && (
               <section>
                 <h3 className="px-4 pt-4 pb-1 text-footnote text-fg-2">Популярное</h3>
-                {popular.map((d) => row(d))}
+                {popular.map((d) => row(d, SHELVES.find((s) => s.id === shelfOf(d.id))?.label))}
               </section>
             )}
             {n

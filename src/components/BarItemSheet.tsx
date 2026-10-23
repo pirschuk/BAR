@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 import type { Cocktail } from '../types/cocktail';
-import { countLabel } from '../lib/cocktails';
+import { inCocktailsLabel } from '../lib/cocktails';
 import type { Bottle } from '../lib/inventory';
 import { BottomSheet } from './ui/BottomSheet';
 import { Button } from './ui/Button';
@@ -55,7 +55,7 @@ export function BarItemSheet({ item, onClose, onRemove, onSaveBottle, isAvailabl
           {item.subtitle && <p className="px-4 text-subhead text-fg-2">{item.subtitle}</p>}
 
           <h3 className="mt-5 px-4 text-headline text-fg">
-            {item.used.length ? `Используется в ${countLabel(item.used.length)}` : b && !b.ref ? 'Не участвует в рецептах' : 'Пока ни в одном рецепте'}
+            {item.used.length ? `Используется ${inCocktailsLabel(item.used.length)}` : b && !b.ref ? 'Не участвует в рецептах' : 'Пока ни в одном рецепте'}
           </h3>
           {item.used.length > 0 && (
             <CardRail label="Рецепты с этой позицией" className="mt-3">

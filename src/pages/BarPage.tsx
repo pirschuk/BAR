@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { ChevronRight, HardDriveDownload, Heart, Plus, Sparkles, Trash2 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import type { Cocktail } from '../types/cocktail';
-import { cocktails, getCocktail, plural } from '../lib/cocktails';
+import { cocktails, getCocktail, inCocktailsLabel, plural } from '../lib/cocktails';
 import { getIngredient } from '../lib/filters';
 import { useFavorites } from '../lib/favorites';
 import {
@@ -31,7 +31,7 @@ import { Toast, ToastAction } from '../components/ui/Toast';
 import { BarAddSheet } from '../components/BarAddSheet';
 import { BarItemSheet, type ShelfItem } from '../components/BarItemSheet';
 
-const inRecipes = (n: number) => (n ? `в ${n} ${plural(n, ['коктейле', 'коктейлях', 'коктейлях'])}` : undefined);
+const inRecipes = (n: number) => (n ? inCocktailsLabel(n) : undefined);
 
 type Row = ShelfItem & { shelf: ShelfKey; order: number; meta?: string };
 
@@ -95,7 +95,7 @@ export function BarPage() {
 
   const buySection = toBuy.length > 0 && (
     <section className="mt-6" aria-label="Докупить">
-      <SectionHeader title="Докупить" />
+      <SectionHeader size="l" title="Докупить" />
       <ul className="mt-1 flex flex-col gap-2 px-4">
         {toBuy.map((u) => (
           <li key={u.ref}>
@@ -109,8 +109,9 @@ export function BarPage() {
   const favSection = favs.length > 0 && (
     <section className="mt-6" aria-label="Избранное">
       <SectionHeader
+        size="l"
         title="Избранное"
-        action={
+        meta={
           <Link to="/?fav=1" className="pressable -mr-2 inline-flex h-tap items-center gap-0.5 rounded-control px-2 text-subhead text-fg-2">
             Все {favs.length}
             <ChevronRight className="size-4" aria-hidden />
@@ -136,7 +137,8 @@ export function BarPage() {
             {empty ? 'Пока пусто' : `${rows.length} ${plural(rows.length, ['позиция', 'позиции', 'позиций'])}`}
           </p>
         </div>
-        <IconButton icon={Plus} label="Добавить в бар" size="l" className="mt-1 bg-tile-strong!" onClick={() => openSheet('#add')} />
+        {/* пустой бар — «Добавить» в центре экрана, третий вход не нужен */}
+        {!empty && <IconButton icon={Plus} label="Добавить в бар" size="l" className="mt-1 bg-tile-strong!" onClick={() => openSheet('#add')} />}
       </header>
 
       {!inventoryPersisted && (
@@ -162,7 +164,7 @@ export function BarPage() {
             }
           />
           {favSection || (
-            <HintLine icon={Heart} className="px-4">
+            <HintLine icon={Heart} className="mt-4 justify-center px-8 text-center">
               Нажмите сердце на странице коктейля — он появится в «Избранном»
             </HintLine>
           )}
@@ -180,7 +182,7 @@ export function BarPage() {
             if (!items.length) return null;
             return (
               <section key={s.id} className="mt-6" aria-label={s.label}>
-                <SectionHeader title={s.label} />
+                <SectionHeader size="l" title={s.label} meta={items.length} />
                 <ul className="mt-1 flex flex-col gap-2 px-4">
                   {items.map((r) => (
                     <li key={r.id}>

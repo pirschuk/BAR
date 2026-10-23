@@ -4,8 +4,8 @@ import { cn } from '../../lib/cn';
 type Props = {
   title: string;
   action?: ReactNode;
-  /** мета справа в строке заголовка (только l): «~3 мин», «≈ 90 мл» */
-  meta?: string;
+  /** мета справа в строке заголовка: «~3 мин», счётчик, ссылка «Все 3 ›» */
+  meta?: ReactNode;
   /** m — title-2 (каталог, бар); l — дисплейный заголовок рецепта */
   size?: 'm' | 'l';
   className?: string;

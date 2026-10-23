@@ -40,10 +40,10 @@ export function BarItemRow({
 /** «Докупить»: что откроет больше коктейлей — название, «откроет N коктейлей», «+» 44 */
 export function UnlockRow({ name, hint, onAdd, pressed }: { name: string; hint: string; onAdd: () => void; pressed?: boolean }) {
   return (
-    <div className="flex min-h-row-l items-center gap-3 rounded-row bg-tile py-1.5 pr-1.5 pl-4">
+    <div className="flex min-h-row-l items-center gap-3 rounded-row bg-tile py-1 pr-3 pl-4">
       <span className="min-w-0 flex-1">
         <span className="block truncate text-body text-fg">{name}</span>
-        <span className="block text-footnote text-success">{hint}</span>
+        <span className="block text-footnote text-fg-2">{hint}</span>
       </span>
       <IconButton icon={Plus} label={`Добавить ${name} в бар`} size="l" pressed={pressed} onClick={onAdd} className="bg-tile-strong!" />
     </div>
@@ -85,7 +85,7 @@ export function PickRow({
       <span
         className={cn(
           'flex size-7 shrink-0 items-center justify-center rounded-full transition-colors',
-          on ? 'bg-accent text-accent-fg' : 'border-2 border-fg-3/60 text-fg-2',
+          on ? 'bg-tile-strong text-accent' : 'border-2 border-fg-3/60 text-fg-2',
         )}
         aria-hidden
       >

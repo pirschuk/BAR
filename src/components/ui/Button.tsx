@@ -6,7 +6,8 @@ export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'plain';
 export type ButtonSize = 'l' | 'm' | 's';
 
 const VARIANT: Record<ButtonVariant, string> = {
-  primary: 'bg-accent text-accent-fg',
+  // disabled — нейтральная плашка, а не тусклый акцент (не путается с активной CTA)
+  primary: 'bg-accent text-accent-fg disabled:bg-tile-strong disabled:text-fg-3 disabled:opacity-100!',
   secondary: 'bg-surface-2 text-fg',
   ghost: 'bg-transparent text-accent',
   // нейтральное текстовое действие рядом с primary — не второй акцент

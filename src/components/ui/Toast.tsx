@@ -19,7 +19,7 @@ type Props = {
 };
 
 /**
- * Тост [Swiggy, Doji]: плотное стекло таб-бара (surface 90% + blur) внизу над safe-area — читается поверх белого Unbounded; иконка + текст + текстовое действие.
+ * Тост [Swiggy, Doji]: непрозрачная пилюля surface-2 с тенью внизу над safe-area — читается поверх любого контента; иконка + текст + текстовое действие.
  * Живёт 3 с, читается скринридером (aria-live). Без таймера — для витрины.
  */
 export function Toast({ icon: Icon, text, action, onDone, inline, filled = true, aboveTabBar }: Props) {
@@ -41,7 +41,7 @@ export function Toast({ icon: Icon, text, action, onDone, inline, filled = true,
       role="status"
       aria-live="polite"
     >
-      <div className="pointer-events-auto tabbar-glass flex h-btn-l items-center gap-3 rounded-full pr-2 pl-4 text-subhead text-fg motion-safe:animate-toast-in">
+      <div className="pointer-events-auto toast-surface flex h-btn-l items-center gap-3 rounded-full pr-2 pl-4 text-subhead text-fg motion-safe:animate-toast-in">
         <Icon className={cn('size-5 shrink-0', filled ? 'fill-current text-accent' : 'text-fg-2')} aria-hidden />
         <span className="min-w-0 flex-1 truncate">{text}</span>
         {action}

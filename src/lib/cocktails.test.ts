@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BASES, cocktails, countLabel, filterByBase, getCocktail, scaleIngredient, servingVolume, strengthLevel } from './cocktails';
+import { BASES, cocktails, countLabel, filterByBase, getCocktail, inCocktailsLabel, scaleIngredient, servingVolume, strengthLevel } from './cocktails';
 import { barSummary, canMake, missing, toolsFor } from './inventory';
 import {
   EMPTY_FILTERS,
@@ -179,5 +179,11 @@ describe('servingVolume', () => {
   });
   it('доливка до верха — объём бокала, без «+ доливка»', () => {
     expect(servingVolume({ glass: 'highball', ingredients: [gin, { ref: 'tonic', name: 'Тоник', unit: 'top', category: 'soda' }] }, 2)).toBe('≈ 600 мл');
+  });
+});
+
+describe('inCocktailsLabel', () => {
+  it('предложный падеж', () => {
+    expect([1, 2, 5, 21].map(inCocktailsLabel)).toEqual(['в 1 коктейле', 'в 2 коктейлях', 'в 5 коктейлях', 'в 21 коктейле']);
   });
 });
