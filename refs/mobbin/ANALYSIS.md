@@ -265,3 +265,23 @@ Drinkin в базе Mobbin не найден; ближайший по духу �
 Замеры (390): круг номера ≈ 28–32, линия ≈ 1.5–2, текст начинается на 56–60 от края; мета в строке
 заголовка — 13–15pt серым по базовой линии. Данные: украшение упомянуто в последнем шаге у 42 из
 47 рецептов; доливка у 9 из 51; объём порции 45–220 мл (без доливки).
+
+
+---
+
+## Шаг 9 — избранное
+
+| Файл | Приложение | Что берём |
+|---|---|---|
+| `11-fav-swiggy-detail-toast-go-to.jpg` | Swiggy | закладка в стеклянном круге на фото справа сверху; тёмный тост «Added to wishlist · Go to wishlist» над низом |
+| `11-fav-shop-detail-heart.jpg` | Shop | ♡ в круге 44 с контуром рядом с заголовком товара (альтернатива — у нас на обложке) |
+| `11-fav-tripadvisor-card-heart-undo.jpg` | Tripadvisor | ♥ на карточке в списке сохранённого; тост «Removed … Undo» на удаление |
+| `11-fav-mindtrip-toast-card-heart.jpg` | Mindtrip | тост «Created … and saved» сверху; ♥ на карточке wishlist |
+| `11-fav-shop-saved-grid.jpg` | Shop | сетка сохранённого 2 колонки, ♥ на карточке |
+| `11-fav-google-saved-rail.jpg` | Google | «Saved & collections ›» — ряд карточек ≈ 115 с выглядывающей следующей в профиле |
+| `11-fav-insight-timer-saved-rail.jpg` | Insight Timer | «Saved» — ряд карточек-коллекций, ниже папки |
+| `11-fav-subway-empty-heart-hint.jpg` | Subway | пустое: крупный заголовок + «tapping the heart icon» + CTA «Browse Menu» |
+| `11-fav-chickfila-empty.jpg` | Chick-fil-A | пустое: «All your favorites will appear here» + «Use the hearts to save» |
+
+Замеры (390): кнопка на фото 36–44 в стеклянном круге, отступ 16 от краёв; тост — пилюля/плашка
+h 48–56, поля 16, над таб-баром; ряд — карточки 115–150, gap 8–12, следующая выглядывает на 20–40.
