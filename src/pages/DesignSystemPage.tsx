@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { ChevronLeft, HardDriveDownload, Moon, SearchX, SlidersHorizontal, Wine, Wrench } from 'lucide-react';
+import { ChevronLeft, HardDriveDownload, Heart, Moon, SearchX, SlidersHorizontal, Wine, Wrench } from 'lucide-react';
 import { Link } from 'react-router';
 import { GLASSES, STRENGTH_LABEL, cocktails, servingVolume, countLabel, getCocktail, scaleIngredient, type Servings } from '../lib/cocktails';
 import type { Cocktail, Glass } from '../types/cocktail';
@@ -14,12 +14,15 @@ import { FilterSheet } from '../components/FilterSheets';
 import { TabBar } from '../components/ui/TabBar';
 import { LuckySheet } from '../components/LuckySheet';
 import { CheckRow, SwitchRow } from '../components/ui/Toggles';
-import { AvailabilityLine, BarSummary, InfoNote } from '../components/ui/Availability';
+import { AvailabilityLine, BarSummary, HintLine, InfoNote } from '../components/ui/Availability';
 import { EMPTY_FILTERS, applyFilters, type FilterState } from '../lib/filters';
 import { GlassIllustration } from '../components/ui/GlassIllustration';
 import { CocktailCard, coverStyle } from '../components/ui/CocktailCard';
 import { CocktailHero } from '../components/ui/CocktailHero';
 import { NavBar } from '../components/ui/NavBar';
+import { FavoriteButton } from '../components/ui/FavoriteButton';
+import { Toast, ToastAction } from '../components/ui/Toast';
+import { CardRail, CardRailItem } from '../components/ui/CardRail';
 import { ParamTiles } from '../components/ui/ParamTiles';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { SegmentedControl } from '../components/ui/SegmentedControl';
@@ -149,6 +152,7 @@ export function DesignSystemPage() {
   const [sw, setSw] = useState(true);
   const [ck, setCk] = useState(false);
   const [servings, setServings] = useState<Servings>(2);
+  const [fav, setFav] = useState(false);
   const sour = must('whiskey-sour');
   const mojito = must('mojito');
 
@@ -179,6 +183,7 @@ export function DesignSystemPage() {
           ['card', 'CocktailCard'],
           ['hero', 'CocktailHero'],
           ['navbar', 'NavBar'],
+          ['favorites', 'Избранное'],
           ['tint', 'Тинт'],
           ['params', 'ParamTiles'],
           ['section', 'SectionHeader'],
@@ -410,7 +415,7 @@ export function DesignSystemPage() {
           </State>
           <State label="FilterSheet · бар пуст — «Могу сделать» недоступна">
             <div className="overflow-hidden rounded-sheet border border-border">
-              <FilterSheet open inline facet={null} barEmpty value={EMPTY_FILTERS} count={sheetCount} onApply={() => {}} onClose={() => {}} />
+              <FilterSheet open inline facet={null} barEmpty favEmpty value={EMPTY_FILTERS} count={sheetCount} onApply={() => {}} onClose={() => {}} />
             </div>
           </State>
           <State label="N = 0 — CTA disabled">
@@ -564,10 +569,67 @@ export function DesignSystemPage() {
       <Section id="navbar" title="NavBar" note="Появляется при скролле, когда название на обложке ушло под верх экрана: стекло, «Назад» 36 (тач-зона 44), название headline по центру в одну строку. Скрытый — inert.">
         <div className="flex flex-col gap-5">
           <State label="короткое название" inset>
-            <NavBar inline visible title="Негрони" onBack={() => {}} />
+            <NavBar inline visible title="Негрони" onBack={() => {}} action={<FavoriteButton place="bar" on={fav} onToggle={() => setFav(!fav)} />} />
           </State>
           <State label="длинное — обрезка с …" inset>
             <NavBar inline visible title={LONG_NAME.name} onBack={() => {}} />
+          </State>
+        </div>
+      </Section>
+
+      <Section id="favorites" title="Избранное" note="FavoriteButton: cover — стекло 44 на обложке, bar — 36 в навбаре; в избранном — заливка акцентом + «пульс». Тост — только на добавление. Карточка — ♥-индикатор (не кнопка). CardRail — лента 140, gap 12.">
+        <div className="flex flex-col gap-5">
+          <State label="FavoriteButton · обложка (интерактивно) / выкл / вкл / pressed" inset>
+            <div className="cover-gradient mx-4 flex items-center gap-4 rounded-card p-4" style={coverStyle(must('negroni'))}>
+              <FavoriteButton place="cover" on={fav} onToggle={() => setFav(!fav)} />
+              <FavoriteButton place="cover" on={false} onToggle={() => {}} />
+              <FavoriteButton place="cover" on onToggle={() => {}} />
+              <FavoriteButton place="cover" on onToggle={() => {}} pressed />
+            </div>
+          </State>
+          <State label="FavoriteButton · навбар / выкл / вкл / pressed" inset>
+            <div className="flex items-center gap-4 px-4">
+              <FavoriteButton place="bar" on={fav} onToggle={() => setFav(!fav)} />
+              <FavoriteButton place="bar" on={false} onToggle={() => {}} />
+              <FavoriteButton place="bar" on onToggle={() => {}} />
+              <FavoriteButton place="bar" on={false} onToggle={() => {}} pressed />
+            </div>
+          </State>
+          <State label="Toast · на добавление" inset>
+            <Toast inline icon={Heart} text="В избранном" action={<ToastAction to="/?fav=1">Открыть</ToastAction>} />
+          </State>
+          <State label="Обложка с сердцем" inset>
+            <div className="mx-4 overflow-hidden rounded-card">
+              <CocktailHero cocktail={must('negroni')} onBack={() => {}} height="preview" action={<FavoriteButton place="cover" on={fav} onToggle={() => setFav(!fav)} />} />
+            </div>
+          </State>
+          <State label="CardRail (compact: без плашки, бокал ниже; ♥ не нужен — все избранные) · ✓" inset>
+            <CardRail label="Избранные коктейли">
+              {['negroni', 'mojito', 'dry-martini', 'daiquiri', 'aperol-spritz'].map((id, i) => (
+                <CardRailItem key={id}>
+                  <CocktailCard cocktail={must(id)} compact available={i % 2 === 1} />
+                </CardRailItem>
+              ))}
+            </CardRail>
+          </State>
+          <State label="Карточка каталога · ♥ + ✓ с длинной плашкой" inset>
+            <div className="grid grid-cols-2 gap-3 px-4">
+              <CocktailCard cocktail={must('virgin-colada')} favorite available />
+              <CocktailCard cocktail={must('dry-martini')} favorite />
+            </div>
+          </State>
+          <State label="Пусто — HintLine" inset>
+            <HintLine icon={Heart} className="px-4">
+              Нажмите ♡ на странице коктейля — он появится здесь
+            </HintLine>
+          </State>
+          <State label="Каталог ?fav=1, избранное пусто" inset>
+            <EmptyState icon={Heart} title="Здесь будут любимые коктейли" hint="Нажмите ♡ на странице коктейля" action={<Button variant="secondary" size="m">Весь каталог</Button>} />
+          </State>
+          <State label="Чип фильтра" inset>
+            <ChipRow label="Фильтры">
+              <Chip variant="removable" icon={Heart}>Избранное</Chip>
+            </ChipRow>
           </State>
         </div>
       </Section>

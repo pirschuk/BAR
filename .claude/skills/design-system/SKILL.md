@@ -497,6 +497,16 @@ _Пополняется командой `/ref`._
   `STRENGTH_TONE`; расчёты — `servingVolume()` / `portionMl()` (`src/lib/cocktails.ts`).
 - Удалены: `StatGrid`, `StrengthMeter`, `IngredientRow`, `StepList`, `AvailabilityBanner`, `ThemeToggle`.
 
+**Избранное (Шаг 9):**
+- Компоненты: `FavoriteButton` (place `cover` — стекло 44 / `bar` — 36; `aria-pressed`, «пульс» `animate-pop`,
+  `navigator.vibrate(10)`), `Toast` + `ToastAction` (стеклянная пилюля 50 внизу, 3 с, `aria-live`,
+  `animate-toast-in`), `CardRail` + `CardRailItem` (лента 140, gap 12, snap), `HintLine` (информер без
+  подложки). Слоты `action` у `CocktailHero` и `NavBar`; `CocktailCard favorite` (♥ под ✓, столбиком) и
+  `compact` (для ленты: без плашки крепости, бокал ниже); `IconButton iconClassName`.
+- Логика: `src/lib/favorites.ts` — `useFavorites()` (localStorage `bar-favorites-v1`, новые в начале,
+  неизвестные id отбрасываются, синхронизация вкладок через `storage`); фильтр `fav` / `?fav=1`
+  (`applyFilters(list, f, canMake, isFav)`), строка «Только избранное» в шторке фильтров, чип «♥ Избранное ×».
+
 ## 9. Чек-лист визуальной проверки (для `/look` и `ui-inspector`)
 
 - [ ] Ничего не выходит за 390px, нет горизонтального скролла.

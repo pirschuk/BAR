@@ -1,9 +1,13 @@
 import { useMemo, useState } from 'react';
-import { HardDriveDownload, Sparkles, Wine } from 'lucide-react';
-import { cocktails, plural } from '../lib/cocktails';
+import { ChevronRight, HardDriveDownload, Heart, Sparkles, Wine } from 'lucide-react';
+import { Link } from 'react-router';
+import { cocktails, getCocktail, plural } from '../lib/cocktails';
+import { useFavorites } from '../lib/favorites';
+import { CardRail, CardRailItem } from '../components/ui/CardRail';
+import { CocktailCard } from '../components/ui/CocktailCard';
 import { getIngredient, ingredients, normalize, popularIngredients } from '../lib/filters';
-import { BAR_GROUPS, QUICK_START, TOOLS, barItems, barSummary, inventoryPersisted, useInventory } from '../lib/inventory';
-import { BarSummary, InfoNote } from '../components/ui/Availability';
+import { BAR_GROUPS, QUICK_START, TOOLS, barItems, barSummary, canMake, inventoryPersisted, useInventory } from '../lib/inventory';
+import { BarSummary, HintLine, InfoNote } from '../components/ui/Availability';
 import { Button } from '../components/ui/Button';
 import { Chip, ChipWrap } from '../components/ui/Chip';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -31,6 +35,8 @@ export function BarPage() {
   const [query, setQuery] = useState('');
   const summary = useMemo(() => barSummary(cocktails, inv), [inv]);
   const has = (id: string) => inv.has(id);
+  const { list: favIds } = useFavorites();
+  const favs = favIds.map((id) => getCocktail(id)).filter((c) => !!c);
 
   const q = normalize(query);
   const found = useMemo<Item[]>(() => {
@@ -57,6 +63,34 @@ export function BarPage() {
         </InfoNote>
       )}
 
+      {/* Избранное — первой секцией: лента карточек [Google — Saved], «Все ›» — каталог с фильтром */}
+      <section className="mt-4" aria-label="Избранное">
+        <SectionHeader
+          title="Избранное"
+          action={
+            favs.length > 0 && (
+              <Link to="/?fav=1" className="pressable -mr-2 inline-flex h-tap items-center gap-0.5 rounded-control px-2 text-subhead text-fg-2">
+                Все {favs.length}
+                <ChevronRight className="size-4" aria-hidden />
+              </Link>
+            )
+          }
+        />
+        {favs.length > 0 ? (
+          <CardRail label="Избранные коктейли" className="mt-2">
+            {favs.map((c) => (
+              <CardRailItem key={c.id}>
+                <CocktailCard cocktail={c} available={canMake(c, inv)} compact />
+              </CardRailItem>
+            ))}
+          </CardRail>
+        ) : (
+          <HintLine icon={Heart} className="px-4">
+            Нажмите ♡ на странице коктейля — он появится здесь
+          </HintLine>
+        )}
+      </section>
+
       {inv.size === 0 ? (
         <EmptyState
           icon={Wine}
@@ -69,7 +103,7 @@ export function BarPage() {
           }
         />
       ) : (
-        <div className="mt-4 px-4">
+        <div className="mt-6 px-4">
           <BarSummary can={summary.can} nearly={summary.nearly} to="/?can=1" />
         </div>
       )}

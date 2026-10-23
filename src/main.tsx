@@ -5,6 +5,7 @@ import { createBrowserRouter, Outlet, RouterProvider, ScrollRestoration, useLoca
 import { LuckySheet } from './components/LuckySheet';
 import { Button } from './components/ui/Button';
 import { cocktails, countLabel } from './lib/cocktails';
+import { useFavorites } from './lib/favorites';
 import { applyFilters, hasFacetFilters, parseFilters } from './lib/filters';
 import { canMake, useInventory } from './lib/inventory';
 import type { Cocktail } from './types/cocktail';
@@ -23,6 +24,7 @@ function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { inv } = useInventory();
+  const { list: favList } = useFavorites();
   const onRoot = TAB_ROOTS.has(location.pathname);
 
   // «Мне повезёт» по контексту таба: каталог — текущие фильтры, «Мой бар» — только то, что можно приготовить
@@ -33,10 +35,10 @@ function Layout() {
       return { pool, caption: `Всё есть дома: ${countLabel(pool.length)}` };
     }
     const f = parseFilters(new URLSearchParams(location.search));
-    const pool = applyFilters(cocktails, f, able);
+    const pool = applyFilters(cocktails, f, able, (c) => favList.includes(c.id));
     const filtered = hasFacetFilters(f) || !!f.q.trim();
     return { pool, caption: filtered ? `Подходят: ${countLabel(pool.length)}` : `Весь каталог: ${countLabel(pool.length)}` };
-  }, [location.pathname, location.search, inv]);
+  }, [location.pathname, location.search, inv, favList]);
 
   const isLucky = onRoot && location.hash === '#lucky';
   const openLucky = () =>

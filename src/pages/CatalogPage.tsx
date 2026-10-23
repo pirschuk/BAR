@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
-import { Citrus, SearchX, SlidersHorizontal, Wine } from 'lucide-react';
+import { Citrus, Heart, SearchX, SlidersHorizontal, Wine } from 'lucide-react';
 import { cocktails, countLabel } from '../lib/cocktails';
 import {
   EMPTY_FILTERS,
@@ -27,6 +27,7 @@ import { EmptyState } from '../components/ui/EmptyState';
 import { SearchBar } from '../components/ui/SearchBar';
 import { RecentRow, SearchRow, SearchSectionTitle, Highlight } from '../components/ui/SearchRows';
 import { SectionHeader } from '../components/ui/SectionHeader';
+import { useFavorites } from '../lib/favorites';
 import { StickyHeader } from '../components/ui/StickyHeader';
 import { FilterSheet } from '../components/FilterSheets';
 import { canMake, useInventory } from '../lib/inventory';
@@ -44,12 +45,22 @@ function sheetFromHash(hash: string): { open: boolean; facet: FacetKey | null } 
   return { open: false, facet: null };
 }
 
-function Grid({ list, onOpen, isAvailable }: { list: Cocktail[]; onOpen?: () => void; isAvailable: (c: Cocktail) => boolean }) {
+function Grid({
+  list,
+  onOpen,
+  isAvailable,
+  isFav,
+}: {
+  list: Cocktail[];
+  onOpen?: () => void;
+  isAvailable: (c: Cocktail) => boolean;
+  isFav: (c: Cocktail) => boolean;
+}) {
   return (
     <ul className="grid grid-cols-2 gap-3 px-4" onClickCapture={onOpen}>
       {list.map((c) => (
         <li key={c.id}>
-          <CocktailCard cocktail={c} available={isAvailable(c)} />
+          <CocktailCard cocktail={c} available={isAvailable(c)} favorite={isFav(c)} />
         </li>
       ))}
     </ul>
@@ -63,7 +74,9 @@ export function CatalogPage() {
   const f = useMemo(() => parseFilters(params), [params]);
   const { inv } = useInventory();
   const isAvailable = useMemo(() => (c: Cocktail) => canMake(c, inv), [inv]);
-  const list = useMemo(() => applyFilters(cocktails, f, isAvailable), [f, isAvailable]);
+  const { list: favList } = useFavorites();
+  const isFav = useMemo(() => (c: Cocktail) => favList.includes(c.id), [favList]);
+  const list = useMemo(() => applyFilters(cocktails, f, isAvailable, isFav), [f, isAvailable, isFav]);
   const markAvailable = f.can ? () => false : isAvailable;
   const sheet = sheetFromHash(location.hash);
 
@@ -162,6 +175,11 @@ export function CatalogPage() {
               Фильтры
             </Chip>
             <ChipDivider />
+            {f.fav && (
+              <Chip variant="removable" icon={Heart} aria-label="Убрать фильтр «Избранное»" onClick={() => setFilters({ ...f, fav: false })}>
+                Избранное
+              </Chip>
+            )}
             {f.ing && (
               <Chip variant="removable" aria-label={`Убрать ингредиент ${getIngredient(f.ing)?.name}`} onClick={() => setFilters({ ...f, ing: null })}>
                 {getIngredient(f.ing)?.name}
@@ -236,8 +254,20 @@ export function CatalogPage() {
 
           {list.length > 0 ? (
             <div className="mt-3">
-              <Grid list={list} onOpen={remember} isAvailable={markAvailable} />
+              <Grid list={list} onOpen={remember} isAvailable={markAvailable} isFav={isFav} />
             </div>
+          ) : f.fav && favList.length === 0 ? (
+            // пустое избранное объясняет жест [Subway, Chick-fil-A]
+            <EmptyState
+              icon={Heart}
+              title="Здесь будут любимые коктейли"
+              hint="Нажмите ♡ на странице коктейля"
+              action={
+                <Button variant="secondary" size="m" onClick={() => setFilters({ ...f, fav: false })}>
+                  Весь каталог
+                </Button>
+              }
+            />
           ) : f.can && !applyFilters(cocktails, { ...EMPTY_FILTERS, can: true }, isAvailable).length ? (
             <EmptyState
               icon={Wine}
@@ -279,7 +309,7 @@ export function CatalogPage() {
               />
               <SectionHeader title="Похожие" />
               <div className="mt-2">
-                <Grid list={similarFor(cocktails, f)} isAvailable={isAvailable} />
+                <Grid list={similarFor(cocktails, f)} isAvailable={isAvailable} isFav={isFav} />
               </div>
             </>
           )}
@@ -290,10 +320,11 @@ export function CatalogPage() {
         open={sheet.open}
         facet={sheet.facet}
         value={f}
-        count={(draft) => applyFilters(cocktails, draft, isAvailable).length}
+        count={(draft) => applyFilters(cocktails, draft, isAvailable, isFav).length}
         onApply={apply}
         onClose={closeSheet}
         barEmpty={inv.size === 0}
+        favEmpty={favList.length === 0}
       />
     </main>
   );

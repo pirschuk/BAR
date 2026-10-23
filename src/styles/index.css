@@ -277,6 +277,24 @@
 @utility animate-sheet-in {
   animation: sheet-in 320ms var(--ease-soft);
 }
+/* «пульс» сердца при добавлении в избранное */
+@keyframes pop {
+  50% {
+    transform: scale(1.2);
+  }
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@utility animate-pop {
+  animation: pop 200ms var(--ease-soft);
+}
+@utility animate-toast-in {
+  animation: toast-in 200ms var(--ease-soft);
+}
 @utility animate-fade-in {
   animation: fade-in 200ms ease-out;
 }

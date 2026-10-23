@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { IconButton } from './Button';
@@ -9,13 +10,15 @@ type Props = {
   visible: boolean;
   /** для витрины: рисовать в потоке, а не fixed */
   inline?: boolean;
+  /** действие справа, симметрично «Назад» — FavoriteButton place="bar" */
+  action?: ReactNode;
 };
 
 /**
  * Навбар рецепта в стиле iOS: стекло, «Назад» слева, название по центру (headline, в одну строку).
  * Появляется при скролле, когда крупное название обложки уехало вверх; скрытый — не фокусируется.
  */
-export function NavBar({ title, onBack, visible, inline }: Props) {
+export function NavBar({ title, onBack, visible, inline, action }: Props) {
   return (
     <div
       inert={!visible}
@@ -30,6 +33,7 @@ export function NavBar({ title, onBack, visible, inline }: Props) {
         <IconButton icon={ChevronLeft} label="Назад" onClick={onBack} />
         {/* центр по ширине экрана: поля под кнопку с обеих сторон */}
         <p className="pointer-events-none absolute inset-x-16 truncate text-center text-headline text-fg">{title}</p>
+        {action && <div className="ml-auto">{action}</div>}
       </div>
     </div>
   );

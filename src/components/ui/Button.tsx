@@ -55,11 +55,13 @@ type IconButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: 'tonal' | 'glass';
   /** m — 36 (тач-зона 44); l — 44, для обложки рецепта */
   size?: 'm' | 'l';
+  /** доп. классы иконки: заливка (`fill-current`), анимация */
+  iconClassName?: string;
   pressed?: boolean;
 };
 
 /** Круглая кнопка-иконка: визуально 36, тач-зона 44 */
-export function IconButton({ icon: Icon, label, variant = 'tonal', size = 'm', pressed, className, type = 'button', ...rest }: IconButtonProps) {
+export function IconButton({ icon: Icon, label, variant = 'tonal', size = 'm', iconClassName, pressed, className, type = 'button', ...rest }: IconButtonProps) {
   return (
     <button
       type={type}
@@ -75,7 +77,7 @@ export function IconButton({ icon: Icon, label, variant = 'tonal', size = 'm', p
       )}
       {...rest}
     >
-      <Icon className={size === 'l' ? 'size-6' : 'size-5'} strokeWidth={size === 'l' ? 2.25 : 2} aria-hidden />
+      <Icon className={cn(size === 'l' ? 'size-6' : 'size-5', iconClassName)} strokeWidth={size === 'l' ? 2.25 : 2} aria-hidden />
     </button>
   );
 }

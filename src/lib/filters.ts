@@ -50,9 +50,11 @@ export type FilterState = {
   ing: string | null;
   /** «Могу сделать» — только то, для чего всё есть в «Моём баре» */
   can: boolean;
+  /** «Только избранное» */
+  fav: boolean;
 };
 
-export const EMPTY_FILTERS: FilterState = { q: '', base: [], taste: [], strength: [], ing: null, can: false };
+export const EMPTY_FILTERS: FilterState = { q: '', base: [], taste: [], strength: [], ing: null, can: false, fav: false };
 
 function pickList<T extends string>(raw: string | null, allowed: readonly { id: T }[]): T[] {
   if (!raw) return [];
@@ -69,6 +71,7 @@ export function parseFilters(params: URLSearchParams): FilterState {
     strength: pickList(params.get('strength'), STRENGTHS),
     ing: ing && byId.has(ing) ? ing : null,
     can: params.get('can') === '1',
+    fav: params.get('fav') === '1',
   };
 }
 
@@ -80,12 +83,13 @@ export function filtersToParams(f: FilterState): Record<string, string> {
   if (f.strength.length) out.strength = f.strength.join(',');
   if (f.ing) out.ing = f.ing;
   if (f.can) out.can = '1';
+  if (f.fav) out.fav = '1';
   return out;
 }
 
 /** Число выбранных значений во всех фасетах — бейдж на «Фильтры» (без текста поиска) */
 export function activeCount(f: FilterState): number {
-  return f.base.length + f.taste.length + f.strength.length + (f.ing ? 1 : 0) + (f.can ? 1 : 0);
+  return f.base.length + f.taste.length + f.strength.length + (f.ing ? 1 : 0) + (f.can ? 1 : 0) + (f.fav ? 1 : 0);
 }
 
 export function hasFacetFilters(f: FilterState): boolean {
@@ -132,11 +136,17 @@ export function matchesQuery(c: Cocktail, q: string): boolean {
   return words.every((w) => h.includes(w));
 }
 
-/** canMake — проверка «всё есть дома» (из inventory.ts; передаётся, чтобы не тянуть стор в чистую логику) */
-export function applyFilters(list: Cocktail[], f: FilterState, canMake?: (c: Cocktail) => boolean): Cocktail[] {
+/** canMake / isFav — «всё есть дома» и «в избранном» (сторы передаются снаружи, логика остаётся чистой) */
+export function applyFilters(
+  list: Cocktail[],
+  f: FilterState,
+  canMake?: (c: Cocktail) => boolean,
+  isFav?: (c: Cocktail) => boolean,
+): Cocktail[] {
   return list.filter(
     (c) =>
       (!f.can || (canMake?.(c) ?? false)) &&
+      (!f.fav || (isFav?.(c) ?? false)) &&
       matchesQuery(c, f.q) &&
       (!f.base.length || f.base.includes(c.base)) &&
       (!f.taste.length || f.taste.some((t) => c.tags.includes(t))) &&

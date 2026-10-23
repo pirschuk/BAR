@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import type { Cocktail } from '../../types/cocktail';
 import { cn } from '../../lib/cn';
@@ -8,6 +9,8 @@ import { GlassIllustration } from './GlassIllustration';
 type Props = {
   cocktail: Cocktail;
   onBack?: () => void;
+  /** действие справа сверху, симметрично «Назад» — FavoriteButton place="cover" */
+  action?: ReactNode;
   /** screen — 55% высоты экрана; preview — уменьшенная, для витрины */
   height?: 'screen' | 'preview';
 };
@@ -16,7 +19,7 @@ type Props = {
  * Обложка рецепта: градиент напитка, крупный бокал, «Назад» на стекле, название поверх скрима.
  * Колонка: бокал занимает всё место над названием — длинное название уменьшает бокал, а не наезжает на него.
  */
-export function CocktailHero({ cocktail, onBack, height = 'screen' }: Props) {
+export function CocktailHero({ cocktail, onBack, action, height = 'screen' }: Props) {
   return (
     <header
       className={cn('cover-gradient relative flex flex-col overflow-hidden', height === 'screen' ? 'h-hero pt-safe' : 'h-80 pt-3')}
@@ -37,6 +40,7 @@ export function CocktailHero({ cocktail, onBack, height = 'screen' }: Props) {
           <IconButton icon={ChevronLeft} label="Назад" variant="glass" size="l" onClick={onBack} />
         </div>
       )}
+      {action && <div className={cn('absolute right-4', height === 'screen' ? 'top-safe' : 'top-3')}>{action}</div>}
 
       <div className="relative px-4 pb-5">
         <h1 className="line-clamp-2 font-display text-display text-balance text-on-media">{cocktail.name}</h1>
