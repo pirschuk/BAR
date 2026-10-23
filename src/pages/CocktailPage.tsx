@@ -54,7 +54,7 @@ export function CocktailPage() {
       <SectionHeader
         size="l"
         title="Ингредиенты"
-        className="mt-8"
+        className="mt-10"
         action={<SegmentedControl size="l" label="Порции" options={SERVINGS} value={servings} onChange={setServings} />}
       />
       <ul className="mt-3 flex flex-col gap-2 px-4">

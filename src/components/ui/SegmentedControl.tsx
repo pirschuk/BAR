@@ -30,7 +30,7 @@ export function SegmentedControl<T extends string | number>({ label, options, va
             onClick={() => onChange(o.value)}
             className={cn(
               'pressable font-semibold tabular-nums transition-colors',
-              l ? 'h-10 min-w-13 rounded-full px-3 text-callout' : 'hit-44 h-8 min-w-12 rounded-check px-3 text-subhead',
+              l ? 'hit-44 h-10 min-w-13 rounded-full px-3 text-callout' : 'hit-44 h-8 min-w-12 rounded-check px-3 text-subhead',
               active ? 'bg-fg text-bg' : 'text-fg-2',
             )}
           >

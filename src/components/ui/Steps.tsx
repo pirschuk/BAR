@@ -9,7 +9,7 @@ export function Steps({ steps, className }: { steps: string[]; className?: strin
           <p className="text-caption font-semibold tracking-caps text-fg-2 uppercase" aria-hidden>
             Шаг {i + 1}
           </p>
-          <p className="mt-1 text-title-3 font-normal! text-fg">{step}</p>
+          <p className="mt-2 text-title-3 font-normal! text-fg">{step}</p>
         </li>
       ))}
     </ol>

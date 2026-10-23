@@ -566,7 +566,7 @@ export function DesignSystemPage() {
         <div className="grid grid-cols-3 gap-3 px-4">
           {['negroni', 'daiquiri', 'aperol-spritz'].map((id) => (
             <div key={id} className="recipe-tint h-40 overflow-hidden rounded-card p-2" style={coverStyle(must(id))}>
-              <div className="rounded-row bg-tile p-2 text-caption text-fg">{must(id).name}</div>
+              <div className="truncate rounded-row bg-tile p-2 text-caption text-fg">{must(id).name}</div>
             </div>
           ))}
         </div>

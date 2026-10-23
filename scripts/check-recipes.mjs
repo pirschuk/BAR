@@ -30,15 +30,17 @@ const ratio = (a, b) => {
 const css = readFileSync(new URL('../src/styles/index.css', import.meta.url), 'utf8');
 const token = (name) => hex(css.match(new RegExp(`--${name}:\\s*(#[0-9a-f]{6})`, 'i'))[1]);
 const [BG, FG, FG2] = [token('bg'), token('text'), token('text-2')];
-const mix = Number(css.match(/--tint-top: color-mix\(in srgb, var\(--cover-to\) (\d+)%/)[1]) / 100;
+const mixes = ['top', 'low'].map((k) => Number(css.match(new RegExp(`--tint-${k}: color-mix\\(in srgb, var\\(--cover-to\\) (\\d+)%`))[1]) / 100);
 
 const problems = [];
 for (const c of cocktails) {
   const to = hex(c.cover.to);
-  const tint = to.map((v, k) => v * mix + BG[k] * (1 - mix));
-  for (const [name, color] of [['fg', FG], ['fg-2', FG2]]) {
-    const r = ratio(color, tint);
-    if (r < 4.5) problems.push(`${c.id}: контраст ${name} на тинте ${r.toFixed(2)} < 4.5`);
+  for (const mix of mixes) {
+    const tint = to.map((v, k) => v * mix + BG[k] * (1 - mix));
+    for (const [name, color] of [['fg', FG], ['fg-2', FG2]]) {
+      const r = ratio(color, tint);
+      if (r < 4.5) problems.push(`${c.id}: контраст ${name} на тинте ${Math.round(mix * 100)}% ${r.toFixed(2)} < 4.5`);
+    }
   }
 }
 

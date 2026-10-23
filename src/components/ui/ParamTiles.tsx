@@ -6,12 +6,13 @@ export type Param = { icon: LucideIcon; label: string; value: string; extra?: Re
 
 /**
  * Параметры рецепта плитками 2×2 [Mindvalley, Vocabulary]: иконка в круге 32 → значение title-3 → подпись footnote.
- * Значение — одной строкой; длиннее LONG символов («Безалкогольный», «Медная кружка») — кеглем headline,
- * иначе не входит в плитку 171. Влезание проверяет scripts/check-recipes.mjs на всех рецептах.
+ * Значение — одной строкой; если хоть одно длиннее LONG символов («Безалкогольный», «Медная кружка»),
+ * вся сетка — кеглем headline (иначе не входит в плитку 171; кегль один на сетку). Влезание проверяет scripts/check-recipes.mjs на всех рецептах.
  */
 const LONG = 11;
 
 export function ParamTiles({ items, className }: { items: Param[]; className?: string }) {
+  const valueSize = items.some((p) => p.value.length > LONG) ? 'text-headline' : 'text-title-3';
   return (
     <dl className={cn('grid grid-cols-2 gap-3', className)}>
       {items.map(({ icon: Icon, label, value, extra }) => (
@@ -24,7 +25,7 @@ export function ParamTiles({ items, className }: { items: Param[]; className?: s
           </div>
           {/* порядок для чтения — подпись, затем значение; визуально значение выше */}
           <dt className="order-last mt-0.5 text-footnote text-fg-2">{label}</dt>
-          <dd className={cn('mt-3 flex h-6.5 items-center whitespace-nowrap text-fg', value.length > LONG ? 'text-headline' : 'text-title-3')} data-param-value>
+          <dd className={cn('mt-3 flex h-6.5 items-center whitespace-nowrap text-fg', valueSize)} data-param-value>
             {value}
           </dd>
         </div>
@@ -38,7 +39,7 @@ export function StrengthTicks({ level }: { level: 0 | 1 | 2 | 3 | 4 }) {
   return (
     <span className="flex w-14 gap-1" aria-hidden>
       {[1, 2, 3, 4].map((i) => (
-        <span key={i} className={cn('h-1.5 flex-1 rounded-full', i <= level ? 'bg-accent' : 'bg-tile-strong')} />
+        <span key={i} className={cn('h-1.5 flex-1 rounded-full', i <= level ? 'bg-accent' : 'bg-fg-3/60')} />
       ))}
     </span>
   );

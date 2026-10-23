@@ -72,8 +72,8 @@ export function BarSummary({ can, nearly, to }: { can: number; nearly: number; t
 /** Нейтральная подсказка: иконка 16 + текст subhead на surface-2 (инструменты, хранилище) */
 export function InfoNote({ icon: Icon, children, className, tile }: { icon: LucideIcon; children: ReactNode; className?: string; tile?: boolean }) {
   return (
-    <p className={cn('flex items-start gap-2 px-4 py-3 text-subhead text-fg-2', tile ? 'rounded-row bg-tile' : 'rounded-control bg-surface-2', className)}>
-      <Icon className="mt-0.5 size-4 shrink-0" aria-hidden />
+    <p className={cn('flex items-start px-4 py-3 text-subhead text-fg-2', tile ? 'gap-3 rounded-row bg-tile' : 'gap-2 rounded-control bg-surface-2', className)}>
+      <Icon className={cn('shrink-0', tile ? 'size-5' : 'mt-0.5 size-4')} aria-hidden />
       <span>{children}</span>
     </p>
   );

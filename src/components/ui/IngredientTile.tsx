@@ -19,7 +19,6 @@ type Props = {
 export function IngredientTile({ name, amount, optional, missing, note, icon: Icon }: Props) {
   return (
     <div className="flex min-h-row-l items-center gap-3 rounded-row bg-tile px-4 py-3">
-      {Icon && <Icon className="size-5 shrink-0 text-fg-2" aria-hidden />}
       <span className="min-w-0 flex-1">
         <span className="block text-body text-fg">{name}</span>
         {(optional || missing || note) && (
@@ -38,6 +37,8 @@ export function IngredientTile({ name, amount, optional, missing, note, icon: Ic
           <span className="w-14 text-footnote text-fg-2">{amount.unit}</span>
         </span>
       )}
+      {/* иконка справа, в колонке объёма: левый край текста у всех плиток один */}
+      {Icon && <Icon className="size-5 shrink-0 text-fg-2" aria-hidden />}
     </div>
   );
 }
