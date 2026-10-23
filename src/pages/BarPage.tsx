@@ -39,9 +39,11 @@ export function BarPage() {
     <main className="pb-tabbar">
       <header className="pt-safe px-4">
         <h1 className="font-display text-display text-fg">Мой бар</h1>
-        <p className="mt-1 text-footnote text-fg-2" aria-live="polite">
-          {empty ? 'Пока пусто' : positionsLabel(rows.length)}
-        </p>
+        {!empty && (
+          <p className="mt-1 text-footnote text-fg-2" aria-live="polite">
+            {positionsLabel(rows.length)}
+          </p>
+        )}
       </header>
 
       {!inventoryPersisted && (
@@ -56,7 +58,7 @@ export function BarPage() {
           title="Соберите бар за минуту"
           hint="Добавьте, что есть дома, — покажем, что можно приготовить"
           action={
-            <Button variant="secondary" size="m" icon={Sparkles} className="bg-tile-strong!" onClick={() => add(QUICK_START)}>
+            <Button icon={Sparkles} onClick={() => add(QUICK_START)}>
               Быстрый старт: базовый бар
             </Button>
           }
@@ -70,7 +72,18 @@ export function BarPage() {
       <div className={`${empty ? '' : 'mt-3'} flex flex-col gap-3 px-4`}>
         {SECTIONS.map((s) => {
           const { meta, preview } = sectionSummary(rows.filter((r) => r.section === s.id));
-          return <BarCategoryCard key={s.id} title={s.label} meta={meta} preview={preview} placeholder={s.placeholder} to={`/bar/${s.id}`} onAdd={() => openAdd(s.id)} />;
+          return (
+            <BarCategoryCard
+              key={s.id}
+              title={s.label}
+              meta={meta}
+              preview={preview}
+              placeholder={s.placeholder}
+              accentAdd={!empty && !preview}
+              to={`/bar/${s.id}`}
+              onAdd={() => openAdd(s.id)}
+            />
+          );
         })}
       </div>
 
@@ -95,8 +108,8 @@ export function BarPage() {
           </CardRail>
         </section>
       ) : (
-        <HintLine icon={Heart} className="mt-4 justify-center px-8 text-center">
-          Нажмите сердце на странице коктейля — он появится в «Избранном»
+        <HintLine icon={Heart} className="mt-4 px-4">
+          Нажмите сердце на странице коктейля&nbsp;— он появится в «Избранном»
         </HintLine>
       )}
 

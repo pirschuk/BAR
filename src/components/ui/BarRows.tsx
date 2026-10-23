@@ -45,7 +45,7 @@ export function AddRow({ label, onClick, pressed }: { label: string; onClick: ()
       type="button"
       data-pressed={pressed || undefined}
       onClick={onClick}
-      className="pressable flex min-h-row-l w-full items-center gap-3 rounded-row border border-dashed border-tile-strong px-4 text-left text-body text-fg-2"
+      className="pressable flex min-h-row-l w-full items-center gap-3 rounded-row border border-tile-strong px-4 text-left text-body text-fg-2"
     >
       <Plus className="size-5 shrink-0 text-accent" aria-hidden />
       Добавить {label}
@@ -64,6 +64,7 @@ export function BarCategoryCard({
   to,
   onAdd,
   placeholder,
+  accentAdd,
   pressed,
 }: {
   title: string;
@@ -73,6 +74,8 @@ export function BarCategoryCard({
   preview?: string;
   /** пустой раздел: «Например: джин, ром, вермут» */
   placeholder: string;
+  /** «+» акцентом — пуст только этот раздел (когда пуст весь бар, акцент у «Быстрого старта») */
+  accentAdd?: boolean;
   to: string;
   onAdd: () => void;
   pressed?: boolean;
@@ -81,19 +84,19 @@ export function BarCategoryCard({
     <section className="relative flex items-start gap-3 rounded-tile bg-tile p-4" aria-label={title}>
       <Link to={to} data-pressed={pressed || undefined} className="pressable absolute inset-0 rounded-tile" aria-label={`${title}: ${meta}`} />
       <div className="pointer-events-none relative min-w-0 flex-1">
-        <h2 className="flex items-center gap-1 font-display text-section text-fg">
-          {title}
-          <ChevronRight className="size-5 shrink-0 text-fg-3" aria-hidden />
+        {/* шеврон — inline за последним словом: при переносе не висит рядом с «+» второй кнопкой */}
+        <h2 className="font-display text-section text-fg">
+          {title}&nbsp;<ChevronRight className="inline size-5 align-[-2px] text-fg-3" aria-hidden />
         </h2>
         <p className="mt-1 text-footnote text-fg-2">{meta}</p>
-        <p className={cn('mt-3 line-clamp-2 text-subhead', preview ? 'text-fg' : 'text-fg-3')}>{preview || placeholder}</p>
+        <p className={cn('mt-3 line-clamp-2 text-subhead', preview ? 'text-fg' : 'text-fg-2')}>{preview || placeholder}</p>
       </div>
       <IconButton
         icon={Plus}
         label={`Добавить: ${title.toLowerCase()}`}
         size="l"
         onClick={onAdd}
-        className={cn('relative', preview ? 'bg-tile-strong!' : 'bg-accent! text-accent-fg!')}
+        className={cn('relative', accentAdd ? 'bg-accent! text-accent-fg!' : 'bg-tile-strong!')}
       />
     </section>
   );

@@ -105,8 +105,8 @@ export function BottomSheet({ open, onClose, title, onBack, children, footer, in
           <span className="h-[5px] w-9 rounded-full bg-fg-3/40" />
         </div>
         <div className={cn('flex items-center justify-between gap-3 border-b px-4 pb-3', scrolled ? 'border-border' : 'border-transparent')}>
-          <div className="flex min-w-0 items-center gap-1">
-            {onBack && <IconButton icon={ChevronLeft} label="Назад" variant="tonal" className="-ml-1 bg-transparent!" onClick={onBack} />}
+          <div className="flex min-w-0 items-center gap-3">
+            {onBack && <IconButton icon={ChevronLeft} label="Назад" onClick={onBack} />}
             <h2 id={titleId} className="truncate text-title-2 text-fg">
               {title}
             </h2>

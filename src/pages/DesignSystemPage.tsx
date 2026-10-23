@@ -674,8 +674,8 @@ export function DesignSystemPage() {
               <BarCategoryCard title="Миксеры и прочее" meta="6 позиций · в 31 коктейле" preview="Лайм, Лимон, Мята и ещё 3" to="/bar/mixers" placeholder="Например: лайм, сироп, тоник" onAdd={() => {}} pressed />
             </div>
           </State>
-          <State label="SectionHeader L · счётчик + «+» подкатегории · AddRow (пустая подкатегория, pressed)" inset>
-            <SectionHeader title="Газировка и миксеры" meta={2} trailing={<IconButton icon={Plus} label="Добавить газировку" onClick={() => {}} className="bg-tile!" />} />
+          <State label="Подкатегория: счётчик у заголовка + «+» справа · AddRow (пустая — без «+» в шапке, pressed)" inset>
+            <SectionHeader title="Газировка и миксеры" count={2} trailing={<IconButton icon={Plus} label="Добавить газировку" onClick={() => {}} className="bg-tile!" />} />
             <div className="mt-1 flex flex-col gap-2 px-4">
               <AddRow label="газировку" onClick={() => {}} />
               <AddRow label="биттер" onClick={() => {}} pressed />

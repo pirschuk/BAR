@@ -58,7 +58,7 @@ export function BarAddSheet({ open, onClose, section, sub, owned, bottles, sugge
   // выбранная подкатегория может стоять за краем ряда — доскроллить к ней
   const chips = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (open) chips.current?.querySelector('[aria-pressed="true"]')?.scrollIntoView({ inline: 'center', block: 'nearest' });
+    if (open) chips.current?.querySelector('[aria-pressed="true"]')?.scrollIntoView({ inline: 'nearest', block: 'nearest' });
   }, [open, filter]);
 
   const n = normalize(q);
@@ -121,7 +121,7 @@ export function BarAddSheet({ open, onClose, section, sub, owned, bottles, sugge
             <SearchBar value={q} onChange={setQ} placeholder="Название или бренд" aria-label="Найти в справочнике" autoFocus={!inline && !sub} />
           </div>
           <div ref={chips}>
-            <ChipRow label="Подкатегория" className="mt-3">
+            <ChipRow label="Подкатегория" className="mt-3 scroll-px-4">
               <Chip selected={filter === 'all'} aria-pressed={filter === 'all'} onClick={() => setFilter('all')}>
                 Всё
               </Chip>
@@ -137,7 +137,7 @@ export function BarAddSheet({ open, onClose, section, sub, owned, bottles, sugge
             {n && !exact && <AddCustomRow query={q} onClick={() => setStep('bottle')} />}
             {advice.length > 0 && (
               <section>
-                <h3 className="px-4 pt-4 pb-1 text-footnote text-fg-2">Советуем — откроют новые коктейли</h3>
+                <h3 className="px-4 pt-4 pb-1 text-footnote text-fg-2">Советуем</h3>
                 {advice.map((a) => row(a.ref, a.name, `+${a.count} ${plural(a.count, ['коктейль', 'коктейля', 'коктейлей'])}`))}
               </section>
             )}

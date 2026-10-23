@@ -25,7 +25,7 @@ export function TextField({ label, value, onChange, hint, className, id, ...rest
         className="h-tap rounded-full bg-tile px-4 text-body text-fg outline-none placeholder:text-fg-3 focus:outline-1 focus:outline-fg-3"
         {...rest}
       />
-      {hint && <p className="text-footnote text-fg-3">{hint}</p>}
+      {hint && <p className="text-footnote text-fg-2">{hint}</p>}
     </div>
   );
 }
