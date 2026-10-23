@@ -233,8 +233,8 @@
    Нужны --cover-from / --cover-to на элементе или предке (coverStyle). */
 @utility recipe-tint {
   --tint-top: color-mix(in srgb, var(--cover-to) 45%, var(--bg));
-  /* тинт плавно тянется через всю страницу и к концу уходит в чёрный фон */
-  background: linear-gradient(to bottom, var(--tint-top) 0, var(--tint-top) 55svh, var(--bg) 100%) var(--bg);
+  /* тинт под обложкой и параметрами, к концу ингредиентов уже чёрный фон */
+  background: linear-gradient(to bottom, var(--tint-top) 0, var(--tint-top) 55svh, var(--bg) calc(55svh + 760px)) var(--bg);
 }
 /* низ обложки переходит в цвет тинта — без шва */
 @utility hero-fade {
@@ -343,7 +343,7 @@
 @utility cover-gradient {
   background:
     radial-gradient(60% 45% at 50% 42%, rgb(255 255 255 / 0.16), transparent 70%),
-    linear-gradient(170deg, var(--cover-from), var(--cover-to) 65%, var(--bg));
+    linear-gradient(170deg, var(--cover-from), var(--cover-to) 50%, var(--bg) 90%);
 }
 
 @layer components {
