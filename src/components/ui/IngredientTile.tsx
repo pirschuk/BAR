@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import type { LucideIcon } from 'lucide-react';
 import type { Amount } from '../../lib/cocktails';
 import { cn } from '../../lib/cn';
 
@@ -21,7 +20,7 @@ type Props = {
 
 /**
  * Ингредиент — своя округлая плитка [Apple News]: название слева, объём крупно справа.
- * Не кнопка: отметки «налил» нет. Без числа («долить», «по вкусу») — слово стилем значения, а не единицы.
+ * Не кнопка: отметки «налил» нет. Без числа («долить», «по вкусу», «украсить» у украшения) — слово стилем значения.
  * Только внутри IngredientList.
  */
 export function IngredientTile({ name, amount, optional, missing }: Props) {
@@ -45,18 +44,5 @@ export function IngredientTile({ name, amount, optional, missing }: Props) {
         <span className="col-span-2 text-right text-headline text-fg">{amount.unit}</span>
       )}
     </li>
-  );
-}
-
-/** Украшение — по логике ингредиента: слева что это («Украшение» с иконкой), справа чем украсить */
-export function GarnishTile({ value, icon: Icon, className }: { value: string; icon: LucideIcon; className?: string }) {
-  return (
-    <div className={cn('flex min-h-row-l items-center gap-3 rounded-row bg-tile px-4 py-3', className)}>
-      <span className="flex shrink-0 items-center gap-1.5 text-body text-fg-2">
-        <Icon className="size-4" aria-hidden />
-        Украшение
-      </span>
-      <span className="min-w-0 flex-1 text-right text-body text-fg">{value}</span>
-    </div>
   );
 }

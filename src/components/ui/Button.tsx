@@ -17,7 +17,7 @@ const SIZE: Record<ButtonSize, string> = {
   // L — CTA, pill; M — действия, радиус 12
   l: 'h-btn-l rounded-full px-6',
   m: 'h-tap rounded-control px-4',
-  // S — вторичные действия в строке («Сбросить», «Это есть»): 36 визуально, 44 тач-зона
+  // S — вторичные действия в строке («Сбросить»): 36 визуально, 44 тач-зона
   s: 'hit-44 h-chip rounded-full px-3 text-subhead! font-semibold',
 };
 

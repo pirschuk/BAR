@@ -1,71 +1,42 @@
-import { ChevronRight, CircleCheck, CircleDashed, Wine, type LucideIcon } from 'lucide-react';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { ChevronRight, type LucideIcon } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { Link } from 'react-router';
 import { countLabel } from '../../lib/cocktails';
 import { cn } from '../../lib/cn';
-import { Button, buttonClass } from './Button';
+import { buttonClass } from './Button';
 
-type BannerProps =
-  | { state: 'empty-bar' }
-  | { state: 'all' }
-  | { state: 'missing'; names: string[]; onHave: () => void };
+type AvailabilityProps = { state: 'empty-bar' } | { state: 'all' } | { state: 'missing'; names: string[] };
 
 /**
- * Наличие в рецепте: «Всё есть дома» / «Не хватает N: …» + «Это есть» / приглашение заполнить бар.
- * tile — статус над списком ингредиентов на тинте: не плитка-строка, а другой тип блока —
- * «всё есть» с зелёной подложкой, остальное — контур без заливки; кнопка справа.
+ * Наличие в рецепте — информер, а не блок [IKEA]: точка 8 + текст, без подложки, рамки и кнопки.
+ * Отмечать, что есть дома, — в «Моём баре»; бар пуст — строка-ссылка туда.
  */
-export function AvailabilityBanner(props: BannerProps & { focusOnMount?: boolean; tile?: boolean }) {
-  const ref = useRef<HTMLDivElement>(null);
-  // после «Это есть» кнопка исчезает — фокус переводим на новый баннер, а не теряем на <body>
-  useEffect(() => {
-    if (props.focusOnMount) ref.current?.focus();
-  }, [props.focusOnMount]);
-  const t = props.tile;
-  const base = cn('flex gap-3 px-4', t ? 'min-h-row-l rounded-row py-2.5' : 'rounded-control bg-surface py-3');
-  const outline = t && 'border border-tile-strong';
-  if (props.state === 'all')
-    return (
-      <div ref={ref} tabIndex={-1} className={cn(base, 'items-center outline-none', t && 'bg-success/12')} role="status">
-        <CircleCheck className="size-5 shrink-0 text-success" aria-hidden />
-        <p className="text-subhead text-fg">Всё есть дома</p>
-      </div>
-    );
+export function AvailabilityLine(props: AvailabilityProps) {
+  const dot = (cls: string) => <span className={cn('size-2 shrink-0 self-center rounded-full', cls)} aria-hidden />;
   if (props.state === 'empty-bar')
     return (
-      <Link to="/bar" className={cn(base, outline, 'pressable items-center')}>
-        <Wine className="size-5 shrink-0 text-fg-2" aria-hidden />
-        <p className="min-w-0 flex-1 text-subhead text-fg">Отметьте свой бар — покажем, чего не хватает</p>
+      <Link to="/bar" className="pressable -mx-2 flex min-h-tap items-center gap-2 rounded-control px-2 text-subhead text-fg-2">
+        {dot('bg-fg-3')}
+        <span className="min-w-0 flex-1">Отметьте, что есть дома</span>
         <ChevronRight className="size-4 shrink-0 text-fg-3" aria-hidden />
       </Link>
     );
-  const n = props.names.length;
-  const text = (
-    <p className="text-subhead text-fg">
-      Не хватает {n}: <span className="text-fg-2">{props.names.join(', ')}</span>
-    </p>
-  );
-  if (t)
-    return (
-      <div className={cn(base, outline, 'items-center')} role="status">
-        <CircleDashed className="size-5 shrink-0 text-fg-2" aria-hidden />
-        <div className="min-w-0 flex-1">{text}</div>
-        <Button variant="secondary" size="s" className="bg-tile-strong!" onClick={props.onHave}>
-          Это есть
-        </Button>
-      </div>
-    );
   return (
-    <div className={cn(base, 'items-start')} role="status">
-      <CircleDashed className="mt-px size-5 shrink-0 text-fg-2" aria-hidden />
-      {/* две строки: текст на всю ширину, кнопка под ним — название не рвётся */}
-      <div className="flex min-w-0 flex-1 flex-col items-start gap-2">
-        {text}
-        <Button variant="secondary" size="s" onClick={props.onHave}>
-          Это есть
-        </Button>
-      </div>
-    </div>
+    <p role="status" className="flex min-h-tap items-center gap-2 py-2 text-subhead text-fg">
+      {props.state === 'all' ? (
+        <>
+          {dot('bg-success')}
+          Всё есть дома
+        </>
+      ) : (
+        <>
+          {dot('bg-accent')}
+          <span className="min-w-0">
+            Нет дома: <span className="text-fg-2">{props.names.join(', ')}</span>
+          </span>
+        </>
+      )}
+    </p>
   );
 }
 

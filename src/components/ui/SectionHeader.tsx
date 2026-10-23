@@ -1,11 +1,10 @@
 import type { ReactNode } from 'react';
-import { Clock } from 'lucide-react';
 import { cn } from '../../lib/cn';
 
 type Props = {
   title: string;
   action?: ReactNode;
-  /** мета-пилюля справа от заголовка (только l): «~3 мин» [MacroFactor] */
+  /** мета справа в строке заголовка (только l): «~3 мин», «≈ 90 мл» */
   meta?: string;
   /** m — title-2 (каталог, бар); l — дисплейный заголовок рецепта */
   size?: 'm' | 'l';
@@ -14,20 +13,16 @@ type Props = {
 
 /**
  * m: заголовок + действие/контрол справа в одну строку.
- * l: дисплейный заголовок + мета-пилюля справа; контрол — строкой ниже (Unbounded широкий: «Ингредиенты» + 1×/2×/4× в 358 не входят).
+ * l: дисплейный заголовок + мета текстом справа; контрол — строкой ниже (Unbounded широкий: «Ингредиенты» + 1×/2×/4× в 358 не входят).
  */
 export function SectionHeader({ title, action, meta, size = 'm', className }: Props) {
   if (size === 'l')
     return (
       <div className={cn('px-4', className)}>
-        <div className="flex min-h-tap items-center justify-between gap-3">
+        {/* мета — текстом по базовой линии заголовка [Withings, Yazio], без пилюли и иконки */}
+        <div className="flex min-h-tap items-baseline justify-between gap-3 pt-2">
           <h2 className="font-display text-section text-fg">{title}</h2>
-          {meta && (
-            <span className="inline-flex h-7 shrink-0 items-center gap-1 rounded-full bg-tile-strong px-3 text-footnote text-fg tabular-nums">
-              <Clock className="size-3.5" aria-hidden />
-              {meta}
-            </span>
-          )}
+          {meta && <span className="shrink-0 text-subhead text-fg-2 tabular-nums">{meta}</span>}
         </div>
         {action && <div className="mt-2">{action}</div>}
       </div>

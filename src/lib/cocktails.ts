@@ -140,3 +140,16 @@ export function scaleIngredient(ing: Ingredient, servings: Servings): Amount {
   }
   return { value: '', unit: 'по вкусу' };
 }
+
+/**
+ * Выход порции для меты «Ингредиентов» [Alma, Apple News]: сумма мл без дэшей и бар. ложек;
+ * доливка не измерена — «+ доливка». 1× — «≈ 90 мл», 2× — «2 × 90 мл».
+ */
+export function servingVolume(c: Pick<Cocktail, 'ingredients'>, servings: Servings): string {
+  const ml = c.ingredients.reduce((sum, i) => sum + (i.unit === 'top' ? 0 : (i.amountMl ?? 0)), 0);
+  const top = c.ingredients.some((i) => i.unit === 'top') ? ' + доливка' : '';
+  return `${servings === 1 ? '≈ ' : `${servings} × `}${formatNumber(ml)} мл${top}`;
+}
+
+/** Украшение — строка списка ингредиентов со значением «украсить» (как «долить») */
+export const GARNISH_AMOUNT: Amount = { value: '', unit: 'украсить' };

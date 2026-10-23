@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { Sparkles, Wrench } from 'lucide-react';
+import { Wrench } from 'lucide-react';
 import { missing, toolsFor, useInventory } from '../lib/inventory';
-import { AvailabilityBanner, InfoNote } from '../components/ui/Availability';
+import { AvailabilityLine, InfoNote } from '../components/ui/Availability';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { getCocktail, scaleIngredient, type Servings } from '../lib/cocktails';
+import { GARNISH_AMOUNT, getCocktail, scaleIngredient, servingVolume, type Servings } from '../lib/cocktails';
 import { CocktailHero } from '../components/ui/CocktailHero';
 import { ParamTiles } from '../components/ui/ParamTiles';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { SegmentedControl } from '../components/ui/SegmentedControl';
-import { GarnishTile, IngredientList, IngredientTile } from '../components/ui/IngredientTile';
+import { IngredientList, IngredientTile } from '../components/ui/IngredientTile';
 import { Steps } from '../components/ui/Steps';
 import { cocktailParams } from '../components/cocktailStats';
 import { coverStyle } from '../components/ui/CocktailCard';
@@ -29,8 +29,7 @@ export function CocktailPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [servings, setServings] = useState<Servings>(1);
-  const { inv, add } = useInventory();
-  const [justAdded, setJustAdded] = useState(false);
+  const { inv } = useInventory();
 
   if (!cocktail) return <NotFoundPage title="Коктейль не найден" />;
 
@@ -53,18 +52,24 @@ export function CocktailPage() {
         size="l"
         title="Ингредиенты"
         className="mt-10"
-        action={<SegmentedControl size="l" label="Порции" options={SERVINGS} value={servings} onChange={setServings} />}
+        action={
+          // выход порции — рядом с множителем [Alma]: в строку с Unbounded-заголовком не входит
+          <div className="flex items-center justify-between gap-3">
+            <SegmentedControl size="l" label="Порции" options={SERVINGS} value={servings} onChange={setServings} />
+            <span className="text-right text-subhead text-fg-2 tabular-nums">{servingVolume(cocktail, servings)}</span>
+          </div>
+        }
       />
-      <div className="mx-4 mt-4">
+      <div className="mx-4 mt-2">
         {inv.size === 0 ? (
-          <AvailabilityBanner tile state="empty-bar" />
+          <AvailabilityLine state="empty-bar" />
         ) : lacking.length === 0 ? (
-          <AvailabilityBanner tile state="all" focusOnMount={justAdded} />
+          <AvailabilityLine state="all" />
         ) : (
-          <AvailabilityBanner tile state="missing" names={lacking.map((m) => m.name)} onHave={() => (add(lacking.map((m) => m.ref)), setJustAdded(true))} />
+          <AvailabilityLine state="missing" names={lacking.map((m) => m.name)} />
         )}
       </div>
-      <IngredientList className="mx-4 mt-3">
+      <IngredientList className="mx-4 mt-2">
         {cocktail.ingredients.map((ing) => (
           <IngredientTile
             key={ing.name}
@@ -74,11 +79,11 @@ export function CocktailPage() {
             missing={inv.size > 0 && lackingRefs.has(ing.ref)}
           />
         ))}
+        {cocktail.garnish && <IngredientTile name={cocktail.garnish} amount={GARNISH_AMOUNT} />}
       </IngredientList>
-      {cocktail.garnish && <GarnishTile value={cocktail.garnish} icon={Sparkles} className="mx-4 mt-2" />}
 
       <SectionHeader size="l" title="Приготовление" meta={timeMeta(cocktail.timeMin)} className="mt-10" />
-      <Steps steps={cocktail.steps} className="mt-4" />
+      <Steps steps={cocktail.steps} className="mt-5" />
       {toolHints.map((t) => (
         <InfoNote key={t.id} tile icon={Wrench} className="mx-4 mt-6">
           Понадобится {t.name.toLowerCase()} — {t.substitute}.

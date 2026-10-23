@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { ChevronLeft, HardDriveDownload, Moon, SearchX, SlidersHorizontal, Sparkles, Wine, Wrench } from 'lucide-react';
+import { ChevronLeft, HardDriveDownload, Moon, SearchX, SlidersHorizontal, Wine, Wrench } from 'lucide-react';
 import { Link } from 'react-router';
-import { GLASSES, STRENGTH_LABEL, cocktails, countLabel, getCocktail, scaleIngredient, type Servings } from '../lib/cocktails';
+import { GARNISH_AMOUNT, GLASSES, STRENGTH_LABEL, cocktails, servingVolume, countLabel, getCocktail, scaleIngredient, type Servings } from '../lib/cocktails';
 import type { Cocktail, Glass } from '../types/cocktail';
 import { Button, IconButton, buttonClass } from '../components/ui/Button';
 import { Chip, ChipDivider, ChipRow, ChipWrap } from '../components/ui/Chip';
@@ -14,7 +14,7 @@ import { FilterSheet } from '../components/FilterSheets';
 import { TabBar } from '../components/ui/TabBar';
 import { LuckySheet } from '../components/LuckySheet';
 import { CheckRow, SwitchRow } from '../components/ui/Toggles';
-import { AvailabilityBanner, BarSummary, InfoNote } from '../components/ui/Availability';
+import { AvailabilityLine, BarSummary, InfoNote } from '../components/ui/Availability';
 import { EMPTY_FILTERS, applyFilters, type FilterState } from '../lib/filters';
 import { GlassIllustration } from '../components/ui/GlassIllustration';
 import { CocktailCard, coverStyle } from '../components/ui/CocktailCard';
@@ -22,7 +22,7 @@ import { CocktailHero } from '../components/ui/CocktailHero';
 import { ParamTiles } from '../components/ui/ParamTiles';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { SegmentedControl } from '../components/ui/SegmentedControl';
-import { GarnishTile, IngredientList, IngredientTile } from '../components/ui/IngredientTile';
+import { IngredientList, IngredientTile } from '../components/ui/IngredientTile';
 import { Steps } from '../components/ui/Steps';
 import { STRENGTH_TONE, cocktailParams } from '../components/cocktailStats';
 import { SERVINGS, timeMeta } from './CocktailPage';
@@ -468,11 +468,8 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="availability" title="Наличие: баннер, итог бара, подсказка" note="Рецепт: всё есть / не хватает N / бар пуст. «Мой бар»: итог с CTA. InfoNote — нейтральная подсказка.">
+      <Section id="availability" title="Итог бара, подсказка" note="«Мой бар»: итог с CTA. InfoNote — нейтральная подсказка. Наличие в рецепте — AvailabilityLine (раздел IngredientTile).">
         <div className="flex flex-col gap-3 px-4">
-          <AvailabilityBanner state="all" />
-          <AvailabilityBanner state="missing" names={['Кампари', 'Красный вермут']} onHave={() => {}} />
-          <AvailabilityBanner state="empty-bar" />
           <BarSummary can={7} nearly={5} to="/?can=1" />
           <BarSummary can={0} nearly={2} to="/?can=1" />
           <InfoNote icon={Wrench}>Понадобится шейкер — подойдёт банка с плотной крышкой.</InfoNote>
@@ -595,9 +592,18 @@ export function DesignSystemPage() {
         </div>
       </Tinted>
 
-      <Tinted id="section" title="SectionHeader" note="l — Unbounded 24/30, мета-пилюля «~N мин» справа в строке заголовка, контрол — строкой ниже; m — title-2 (каталог, бар)." cocktail="daiquiri">
+      <Tinted id="section" title="SectionHeader" note="l — Unbounded 24/30, мета текстом subhead fg-2 по базовой линии справа («~3 мин»), контрол — строкой ниже; выход порции — справа от 1×/2×/4×; m — title-2 (каталог, бар)." cocktail="daiquiri">
         <div className="flex flex-col gap-3">
-          <SectionHeader size="l" title="Ингредиенты" action={<SegmentedControl size="l" label="Порции" options={SERVINGS} value={servings} onChange={setServings} />} />
+          <SectionHeader
+            size="l"
+            title="Ингредиенты"
+            action={
+              <div className="flex items-center justify-between gap-3">
+                <SegmentedControl size="l" label="Порции" options={SERVINGS} value={servings} onChange={setServings} />
+                <span className="text-right text-subhead text-fg-2 tabular-nums">{servingVolume(must('mojito'), servings)}</span>
+              </div>
+            }
+          />
           <SectionHeader size="l" title="Приготовление" meta={timeMeta(3)} />
           <SectionHeader title="Похожие" />
         </div>
@@ -617,12 +623,12 @@ export function DesignSystemPage() {
         </div>
       </Tinted>
 
-      <Tinted id="ingredient" title="IngredientTile" note={`Плитка r 16, min-h 52, gap 8; без чекбокса и тапа. Общая сетка: числа по правому краю, единицы — колонка по самой длинной (сейчас ${servings}×). «Долить» — стилем значения. Наличие — отдельный статус над списком.`} cocktail="mojito">
-        <div className="flex flex-col gap-2 px-4">
-          <AvailabilityBanner tile state="all" />
-          <AvailabilityBanner tile state="missing" names={['Кампари']} onHave={() => {}} />
-          <AvailabilityBanner tile state="missing" names={['Кампари', 'Красный вермут', 'Апельсиновый биттер']} onHave={() => {}} />
-          <AvailabilityBanner tile state="empty-bar" />
+      <Tinted id="ingredient" title="IngredientTile" note={`Плитка r 16, min-h 52, gap 8; без чекбокса и тапа. Общая сетка: числа по правому краю, единицы — колонка по самой длинной (сейчас ${servings}×). «Долить», «украсить» — стилем значения. Наличие — информер AvailabilityLine: точка + текст, без кнопки.`} cocktail="mojito">
+        <div className="flex flex-col px-4">
+          <AvailabilityLine state="all" />
+          <AvailabilityLine state="missing" names={['Кампари']} />
+          <AvailabilityLine state="missing" names={['Кампари', 'Красный вермут', 'Апельсиновый биттер']} />
+          <AvailabilityLine state="empty-bar" />
         </div>
         <IngredientList className="mx-4 mt-4">
           {mojito.ingredients.map((ing) => (
@@ -630,14 +636,16 @@ export function DesignSystemPage() {
           ))}
           <IngredientTile name="Кампари" amount={{ value: '30', unit: 'мл' }} missing />
           <IngredientTile name="Яичный белок" optional amount={scaleIngredient(sour.ingredients[3] ?? { ref: 'egg-white', name: '', category: 'egg' }, servings)} />
+          <IngredientTile name={mojito.garnish ?? 'Веточка мяты'} amount={GARNISH_AMOUNT} />
         </IngredientList>
-        <GarnishTile value={mojito.garnish ?? 'Веточка мяты'} icon={Sparkles} className="mx-4 mt-2" />
-        <GarnishTile value="Долька апельсина и коктейльная вишня" icon={Sparkles} className="mx-4 mt-2" />
-        <p className="mt-2 px-4 text-caption text-fg-3 uppercase">наличие — статус над списком: всё / не хватает 1 / 3 / бар пуст · мл / листа / долить · нет дома · по желанию · украшение</p>
+        <p className="mt-2 px-4 text-footnote text-fg-2">Выход: {servingVolume(mojito, servings)} · Негрони: {servingVolume(must('negroni'), servings)}</p>
+        <p className="mt-2 px-4 text-caption text-fg-3 uppercase">информер наличия: всё / нет дома 1 / 3 / бар пуст (ссылка) · мл / листьев / долить · нет дома · по желанию · украшение «украсить»</p>
       </Tinted>
 
-      <Tinted id="steps" title="Steps" note="«ШАГ N» caption капсом + текст title-3 (400), между шагами 24; без карточек. Подсказка — InfoNote-плитка." cocktail="whiskey-sour">
+      <Tinted id="steps" title="Steps" note="Таймлайн: номер в круге 28 + вертикальная линия к следующему (у последнего нет), текст title-3 400; без подложек. Подсказка — InfoNote-плитка." cocktail="whiskey-sour">
         <Steps steps={sour.steps} />
+        <p className="mt-6 px-4 text-caption text-fg-3 uppercase">2 шага</p>
+        <Steps steps={sour.steps.slice(0, 2)} className="mt-2" />
         <InfoNote tile icon={Wrench} className="mx-4 mt-6">
           Понадобится шейкер — подойдёт банка с плотной крышкой.
         </InfoNote>

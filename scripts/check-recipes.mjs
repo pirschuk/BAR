@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Проверка страницы рецепта на всех коктейлях (390×844, тёмная тема):
+// Проверка страницы рецепта на всех коктейлях (390×844, тёмная тема, порции 4× — самые длинные строки):
 //  1) значения плиток параметров — в одну строку, без обрезки;
 //  2) нет горизонтального скролла;
 //  3) название на обложке — не больше 2 строк;
@@ -50,6 +50,8 @@ for (const c of cocktails) {
   await page.goto(`${base}/cocktail/${c.id}`);
   await page.waitForSelector('[data-param-value]');
   await page.evaluate(() => document.fonts.ready);
+  // самая длинная мета выхода — при 4×
+  await page.getByRole('radio', { name: '4×' }).click();
   const r = await page.evaluate(() => {
     const out = [];
     for (const dd of document.querySelectorAll('[data-param-value]')) {

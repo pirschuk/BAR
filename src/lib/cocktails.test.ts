@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BASES, cocktails, countLabel, filterByBase, getCocktail, scaleIngredient, strengthLevel } from './cocktails';
+import { BASES, cocktails, countLabel, filterByBase, getCocktail, scaleIngredient, servingVolume, strengthLevel } from './cocktails';
 import { barSummary, canMake, missing, toolsFor } from './inventory';
 import {
   EMPTY_FILTERS,
@@ -169,5 +169,15 @@ describe('мне повезёт', () => {
     const d = makeDeck(['negroni']);
     expect(peek(d)).toBeUndefined();
     expect(current(next(d))).toBe('negroni');
+  });
+});
+
+describe('servingVolume', () => {
+  const gin = { ref: 'gin', name: 'Джин', amountMl: 30, category: 'spirit' } as const;
+  it('сумма мл, дэши не считаются', () => {
+    expect(servingVolume({ ingredients: [gin, gin, { ref: 'bitters', name: 'Биттер', amount: 2, unit: 'dash', category: 'bitter' }] }, 1)).toBe('≈ 60 мл');
+  });
+  it('порции и доливка', () => {
+    expect(servingVolume({ ingredients: [gin, { ref: 'tonic', name: 'Тоник', unit: 'top', category: 'soda' }] }, 2)).toBe('2 × 30 мл + доливка');
   });
 });
