@@ -528,7 +528,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="card" title="CocktailCard" note="3:4, 173×231 в сетке. Градиент напитка + бокал; плашка — крепость словом (как в фильтре); под названием — бокал.">
+      <Section id="card" title="CocktailCard" note="3:4, 173×231, r 24. Название — Unbounded; под ним бокал и «· всё есть» зелёным, если всё есть дома. Правый верхний угол — только ♥ избранного, без подложки. Плашка — крепость словом.">
         <div className="grid grid-cols-2 gap-x-3 gap-y-5 px-4">
           <State label="default">
             <CocktailCard cocktail={must('negroni')} />
@@ -539,14 +539,14 @@ export function DesignSystemPage() {
           <State label="длинное название">
             <CocktailCard cocktail={LONG_NAME} />
           </State>
-          <State label="светлый градиент">
-            <CocktailCard cocktail={must('dry-martini')} />
+          <State label="избранное — ♥ без подложки">
+            <CocktailCard cocktail={must('dry-martini')} favorite />
           </State>
-          <State label="всё есть дома — отметка ✓">
+          <State label="всё есть — «· всё есть» в строке бокала">
             <CocktailCard cocktail={must('mojito')} available />
           </State>
-          <State label="всё есть, светлый верх">
-            <CocktailCard cocktail={must('daiquiri')} available />
+          <State label="избранное + всё есть, светлая обложка">
+            <CocktailCard cocktail={must('daiquiri')} available favorite />
           </State>
         </div>
       </Section>

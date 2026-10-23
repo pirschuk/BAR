@@ -103,6 +103,10 @@
   --text-title-2: 22px;
   --text-title-2--line-height: 28px;
   --text-title-2--font-weight: 700;
+  /* название на карточке каталога — font-display, компактнее headline */
+  --text-card: 14px;
+  --text-card--line-height: 19px;
+  --text-card--font-weight: 600;
   /* значения в плитках, текст шагов */
   --text-title-3: 20px;
   --text-title-3--line-height: 26px;
@@ -193,13 +197,6 @@
 /* Стекло поверх обложек */
 @utility glass {
   background: rgb(20 20 22 / 0.55);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
-  backdrop-filter: blur(16px) saturate(1.4);
-}
-
-/* значки на обложках (✓, ♥): плотнее — акцент 12px читается и на светлых обложках */
-@utility glass-strong {
-  background: rgb(20 20 22 / 0.72);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
   backdrop-filter: blur(16px) saturate(1.4);
 }

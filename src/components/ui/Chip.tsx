@@ -32,11 +32,12 @@ export function Chip({ variant = 'filter', selected = false, pressed, icon: Icon
       className={cn(
         'pressable hit-44 inline-flex h-chip shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-subhead font-medium whitespace-nowrap select-none',
         'disabled:pointer-events-none disabled:opacity-40',
+        // язык v2: плитки без рамок
         variant === 'removable'
-          ? 'border-border bg-surface-2 text-fg'
+          ? 'border-transparent bg-tile-strong text-fg'
           : filled
             ? 'border-transparent bg-accent text-accent-fg'
-            : 'border-border bg-surface-2 text-fg',
+            : 'border-transparent bg-tile text-fg',
         (variant === 'option' || Icon) && 'pl-3',
         (variant === 'facet' || variant === 'removable') && 'pr-3',
         className,

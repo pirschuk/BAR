@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 import { Link } from 'react-router';
-import { Check, Heart } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import type { Cocktail } from '../../types/cocktail';
 import { glassLabel, strengthLabel } from '../../lib/cocktails';
 import { cn } from '../../lib/cn';
@@ -14,9 +14,9 @@ type Props = {
   cocktail: Cocktail;
   pressed?: boolean;
   className?: string;
-  /** всё есть в «Моём баре» — аккуратная отметка ✓ в правом верхнем углу */
+  /** всё есть в «Моём баре» — «· всё есть» зелёным в строке бокала */
   available?: boolean;
-  /** в избранном — ♥ сверху, ✓ под ним (♥ — постоянная отметка, ✓ зависит от бара); индикатор, не кнопка */
+  /** в избранном — ♥ без подложки в правом верхнем углу (угол зарезервирован под избранное); не кнопка */
   favorite?: boolean;
   /** узкая карточка ленты (CardRail): без плашки крепости и бокал ниже — иначе текст налезает */
   compact?: boolean;
@@ -28,7 +28,7 @@ export function CocktailCard({ cocktail, pressed, className, available, favorite
     <Link
       to={`/cocktail/${cocktail.id}`}
       data-pressed={pressed || undefined}
-      className={cn('pressable-scale cover-gradient block aspect-card overflow-hidden rounded-card outline-1 -outline-offset-1 outline-border', className)}
+      className={cn('pressable-scale cover-gradient block aspect-card overflow-hidden rounded-tile outline-1 -outline-offset-1 outline-border', className)}
       style={coverStyle(cocktail)}
     >
       {/* compact (лента 140): бокал ниже ростом — двухстрочное название не наезжает */}
@@ -40,24 +40,22 @@ export function CocktailCard({ cocktail, pressed, className, available, favorite
           {strengthLabel(cocktail.strength)}
         </span>
       )}
-      {(available || favorite) && (
-        // столбиком: в строку с плашкой «Безалкогольный» два значка не помещаются даже в 173
-        <span className="absolute top-3 right-3 flex flex-col gap-1">
-          {favorite && (
-            <span className="glass-strong flex size-6 items-center justify-center rounded-full text-on-media-accent" title="В избранном" aria-label="В избранном" role="img">
-              <Heart className="size-3.5 fill-current" aria-hidden />
-            </span>
-          )}
-          {available && (
-            <span className="glass-strong flex size-6 items-center justify-center rounded-full text-on-media-accent" title="Всё есть дома" aria-label="Всё есть дома" role="img">
-              <Check className="size-3.5" strokeWidth={3} aria-hidden />
-            </span>
-          )}
-        </span>
+      {/* правый верхний угол — только избранное: иконка без подложки, тень для светлых обложек */}
+      {favorite && (
+        <Heart
+          className="absolute top-3.5 right-3.5 size-5 fill-current text-on-media-accent drop-shadow-md"
+          aria-label="В избранном"
+          role="img"
+        />
       )}
       <span className="absolute inset-x-3 bottom-3">
-        <span className="line-clamp-2 text-headline text-on-media">{cocktail.name}</span>
-        <span className="mt-0.5 block truncate text-footnote text-on-media-2">{glassLabel(cocktail.glass)}</span>
+        {/* Unbounded 14 (`text-card`): название не спорит с обложкой; длинное слово — перенос, а не обрезка */}
+        <span className="line-clamp-2 font-display text-card wrap-break-word hyphens-auto text-on-media">{cocktail.name}</span>
+        {/* «можно приготовить» — статусом в строке бокала (язык v2: информер, не значок) */}
+        <span className="mt-1 block truncate text-footnote text-on-media-2">
+          {glassLabel(cocktail.glass)}
+          {available && <span className="text-success"> · всё есть</span>}
+        </span>
       </span>
     </Link>
   );

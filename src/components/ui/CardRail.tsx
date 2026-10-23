@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { cn } from '../../lib/cn';
 
 /**
- * Горизонтальная лента карточек [Google — Saved, Insight Timer]: ширина 140, gap 12, поля 16,
+ * Горизонтальная лента карточек [Google — Saved, Insight Timer]: ширина 160 (Unbounded-названия), gap 12, поля 16,
  * следующая карточка выглядывает; прилипание к началу карточки.
  */
 export function CardRail({ label, children, className }: { label: string; children: ReactNode; className?: string }) {
@@ -14,5 +14,5 @@ export function CardRail({ label, children, className }: { label: string; childr
 }
 
 export function CardRailItem({ children }: { children: ReactNode }) {
-  return <li className="w-35 shrink-0 snap-start">{children}</li>;
+  return <li className="w-40 shrink-0 snap-start">{children}</li>;
 }

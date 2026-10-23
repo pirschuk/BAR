@@ -139,7 +139,7 @@ export function CatalogPage() {
     <main className="pb-tabbar">
       {!searching && (
         <header className="pt-safe flex min-h-tap items-center px-4">
-          <h1 className="text-large-title text-fg">Коктейли</h1>
+          <h1 className="font-display text-display text-fg">Коктейли</h1>
         </header>
       )}
 
