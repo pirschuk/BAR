@@ -1,4 +1,5 @@
 import { Check, ChevronRight, Plus } from 'lucide-react';
+import { Link } from 'react-router';
 import { cn } from '../../lib/cn';
 import { IconButton } from './Button';
 
@@ -37,16 +38,64 @@ export function BarItemRow({
   );
 }
 
-/** «Докупить»: что откроет больше коктейлей — название, «откроет N коктейлей», «+» 44 */
-export function UnlockRow({ name, hint, onAdd, pressed }: { name: string; hint: string; onAdd: () => void; pressed?: boolean }) {
+/** Пустая подкатегория — «＋ Добавить газировку»: плитка контуром, тап — шторка на этой подкатегории */
+export function AddRow({ label, onClick, pressed }: { label: string; onClick: () => void; pressed?: boolean }) {
   return (
-    <div className="flex min-h-row-l items-center gap-3 rounded-row bg-tile py-1 pr-3 pl-4">
-      <span className="min-w-0 flex-1">
-        <span className="block truncate text-body text-fg">{name}</span>
-        <span className="block text-footnote text-fg-2">{hint}</span>
-      </span>
-      <IconButton icon={Plus} label={`Добавить ${name} в бар`} size="l" pressed={pressed} onClick={onAdd} className="bg-tile-strong!" />
-    </div>
+    <button
+      type="button"
+      data-pressed={pressed || undefined}
+      onClick={onClick}
+      className="pressable flex min-h-row-l w-full items-center gap-3 rounded-row border border-dashed border-tile-strong px-4 text-left text-body text-fg-2"
+    >
+      <Plus className="size-5 shrink-0 text-accent" aria-hidden />
+      Добавить {label}
+    </button>
+  );
+}
+
+/**
+ * Раздел на главной «Моего бара» [WHOOP, GitHub — My Work]: плитка r 24, Unbounded-заголовок, мета, превью
+ * названий (2 строки); вся карточка — переход на страницу раздела, «+» 44 — шторка раздела (не вложены).
+ */
+export function BarCategoryCard({
+  title,
+  meta,
+  preview,
+  to,
+  onAdd,
+  placeholder,
+  pressed,
+}: {
+  title: string;
+  /** «4 позиции · в 23 коктейлях» */
+  meta: string;
+  /** «Джин, Водка, Laphroaig 10 и ещё 1»; пусто — подсказка placeholder */
+  preview?: string;
+  /** пустой раздел: «Например: джин, ром, вермут» */
+  placeholder: string;
+  to: string;
+  onAdd: () => void;
+  pressed?: boolean;
+}) {
+  return (
+    <section className="relative flex items-start gap-3 rounded-tile bg-tile p-4" aria-label={title}>
+      <Link to={to} data-pressed={pressed || undefined} className="pressable absolute inset-0 rounded-tile" aria-label={`${title}: ${meta}`} />
+      <div className="pointer-events-none relative min-w-0 flex-1">
+        <h2 className="flex items-center gap-1 font-display text-section text-fg">
+          {title}
+          <ChevronRight className="size-5 shrink-0 text-fg-3" aria-hidden />
+        </h2>
+        <p className="mt-1 text-footnote text-fg-2">{meta}</p>
+        <p className={cn('mt-3 line-clamp-2 text-subhead', preview ? 'text-fg' : 'text-fg-3')}>{preview || placeholder}</p>
+      </div>
+      <IconButton
+        icon={Plus}
+        label={`Добавить: ${title.toLowerCase()}`}
+        size="l"
+        onClick={onAdd}
+        className={cn('relative', preview ? 'bg-tile-strong!' : 'bg-accent! text-accent-fg!')}
+      />
+    </section>
   );
 }
 

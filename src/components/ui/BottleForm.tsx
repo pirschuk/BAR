@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { ingredients, normalize } from '../../lib/filters';
-import { SHELVES, shelfOf, shelfOrder, type Bottle } from '../../lib/inventory';
+import { subLabel, subOf, subOrder, type Bottle } from '../../lib/inventory';
+import type { IngredientGroup } from '../../types/cocktail';
 import { Button } from './Button';
 import { Chip } from './Chip';
 import { PickRow } from './BarRows';
@@ -19,13 +20,15 @@ type Props = {
   editing?: boolean;
   /** для витрины: показать выбор типа раскрытым */
   pickingType?: boolean;
+  /** типы только из этих групп (раздел, из которого открыли шторку) */
+  groups?: IngredientGroup[];
 };
 
 /**
  * Своя бутылка [Garmin — Create Food, Alta]: название + «Что это?» (тип из словаря — рецепты видят его,
  * или «Другое — не участвует в рецептах») + заметка строкой (год, возраст). Тип обязателен.
  */
-export function BottleForm({ initial, submitLabel, onSubmit, editing, pickingType }: Props) {
+export function BottleForm({ initial, submitLabel, onSubmit, editing, pickingType, groups }: Props) {
   const [name, setName] = useState(initial.name);
   const [type, setType] = useState<string | null>(initial.ref ?? (editing ? OTHER : null));
   const [note, setNote] = useState(initial.note ?? '');
@@ -35,10 +38,10 @@ export function BottleForm({ initial, submitLabel, onSubmit, editing, pickingTyp
   const options = useMemo(() => {
     const n = normalize(q);
     return ingredients
-      .filter((d) => !d.pantry && (!n || [d.name, ...d.aliases].some((x) => normalize(x).includes(n))))
-      .sort((a, b) => shelfOrder(a.id) - shelfOrder(b.id) || a.name.localeCompare(b.name, 'ru'))
+      .filter((d) => !d.pantry && (!groups || groups.includes(d.group)) && (!n || [d.name, ...d.aliases].some((x) => normalize(x).includes(n))))
+      .sort((a, b) => subOrder(a.id) - subOrder(b.id) || a.name.localeCompare(b.name, 'ru'))
       .slice(0, 8);
-  }, [q]);
+  }, [q, groups]);
 
   const typeName = type === OTHER ? 'Другое' : ingredients.find((d) => d.id === type)?.name;
   const ready = name.trim().length > 0 && type !== null;
@@ -78,7 +81,7 @@ export function BottleForm({ initial, submitLabel, onSubmit, editing, pickingTyp
                   key={d.id}
                   radio
                   title={d.name}
-                  subtitle={SHELVES.find((s) => s.id === shelfOf(d.id))?.label}
+                  subtitle={subLabel(subOf(d.id))}
                   on={type === d.id}
                   onToggle={() => choose(d.id)}
                 />

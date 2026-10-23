@@ -67,29 +67,55 @@ export function barSummary(list: Cocktail[], inv: Inventory): { can: number; nea
   return inv.size ? { can, nearly } : { can: 0, nearly: 0 };
 }
 
-// --- Полка «Моего бара»: секции [Итерация «Мой бар»] ---
+// --- «Мой бар»: два раздела → подкатегории [Мой бар v2] ---
 
-export type ShelfKey = 'alcohol' | 'mixers' | 'tools' | 'other';
+export type SectionKey = 'alcohol' | 'mixers';
+export type SubKey = 'spirit' | 'liqueur' | 'bitter' | 'custom' | 'syrup' | 'juice-fruit' | 'soda' | 'other' | 'tools';
 
-export const SHELVES: { id: ShelfKey; label: string; groups: IngredientGroup[] }[] = [
-  { id: 'alcohol', label: 'Алкоголь', groups: ['spirit', 'liqueur', 'bitter'] },
-  { id: 'mixers', label: 'Миксеры и прочее', groups: ['syrup', 'juice-fruit', 'soda', 'other'] },
-  { id: 'tools', label: 'Инструменты', groups: [] },
-  { id: 'other', label: 'Другое', groups: [] },
+/** label — заголовок подкатегории; addLabel — «Добавить …» (винительный падеж) */
+export type Sub = { id: SubKey; section: SectionKey; label: string; addLabel: string; group?: IngredientGroup };
+
+export const SUBS: Sub[] = [
+  { id: 'spirit', section: 'alcohol', label: 'Крепкий', addLabel: 'крепкий алкоголь', group: 'spirit' },
+  { id: 'liqueur', section: 'alcohol', label: 'Ликёры, вина и вермуты', addLabel: 'ликёр или вермут', group: 'liqueur' },
+  { id: 'bitter', section: 'alcohol', label: 'Биттеры', addLabel: 'биттер', group: 'bitter' },
+  // свои бутылки без типа («Другое»)
+  { id: 'custom', section: 'alcohol', label: 'Своё', addLabel: 'свою бутылку' },
+  { id: 'syrup', section: 'mixers', label: 'Сиропы и сахар', addLabel: 'сироп', group: 'syrup' },
+  { id: 'juice-fruit', section: 'mixers', label: 'Соки, фрукты и травы', addLabel: 'сок или фрукт', group: 'juice-fruit' },
+  { id: 'soda', section: 'mixers', label: 'Газировка и миксеры', addLabel: 'газировку', group: 'soda' },
+  { id: 'other', section: 'mixers', label: 'Прочее', addLabel: 'что-то ещё', group: 'other' },
+  { id: 'tools', section: 'mixers', label: 'Инструменты', addLabel: 'инструмент' },
 ];
 
-export function shelfOf(ref: string | null): ShelfKey {
-  if (!ref) return 'other';
-  if (TOOLS.some((t) => t.id === ref)) return 'tools';
-  const g = getIngredient(ref)?.group;
-  return SHELVES.find((s) => g && s.groups.includes(g))?.id ?? 'mixers';
+export const SECTIONS: { id: SectionKey; label: string; addLabel: string; placeholder: string }[] = [
+  { id: 'alcohol', label: 'Алкоголь', addLabel: 'алкоголь', placeholder: 'Например: джин, ром, вермут' },
+  { id: 'mixers', label: 'Миксеры и прочее', addLabel: 'миксеры и прочее', placeholder: 'Например: лайм, сироп, тоник' },
+];
+
+export function isSectionKey(v: string | undefined): v is SectionKey {
+  return v === 'alcohol' || v === 'mixers';
 }
 
-/** Порядок внутри секции: по группе словаря (крепкое → ликёры → биттеры), затем по алфавиту */
-export function shelfOrder(ref: string | null): number {
-  const g = ref ? getIngredient(ref)?.group : undefined;
-  const all = SHELVES.flatMap((s) => s.groups);
-  return g ? all.indexOf(g) : all.length;
+/** Подкатегория позиции: ингредиент — по группе словаря, инструмент — «Инструменты», бутылка без типа — «Своё» */
+export function subOf(ref: string | null): SubKey {
+  if (!ref) return 'custom';
+  if (TOOLS.some((t) => t.id === ref)) return 'tools';
+  const g = getIngredient(ref)?.group;
+  return SUBS.find((s) => s.group === g)?.id ?? 'other';
+}
+
+export function sectionOf(ref: string | null): SectionKey {
+  const sub = subOf(ref);
+  return SUBS.find((s) => s.id === sub)!.section;
+}
+
+export const subsOf = (section: SectionKey) => SUBS.filter((s) => s.section === section);
+export const subLabel = (id: SubKey) => SUBS.find((s) => s.id === id)!.label;
+
+/** Порядок: по подкатегории (как в SUBS), затем по алфавиту — сравнивать вместе с именем */
+export function subOrder(ref: string | null): number {
+  return SUBS.findIndex((s) => s.id === subOf(ref));
 }
 
 // --- Свои бутылки: «Laphroaig 10» → тип «Шотландский виски» (ref) — рецепты видят тип ---
@@ -115,14 +141,20 @@ export function usage(ref: string, list: Cocktail[]): Cocktail[] {
   return list.filter((c) => c.ingredients.some((i) => i.ref === ref));
 }
 
-/** «Докупить»: позиция, которая единственная не хватает в N рецептах — топ по N */
-export function unlocks(list: Cocktail[], inv: Inventory, limit = 3): { ref: string; name: string; count: number }[] {
+/** «Советуем»: позиция, которая единственная не хватает в N рецептах — топ по N; only — фильтр (раздел) */
+export function unlocks(
+  list: Cocktail[],
+  inv: Inventory,
+  limit = 3,
+  only: (ref: string) => boolean = () => true,
+): { ref: string; name: string; count: number }[] {
   if (!inv.size) return [];
   const counts = new Map<string, { name: string; count: number }>();
   for (const c of list) {
     const m = missing(c, inv);
     if (m.length !== 1) continue;
     const [{ ref, name }] = m as [{ ref: string; name: string }];
+    if (!only(ref)) continue;
     counts.set(ref, { name, count: (counts.get(ref)?.count ?? 0) + 1 });
   }
   return [...counts]

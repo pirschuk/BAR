@@ -23,7 +23,7 @@ import { NavBar } from '../components/ui/NavBar';
 import { FavoriteButton } from '../components/ui/FavoriteButton';
 import { Toast, ToastAction } from '../components/ui/Toast';
 import { CardRail, CardRailItem } from '../components/ui/CardRail';
-import { AddCustomRow, BarItemRow, PickRow, UnlockRow } from '../components/ui/BarRows';
+import { AddCustomRow, AddRow, BarCategoryCard, BarItemRow, PickRow } from '../components/ui/BarRows';
 import { BottleForm } from '../components/ui/BottleForm';
 import { TextField } from '../components/ui/TextField';
 import { BarAddSheet } from '../components/BarAddSheet';
@@ -650,7 +650,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="bar" title="Мой бар" note="Полка вместо каши тегов: BarItemRow (моё), UnlockRow («Докупить»), шторка «Добавить» (PickRow + / ✓, AddCustomRow, BottleForm), шторка позиции. Свои бутылки: название + тип (рецепты видят тип) + заметка.">
+      <Section id="bar" title="Мой бар" note="v2: главная — итог + BarCategoryCard (раздел → страница, «+» → шторка раздела); страница раздела — подкатегории SectionHeader L со счётчиком и «+», пустая — AddRow. Шторка «Добавить» в контексте раздела/подкатегории, «Советуем» вместо «Докупить». Свои бутылки — только в моём баре.">
         <div className="flex flex-col gap-5">
           <State label="BarSummary v2 · есть / 0 / бар пуст" inset>
             <div className="flex flex-col gap-3 px-4">
@@ -667,10 +667,18 @@ export function DesignSystemPage() {
               <BarItemRow title="Лайм" meta="в 12 коктейлях" onClick={() => {}} pressed />
             </div>
           </State>
-          <State label="UnlockRow · default / pressed" inset>
-            <div className="flex flex-col gap-2 px-4">
-              <UnlockRow name="Кампари" hint="откроет 3 коктейля" onAdd={() => {}} />
-              <UnlockRow name="Красный вермут" hint="откроет 1 коктейль" onAdd={() => {}} pressed />
+          <State label="BarCategoryCard · заполнен / пуст / pressed" inset>
+            <div className="flex flex-col gap-3 px-4">
+              <BarCategoryCard title="Алкоголь" meta="4 позиции · в 23 коктейлях" preview="Джин, Водка, Laphroaig 10 и ещё 1" to="/bar/alcohol" placeholder="Например: джин, ром, вермут" onAdd={() => {}} />
+              <BarCategoryCard title="Миксеры и прочее" meta="Пока пусто" to="/bar/mixers" placeholder="Например: лайм, сироп, тоник" onAdd={() => {}} />
+              <BarCategoryCard title="Миксеры и прочее" meta="6 позиций · в 31 коктейле" preview="Лайм, Лимон, Мята и ещё 3" to="/bar/mixers" placeholder="Например: лайм, сироп, тоник" onAdd={() => {}} pressed />
+            </div>
+          </State>
+          <State label="SectionHeader L · счётчик + «+» подкатегории · AddRow (пустая подкатегория, pressed)" inset>
+            <SectionHeader title="Газировка и миксеры" meta={2} trailing={<IconButton icon={Plus} label="Добавить газировку" onClick={() => {}} className="bg-tile!" />} />
+            <div className="mt-1 flex flex-col gap-2 px-4">
+              <AddRow label="газировку" onClick={() => {}} />
+              <AddRow label="биттер" onClick={() => {}} pressed />
             </div>
           </State>
           <State label="PickRow · выкл / вкл / pressed · AddCustomRow" inset>
@@ -696,11 +704,16 @@ export function DesignSystemPage() {
               </div>
             </div>
           </State>
-          <State label="Шторка «Добавить» (интерактивно)" inset>
+          <State label="Шторка «Добавить алкоголь» (интерактивно) · «Советуем»" inset>
             <div className="mx-4 overflow-hidden rounded-sheet border border-border">
               <BarAddSheet
                 open
                 inline
+                section="alcohol"
+                suggestions={[
+                  { ref: 'bourbon', name: 'Бурбон', count: 2 },
+                  { ref: 'campari', name: 'Кампари', count: 1 },
+                ]}
                 onClose={() => {}}
                 owned={demoOwned}
                 bottles={demoBottles}
@@ -715,9 +728,9 @@ export function DesignSystemPage() {
               />
             </div>
           </State>
-          <State label="Шторка «Добавить» · поиск не нашёл" inset>
+          <State label="Шторка на подкатегории «Газировка» · поиск не нашёл" inset>
             <div className="mx-4 overflow-hidden rounded-sheet border border-border">
-              <BarAddSheet open inline initialQuery="Lagavulin 16" onClose={() => {}} owned={demoOwned} bottles={demoBottles} onToggle={() => {}} onCreateBottle={() => {}} />
+              <BarAddSheet open inline section="mixers" sub="soda" suggestions={[]} initialQuery="Fever-Tree" onClose={() => {}} owned={demoOwned} bottles={demoBottles} onToggle={() => {}} onCreateBottle={() => {}} />
             </div>
           </State>
           <State label="Шторка позиции · своя бутылка" inset>

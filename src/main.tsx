@@ -11,6 +11,7 @@ import { canMake, useInventory } from './lib/inventory';
 import type { Cocktail } from './types/cocktail';
 import { TabBar } from './components/ui/TabBar';
 import { BarPage } from './pages/BarPage';
+import { BarSectionPage } from './pages/BarSectionPage';
 import './styles/index.css';
 import { CatalogPage } from './pages/CatalogPage';
 import { CocktailPage } from './pages/CocktailPage';
@@ -89,6 +90,7 @@ const router = createBrowserRouter([
     children: [
       { path: '/', element: <CatalogPage /> },
       { path: '/bar', element: <BarPage /> },
+      { path: '/bar/:section', element: <BarSectionPage /> },
       { path: '/cocktail/:slug', element: <CocktailPage /> },
       // витрина — отдельным чанком: пользователю приложения она не нужна
       { path: '/design-system', lazy: async () => ({ Component: (await import('./pages/DesignSystemPage')).DesignSystemPage }) },

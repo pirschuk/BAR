@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { cocktails } from './cocktails';
-import { effectiveInventory, findBottle, missing, shelfOf, unlocks, usage, type Bottle } from './inventory';
+import { effectiveInventory, findBottle, missing, sectionOf, subOf, unlocks, usage, type Bottle } from './inventory';
 
 const laphroaig: Bottle = { id: 'b1', name: 'Laphroaig 10', ref: 'scotch', note: '10 лет' };
 const other: Bottle = { id: 'b2', name: 'Сироп лаванды', ref: null };
@@ -21,12 +21,17 @@ describe('Мой бар', () => {
     expect(findBottle([laphroaig], '  laphroaig 10 ')).toBe(laphroaig);
     expect(findBottle([laphroaig], 'Lagavulin')).toBeUndefined();
   });
-  it('секции полки', () => {
-    expect(shelfOf('gin')).toBe('alcohol');
-    expect(shelfOf('campari')).toBe('alcohol');
-    expect(shelfOf('lime')).toBe('mixers');
-    expect(shelfOf('tool-shaker')).toBe('tools');
-    expect(shelfOf(null)).toBe('other');
+  it('разделы и подкатегории', () => {
+    expect([subOf('gin'), sectionOf('gin')]).toEqual(['spirit', 'alcohol']);
+    expect([subOf('campari'), sectionOf('campari')]).toEqual(['bitter', 'alcohol']);
+    expect([subOf('soda'), sectionOf('soda')]).toEqual(['soda', 'mixers']);
+    expect([subOf('tool-shaker'), sectionOf('tool-shaker')]).toEqual(['tools', 'mixers']);
+    expect([subOf(null), sectionOf(null)]).toEqual(['custom', 'alcohol']);
+  });
+  it('«Советуем» в рамках раздела', () => {
+    const inv = new Set(['gin', 'sweet-vermouth', 'lime', 'simple-syrup']);
+    const alc = unlocks(cocktails, inv, 10, (r) => sectionOf(r) === 'alcohol');
+    expect(alc.every((u) => sectionOf(u.ref) === 'alcohol')).toBe(true);
   });
   it('«Докупить»: единственная недостающая, по убыванию', () => {
     const inv = new Set(['gin', 'sweet-vermouth', 'lime', 'simple-syrup']);
