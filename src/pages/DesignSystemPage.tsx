@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { ChevronLeft, HardDriveDownload, Moon, SearchX, SlidersHorizontal, Wine, Wrench } from 'lucide-react';
 import { Link } from 'react-router';
-import { GARNISH_AMOUNT, GLASSES, STRENGTH_LABEL, cocktails, servingVolume, countLabel, getCocktail, scaleIngredient, type Servings } from '../lib/cocktails';
+import { GLASSES, STRENGTH_LABEL, cocktails, servingVolume, countLabel, getCocktail, scaleIngredient, type Servings } from '../lib/cocktails';
 import type { Cocktail, Glass } from '../types/cocktail';
 import { Button, IconButton, buttonClass } from '../components/ui/Button';
 import { Chip, ChipDivider, ChipRow, ChipWrap } from '../components/ui/Chip';
@@ -19,10 +19,11 @@ import { EMPTY_FILTERS, applyFilters, type FilterState } from '../lib/filters';
 import { GlassIllustration } from '../components/ui/GlassIllustration';
 import { CocktailCard, coverStyle } from '../components/ui/CocktailCard';
 import { CocktailHero } from '../components/ui/CocktailHero';
+import { NavBar } from '../components/ui/NavBar';
 import { ParamTiles } from '../components/ui/ParamTiles';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { SegmentedControl } from '../components/ui/SegmentedControl';
-import { IngredientList, IngredientTile } from '../components/ui/IngredientTile';
+import { GarnishNote, IngredientList, IngredientTile } from '../components/ui/IngredientTile';
 import { Steps } from '../components/ui/Steps';
 import { STRENGTH_TONE, cocktailParams } from '../components/cocktailStats';
 import { SERVINGS, timeMeta } from './CocktailPage';
@@ -177,6 +178,7 @@ export function DesignSystemPage() {
           ['glass', 'Бокалы'],
           ['card', 'CocktailCard'],
           ['hero', 'CocktailHero'],
+          ['navbar', 'NavBar'],
           ['tint', 'Тинт'],
           ['params', 'ParamTiles'],
           ['section', 'SectionHeader'],
@@ -559,6 +561,17 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
+      <Section id="navbar" title="NavBar" note="Появляется при скролле, когда название на обложке ушло под верх экрана: стекло, «Назад» 36 (тач-зона 44), название headline по центру в одну строку. Скрытый — inert.">
+        <div className="flex flex-col gap-5">
+          <State label="короткое название" inset>
+            <NavBar inline visible title="Негрони" onBack={() => {}} />
+          </State>
+          <State label="длинное — обрезка с …" inset>
+            <NavBar inline visible title={LONG_NAME.name} onBack={() => {}} />
+          </State>
+        </div>
+      </Section>
+
       <Section id="tint" title="Тинт напитка" note="recipe-tint: cover.to 45% поверх --bg под обложкой, дальше растворяется в фон. Плитки — --tile поверх тинта.">
         <div className="grid grid-cols-3 gap-3 px-4">
           {['negroni', 'daiquiri', 'aperol-spritz'].map((id) => (
@@ -623,7 +636,7 @@ export function DesignSystemPage() {
         </div>
       </Tinted>
 
-      <Tinted id="ingredient" title="IngredientTile" note={`Плитка r 16, min-h 52, gap 8; без чекбокса и тапа. Общая сетка: числа по правому краю, единицы — колонка по самой длинной (сейчас ${servings}×). «Долить», «украсить» — стилем значения. Наличие — информер AvailabilityLine: точка + текст, без кнопки.`} cocktail="mojito">
+      <Tinted id="ingredient" title="IngredientTile" note={`Плитка r 16, min-h 52, gap 8; без чекбокса и тапа. Общая сетка: числа по правому краю, единицы — колонка по самой длинной (сейчас ${servings}×). «Долить» — стилем значения. Украшение — GarnishNote под списком. Наличие — информер AvailabilityLine: точка + текст, без кнопки.`} cocktail="mojito">
         <div className="flex flex-col px-4">
           <AvailabilityLine state="all" />
           <AvailabilityLine state="missing" names={['Кампари']} />
@@ -636,19 +649,20 @@ export function DesignSystemPage() {
           ))}
           <IngredientTile name="Кампари" amount={{ value: '30', unit: 'мл' }} missing />
           <IngredientTile name="Яичный белок" optional amount={scaleIngredient(sour.ingredients[3] ?? { ref: 'egg-white', name: '', category: 'egg' }, servings)} />
-          <IngredientTile name={mojito.garnish ?? 'Веточка мяты'} amount={GARNISH_AMOUNT} />
         </IngredientList>
+        <GarnishNote value={mojito.garnish ?? 'Веточка мяты'} className="mx-4 mt-3" />
+        <GarnishNote value="Долька апельсина и коктейльная вишня" className="mx-4 mt-2" />
         <p className="mt-2 px-4 text-footnote text-fg-2">Выход: {servingVolume(mojito, servings)} · Негрони: {servingVolume(must('negroni'), servings)}</p>
-        <p className="mt-2 px-4 text-caption text-fg-3 uppercase">информер наличия: всё / нет дома 1 / 3 / бар пуст (ссылка) · мл / листьев / долить · нет дома · по желанию · украшение «украсить»</p>
+        <p className="mt-2 px-4 text-caption text-fg-3 uppercase">информер наличия: всё / нет дома 1 / 3 / бар пуст (ссылка) · мл / листьев / долить · нет дома · по желанию · украшение — GarnishNote строкой под списком</p>
       </Tinted>
 
-      <Tinted id="steps" title="Steps" note="Таймлайн: номер в круге 28 + вертикальная линия к следующему (у последнего нет), текст title-3 400; без подложек. Подсказка — InfoNote-плитка." cocktail="whiskey-sour">
-        <Steps steps={sour.steps} />
-        <p className="mt-6 px-4 text-caption text-fg-3 uppercase">2 шага</p>
-        <Steps steps={sour.steps.slice(0, 2)} className="mt-2" />
-        <InfoNote tile icon={Wrench} className="mx-4 mt-6">
+      <Tinted id="steps" title="Steps" note="Таймлайн: номер в круге 32 (callout 600) + вертикальная линия к следующему (у последнего нет), текст body, между шагами 32; без подложек. Подсказка про инструмент — InfoNote-плитка перед первым шагом." cocktail="whiskey-sour">
+        <InfoNote tile icon={Wrench} className="mx-4">
           Понадобится шейкер — подойдёт банка с плотной крышкой.
         </InfoNote>
+        <Steps steps={sour.steps} className="mt-5" />
+        <p className="mt-6 px-4 text-caption text-fg-3 uppercase">2 шага</p>
+        <Steps steps={sour.steps.slice(0, 2)} className="mt-2" />
       </Tinted>
 
       <p className="mt-12 px-4 text-center text-caption text-fg-3">В базе {countLabel(cocktails.length)}</p>

@@ -151,5 +151,3 @@ export function servingVolume(c: Pick<Cocktail, 'ingredients'>, servings: Servin
   return `${servings === 1 ? '≈ ' : `${servings} × `}${formatNumber(ml)} мл${top}`;
 }
 
-/** Украшение — строка списка ингредиентов со значением «украсить» (как «долить») */
-export const GARNISH_AMOUNT: Amount = { value: '', unit: 'украсить' };

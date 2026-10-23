@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Wrench } from 'lucide-react';
 import { missing, toolsFor, useInventory } from '../lib/inventory';
 import { AvailabilityLine, InfoNote } from '../components/ui/Availability';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { GARNISH_AMOUNT, getCocktail, scaleIngredient, servingVolume, type Servings } from '../lib/cocktails';
+import { getCocktail, scaleIngredient, servingVolume, type Servings } from '../lib/cocktails';
 import { CocktailHero } from '../components/ui/CocktailHero';
+import { NavBar } from '../components/ui/NavBar';
 import { ParamTiles } from '../components/ui/ParamTiles';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { SegmentedControl } from '../components/ui/SegmentedControl';
-import { IngredientList, IngredientTile } from '../components/ui/IngredientTile';
+import { GarnishNote, IngredientList, IngredientTile } from '../components/ui/IngredientTile';
 import { Steps } from '../components/ui/Steps';
 import { cocktailParams } from '../components/cocktailStats';
 import { coverStyle } from '../components/ui/CocktailCard';
@@ -30,6 +31,18 @@ export function CocktailPage() {
   const location = useLocation();
   const [servings, setServings] = useState<Servings>(1);
   const { inv } = useInventory();
+  // навбар появляется, когда низ обложки (с названием) ушёл под верхние 64px экрана
+  const heroEnd = useRef<HTMLDivElement>(null);
+  const [navVisible, setNavVisible] = useState(false);
+  useEffect(() => {
+    const el = heroEnd.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => e && setNavVisible(!e.isIntersecting && e.boundingClientRect.top < 64), {
+      rootMargin: '-64px 0px 0px 0px',
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [cocktail?.id]);
 
   if (!cocktail) return <NotFoundPage title="Коктейль не найден" />;
 
@@ -43,7 +56,9 @@ export function CocktailPage() {
   return (
     // тинт напитка: цвет обложки продолжается под контентом и растворяется в фоне
     <main className="recipe-tint min-h-svh pb-safe" style={coverStyle(cocktail)}>
+      <NavBar title={cocktail.name} onBack={back} visible={navVisible} />
       <CocktailHero cocktail={cocktail} onBack={back} />
+      <div ref={heroEnd} aria-hidden />
 
       <p className="mt-2 px-4 text-body text-fg-2">{cocktail.description}</p>
       <ParamTiles items={cocktailParams(cocktail)} className="mx-4 mt-5" />
@@ -79,16 +94,17 @@ export function CocktailPage() {
             missing={inv.size > 0 && lackingRefs.has(ing.ref)}
           />
         ))}
-        {cocktail.garnish && <IngredientTile name={cocktail.garnish} amount={GARNISH_AMOUNT} />}
       </IngredientList>
+      {cocktail.garnish && <GarnishNote value={cocktail.garnish} className="mx-4 mt-3" />}
 
       <SectionHeader size="l" title="Приготовление" meta={timeMeta(cocktail.timeMin)} className="mt-10" />
-      <Steps steps={cocktail.steps} className="mt-5" />
+      {/* инструмент нужен до начала — подсказка перед первым шагом */}
       {toolHints.map((t) => (
-        <InfoNote key={t.id} tile icon={Wrench} className="mx-4 mt-6">
+        <InfoNote key={t.id} tile icon={Wrench} className="mx-4 mt-4">
           Понадобится {t.name.toLowerCase()} — {t.substitute}.
         </InfoNote>
       ))}
+      <Steps steps={cocktail.steps} className="mt-5" />
     </main>
   );
 }

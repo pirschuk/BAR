@@ -20,7 +20,7 @@ type Props = {
 
 /**
  * Ингредиент — своя округлая плитка [Apple News]: название слева, объём крупно справа.
- * Не кнопка: отметки «налил» нет. Без числа («долить», «по вкусу», «украсить» у украшения) — слово стилем значения.
+ * Не кнопка: отметки «налил» нет. Без числа («долить», «по вкусу») — слово стилем значения.
  * Только внутри IngredientList.
  */
 export function IngredientTile({ name, amount, optional, missing }: Props) {
@@ -44,5 +44,14 @@ export function IngredientTile({ name, amount, optional, missing }: Props) {
         <span className="col-span-2 text-right text-headline text-fg">{amount.unit}</span>
       )}
     </li>
+  );
+}
+
+/** Украшение — тихая строка под списком (как в Итерации 1), не плитка: «Украшение: апельсиновая цедра» */
+export function GarnishNote({ value, className }: { value: string; className?: string }) {
+  return (
+    <p className={cn('text-subhead text-fg-2', className)}>
+      Украшение: <span className="text-fg">{value.toLowerCase()}</span>
+    </p>
   );
 }
