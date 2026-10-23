@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { ChevronLeft, HardDriveDownload, Heart, Moon, SearchX, SlidersHorizontal, Wine, Wrench } from 'lucide-react';
+import { ChevronLeft, HardDriveDownload, Heart, Plus, Trash2, Moon, SearchX, SlidersHorizontal, Wine, Wrench } from 'lucide-react';
 import { Link } from 'react-router';
 import { GLASSES, STRENGTH_LABEL, cocktails, servingVolume, countLabel, getCocktail, scaleIngredient, type Servings } from '../lib/cocktails';
 import type { Cocktail, Glass } from '../types/cocktail';
@@ -23,6 +23,12 @@ import { NavBar } from '../components/ui/NavBar';
 import { FavoriteButton } from '../components/ui/FavoriteButton';
 import { Toast, ToastAction } from '../components/ui/Toast';
 import { CardRail, CardRailItem } from '../components/ui/CardRail';
+import { AddCustomRow, BarItemRow, PickRow, UnlockRow } from '../components/ui/BarRows';
+import { BottleForm } from '../components/ui/BottleForm';
+import { TextField } from '../components/ui/TextField';
+import { BarAddSheet } from '../components/BarAddSheet';
+import { BarItemSheet } from '../components/BarItemSheet';
+import { usage, type Bottle } from '../lib/inventory';
 import { ParamTiles } from '../components/ui/ParamTiles';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { SegmentedControl } from '../components/ui/SegmentedControl';
@@ -153,6 +159,10 @@ export function DesignSystemPage() {
   const [ck, setCk] = useState(false);
   const [servings, setServings] = useState<Servings>(2);
   const [fav, setFav] = useState(false);
+  // «Мой бар» на витрине — своё состояние, настоящий бар не трогаем
+  const [demoOwned, setDemoOwned] = useState<ReadonlySet<string>>(new Set(['gin', 'lime']));
+  const [demoBottles, setDemoBottles] = useState<Bottle[]>([{ id: 'b-demo', name: 'Laphroaig 10', ref: 'scotch', note: '10 лет' }]);
+  const [field, setField] = useState('');
   const sour = must('whiskey-sour');
   const mojito = must('mojito');
 
@@ -184,6 +194,7 @@ export function DesignSystemPage() {
           ['hero', 'CocktailHero'],
           ['navbar', 'NavBar'],
           ['favorites', 'Избранное'],
+          ['bar', 'Мой бар'],
           ['tint', 'Тинт'],
           ['params', 'ParamTiles'],
           ['section', 'SectionHeader'],
@@ -635,6 +646,106 @@ export function DesignSystemPage() {
             <ChipRow label="Фильтры">
               <Chip variant="removable" icon={Heart} iconClassName="fill-current text-accent">Избранное</Chip>
             </ChipRow>
+          </State>
+        </div>
+      </Section>
+
+      <Section id="bar" title="Мой бар" note="Полка вместо каши тегов: BarItemRow (моё), UnlockRow («Докупить»), шторка «Добавить» (PickRow + / ✓, AddCustomRow, BottleForm), шторка позиции. Свои бутылки: название + тип (рецепты видят тип) + заметка.">
+        <div className="flex flex-col gap-5">
+          <State label="BarSummary v2 · есть / 0 / бар пуст" inset>
+            <div className="flex flex-col gap-3 px-4">
+              <BarSummary can={12} nearly={6} to="/?can=1" />
+              <BarSummary can={0} nearly={3} to="/?can=1" />
+            </div>
+          </State>
+          <State label="BarItemRow · справочная / своя бутылка / «Другое» / инструмент / pressed" inset>
+            <div className="flex flex-col gap-2 px-4">
+              <BarItemRow title="Джин" meta="в 8 коктейлях" onClick={() => {}} />
+              <BarItemRow title="Laphroaig 10" subtitle="Шотландский виски · 10 лет" meta="в 3 коктейлях" onClick={() => {}} />
+              <BarItemRow title="Сироп лаванды" subtitle="Другое" meta="не в рецептах" onClick={() => {}} />
+              <BarItemRow title="Шейкер" subtitle="подскажем замену" meta="в 22 коктейлях" onClick={() => {}} />
+              <BarItemRow title="Лайм" meta="в 12 коктейлях" onClick={() => {}} pressed />
+            </div>
+          </State>
+          <State label="UnlockRow · default / pressed" inset>
+            <div className="flex flex-col gap-2 px-4">
+              <UnlockRow name="Кампари" hint="откроет 3 коктейля" onAdd={() => {}} />
+              <UnlockRow name="Красный вермут" hint="откроет 1 коктейль" onAdd={() => {}} pressed />
+            </div>
+          </State>
+          <State label="PickRow · выкл / вкл / pressed · AddCustomRow" inset>
+            <div className="mx-4 overflow-hidden rounded-card bg-surface">
+              <PickRow title="Джин" subtitle="Алкоголь" on={false} onToggle={() => {}} />
+              <PickRow title="Лайм" subtitle="Миксеры и прочее" on onToggle={() => {}} />
+              <PickRow title="Тоник" on={false} onToggle={() => {}} pressed />
+              <AddCustomRow query="Laphroaig 10" onClick={() => {}} />
+            </div>
+          </State>
+          <State label="TextField" inset>
+            <div className="px-4">
+              <TextField label="Заметка" value={field} onChange={setField} placeholder="Год, возраст — что угодно" hint="Необязательно" />
+            </div>
+          </State>
+          <State label="BottleForm · новая (тип не выбран — кнопка disabled) / правка" inset>
+            <div className="flex flex-col gap-4">
+              <div className="mx-4 rounded-card bg-surface py-4">
+                <BottleForm initial={{ name: 'Laphroaig 10', ref: null }} submitLabel="Добавить в бар" onSubmit={() => {}} />
+              </div>
+              <div className="mx-4 rounded-card bg-surface py-4">
+                <BottleForm editing initial={{ name: 'Laphroaig 10', ref: 'scotch', note: '10 лет' }} submitLabel="Сохранить" onSubmit={() => {}} />
+              </div>
+            </div>
+          </State>
+          <State label="Шторка «Добавить» (интерактивно)" inset>
+            <div className="mx-4 overflow-hidden rounded-sheet border border-border">
+              <BarAddSheet
+                open
+                inline
+                onClose={() => {}}
+                owned={demoOwned}
+                bottles={demoBottles}
+                onToggle={(id) =>
+                  setDemoOwned((prev) => {
+                    const next = new Set(prev);
+                    if (!next.delete(id)) next.add(id);
+                    return next;
+                  })
+                }
+                onCreateBottle={(b) => setDemoBottles((prev) => [...prev, { ...b, id: `b-${prev.length}` }])}
+              />
+            </div>
+          </State>
+          <State label="Шторка «Добавить» · поиск не нашёл" inset>
+            <div className="mx-4 overflow-hidden rounded-sheet border border-border">
+              <BarAddSheet open inline initialQuery="Lagavulin 16" onClose={() => {}} owned={demoOwned} bottles={demoBottles} onToggle={() => {}} onCreateBottle={() => {}} />
+            </div>
+          </State>
+          <State label="Шторка позиции · своя бутылка" inset>
+            <div className="mx-4 overflow-hidden rounded-sheet border border-border">
+              <BarItemSheet
+                inline
+                item={{ id: 'b-demo', title: 'Laphroaig 10', subtitle: 'Шотландский виски', bottle: demoBottles[0], used: usage('scotch', cocktails) }}
+                onClose={() => {}}
+                onRemove={() => {}}
+                onSaveBottle={() => {}}
+                isAvailable={() => false}
+              />
+            </div>
+          </State>
+          <State label="Пустой бар — EmptyState без иконки, два действия" inset>
+            <EmptyState
+              title="Соберите бар за минуту"
+              hint="Отметьте, что есть дома — покажем, что можно приготовить"
+              action={
+                <div className="flex flex-col items-stretch gap-2">
+                  <Button icon={Plus}>Добавить</Button>
+                  <Button variant="plain" size="m">Быстрый старт: базовый бар</Button>
+                </div>
+              }
+            />
+          </State>
+          <State label="Toast · убрано, над таб-баром" inset>
+            <Toast inline icon={Trash2} filled={false} text="«Кампари» убрано" action={<ToastAction>Вернуть</ToastAction>} />
           </State>
         </div>
       </Section>

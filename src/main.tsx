@@ -14,7 +14,6 @@ import { BarPage } from './pages/BarPage';
 import './styles/index.css';
 import { CatalogPage } from './pages/CatalogPage';
 import { CocktailPage } from './pages/CocktailPage';
-import { DesignSystemPage } from './pages/DesignSystemPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // таб-бар — только на корневых экранах; на рецепте обложка во весь экран
@@ -91,7 +90,8 @@ const router = createBrowserRouter([
       { path: '/', element: <CatalogPage /> },
       { path: '/bar', element: <BarPage /> },
       { path: '/cocktail/:slug', element: <CocktailPage /> },
-      { path: '/design-system', element: <DesignSystemPage /> },
+      // витрина — отдельным чанком: пользователю приложения она не нужна
+      { path: '/design-system', lazy: async () => ({ Component: (await import('./pages/DesignSystemPage')).DesignSystemPage }) },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

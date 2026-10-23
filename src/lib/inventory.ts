@@ -67,11 +67,78 @@ export function barSummary(list: Cocktail[], inv: Inventory): { can: number; nea
   return inv.size ? { can, nearly } : { can: 0, nearly: 0 };
 }
 
+// --- Полка «Моего бара»: секции [Итерация «Мой бар»] ---
+
+export type ShelfKey = 'alcohol' | 'mixers' | 'tools' | 'other';
+
+export const SHELVES: { id: ShelfKey; label: string; groups: IngredientGroup[] }[] = [
+  { id: 'alcohol', label: 'Алкоголь', groups: ['spirit', 'liqueur', 'bitter'] },
+  { id: 'mixers', label: 'Миксеры и прочее', groups: ['syrup', 'juice-fruit', 'soda', 'other'] },
+  { id: 'tools', label: 'Инструменты', groups: [] },
+  { id: 'other', label: 'Другое', groups: [] },
+];
+
+export function shelfOf(ref: string | null): ShelfKey {
+  if (!ref) return 'other';
+  if (TOOLS.some((t) => t.id === ref)) return 'tools';
+  const g = getIngredient(ref)?.group;
+  return SHELVES.find((s) => g && s.groups.includes(g))?.id ?? 'mixers';
+}
+
+/** Порядок внутри секции: по группе словаря (крепкое → ликёры → биттеры), затем по алфавиту */
+export function shelfOrder(ref: string | null): number {
+  const g = ref ? getIngredient(ref)?.group : undefined;
+  const all = SHELVES.flatMap((s) => s.groups);
+  return g ? all.indexOf(g) : all.length;
+}
+
+// --- Свои бутылки: «Laphroaig 10» → тип «Шотландский виски» (ref) — рецепты видят тип ---
+
+export type Bottle = { id: string; name: string; ref: string | null; note?: string };
+
+/** Эффективный бар: отметки ∪ типы своих бутылок («Другое» — ref null — в рецептах не участвует) */
+export function effectiveInventory(ids: Inventory, bottles: readonly Bottle[]): Inventory {
+  const out = new Set(ids);
+  for (const b of bottles) if (b.ref) out.add(b.ref);
+  return out;
+}
+
+export function findBottle(bottles: readonly Bottle[], name: string): Bottle | undefined {
+  const n = name.trim().toLowerCase().replace(/ё/g, 'е');
+  return bottles.find((b) => b.name.trim().toLowerCase().replace(/ё/g, 'е') === n);
+}
+
+/** Сколько рецептов использует позицию: ингредиент — по ref, инструмент — по методу */
+export function usage(ref: string, list: Cocktail[]): Cocktail[] {
+  const tool = TOOLS.find((t) => t.id === ref);
+  if (tool) return list.filter((c) => tool.methods.includes(c.method));
+  return list.filter((c) => c.ingredients.some((i) => i.ref === ref));
+}
+
+/** «Докупить»: позиция, которая единственная не хватает в N рецептах — топ по N */
+export function unlocks(list: Cocktail[], inv: Inventory, limit = 3): { ref: string; name: string; count: number }[] {
+  if (!inv.size) return [];
+  const counts = new Map<string, { name: string; count: number }>();
+  for (const c of list) {
+    const m = missing(c, inv);
+    if (m.length !== 1) continue;
+    const [{ ref, name }] = m as [{ ref: string; name: string }];
+    counts.set(ref, { name, count: (counts.get(ref)?.count ?? 0) + 1 });
+  }
+  return [...counts]
+    .map(([ref, v]) => ({ ref, ...v }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'ru'))
+    .slice(0, limit);
+}
+
 // --- Хранение: localStorage, общий стор для всех экранов ---
 
 const KEY = 'bar-inventory-v1';
+const BOTTLES_KEY = 'bar-bottles-v1';
 const listeners = new Set<() => void>();
 let state: Inventory = load();
+let bottles: readonly Bottle[] = loadBottles();
+let effective: Inventory = effectiveInventory(state, bottles);
 /** false — хранилище недоступно (приватный режим): бар живёт до закрытия вкладки */
 export let inventoryPersisted = true;
 
@@ -84,14 +151,39 @@ function load(): Inventory {
   }
 }
 
-function save(next: Inventory) {
-  state = next;
+function loadBottles(): Bottle[] {
   try {
-    localStorage.setItem(KEY, JSON.stringify([...next]));
+    const raw = JSON.parse(localStorage.getItem(BOTTLES_KEY) ?? '[]');
+    if (!Array.isArray(raw)) return [];
+    return raw.filter(
+      (b): b is Bottle =>
+        !!b && typeof b.id === 'string' && typeof b.name === 'string' && (b.ref === null || (typeof b.ref === 'string' && !!getIngredient(b.ref))),
+    );
+  } catch {
+    return [];
+  }
+}
+
+function persist(key: string, value: unknown) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
     inventoryPersisted = true;
   } catch {
     inventoryPersisted = false;
   }
+}
+
+function save(next: Inventory) {
+  state = next;
+  effective = effectiveInventory(state, bottles);
+  persist(KEY, [...next]);
+  listeners.forEach((l) => l());
+}
+
+function saveBottles(next: readonly Bottle[]) {
+  bottles = next;
+  effective = effectiveInventory(state, bottles);
+  persist(BOTTLES_KEY, next);
   listeners.forEach((l) => l());
 }
 
@@ -104,8 +196,14 @@ const subscribe = (l: () => void) => {
   return () => listeners.delete(l);
 };
 
+/**
+ * inv — эффективный бар (отметки ∪ типы бутылок): его видят рецепты, «Могу сделать», 🎲.
+ * owned — только отметки (полка показывает их и бутылки отдельными строками).
+ */
 export function useInventory() {
-  const inv = useSyncExternalStore(subscribe, () => state, () => state);
+  const inv = useSyncExternalStore(subscribe, () => effective, () => effective);
+  const owned = useSyncExternalStore(subscribe, () => state, () => state);
+  const myBottles = useSyncExternalStore(subscribe, () => bottles, () => bottles);
   const toggle = useCallback((id: string) => {
     const next = new Set(state);
     if (!next.delete(id)) next.add(id);
@@ -117,5 +215,17 @@ export function useInventory() {
     next.delete(id);
     save(next);
   }, []);
-  return { inv, toggle, add, remove };
+  /** новая бутылка; дубль по названию — возвращает существующую, не создаёт */
+  const addBottle = useCallback((b: Omit<Bottle, 'id'>): Bottle => {
+    const dup = findBottle(bottles, b.name);
+    if (dup) return dup;
+    const created = { ...b, name: b.name.trim(), id: `b-${Date.now().toString(36)}` };
+    saveBottles([...bottles, created]);
+    return created;
+  }, []);
+  const updateBottle = useCallback((b: Bottle) => saveBottles(bottles.map((x) => (x.id === b.id ? b : x))), []);
+  const removeBottle = useCallback((id: string) => saveBottles(bottles.filter((x) => x.id !== id)), []);
+  /** «Вернуть» после удаления */
+  const restoreBottle = useCallback((b: Bottle) => saveBottles([...bottles.filter((x) => x.id !== b.id), b]), []);
+  return { inv, owned, bottles: myBottles, toggle, add, remove, addBottle, updateBottle, removeBottle, restoreBottle };
 }
