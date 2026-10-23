@@ -77,7 +77,7 @@ export function FilterSheet({ open, facet, value, count, onApply, onClose, barEm
           />
           <CheckRow
             title="Только избранное"
-            subtitle={favEmpty ? 'Отмечайте ♡ на странице коктейля' : 'Коктейли с сердцем'}
+            subtitle={favEmpty ? 'Сначала нажмите сердце на странице коктейля' : 'Коктейли с сердцем'}
             on={draft.fav && !favEmpty}
             disabled={favEmpty}
             onToggle={() => setDraft({ ...draft, fav: !draft.fav })}

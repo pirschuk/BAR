@@ -15,12 +15,14 @@ type ChipProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   selected?: boolean;
   pressed?: boolean;
   icon?: LucideIcon;
+  /** доп. классы иконки: «♥ Избранное» — `fill-current text-accent` */
+  iconClassName?: string;
   /** число на бейдже (например, активные фильтры) */
   badge?: number;
 };
 
 /** Чипс: визуально 36, тач-зона 44, pill */
-export function Chip({ variant = 'filter', selected = false, pressed, icon: Icon, badge, className, children, type = 'button', ...rest }: ChipProps) {
+export function Chip({ variant = 'filter', selected = false, pressed, icon: Icon, iconClassName, badge, className, children, type = 'button', ...rest }: ChipProps) {
   const filled = selected || variant === 'removable';
   return (
     <button
@@ -42,7 +44,7 @@ export function Chip({ variant = 'filter', selected = false, pressed, icon: Icon
       {...rest}
     >
       {variant === 'option' && (selected ? <Check className="size-4" strokeWidth={2.5} aria-hidden /> : <Plus className="size-4" aria-hidden />)}
-      {Icon && <Icon className="size-4" aria-hidden />}
+      {Icon && <Icon className={cn('size-4', iconClassName)} aria-hidden />}
       {children}
       {badge !== undefined && badge > 0 && (
         <span

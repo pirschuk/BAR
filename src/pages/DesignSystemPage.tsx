@@ -595,8 +595,13 @@ export function DesignSystemPage() {
               <FavoriteButton place="bar" on={false} onToggle={() => {}} pressed />
             </div>
           </State>
-          <State label="Toast · на добавление" inset>
-            <Toast inline icon={Heart} text="В избранном" action={<ToastAction to="/?fav=1">Открыть</ToastAction>} />
+          <State label="Toast · на добавление, поверх белого заголовка рецепта" inset>
+            <div className="recipe-tint relative mx-4 overflow-hidden rounded-card pt-3 pb-4" style={coverStyle(must('pina-colada'))}>
+              <p className="px-4 font-display text-section text-fg">Ингредиенты</p>
+              <div className="absolute inset-x-0 top-2">
+                <Toast inline icon={Heart} text="В избранном" action={<ToastAction to="/?fav=1">Открыть</ToastAction>} />
+              </div>
+            </div>
           </State>
           <State label="Обложка с сердцем" inset>
             <div className="mx-4 overflow-hidden rounded-card">
@@ -620,15 +625,15 @@ export function DesignSystemPage() {
           </State>
           <State label="Пусто — HintLine" inset>
             <HintLine icon={Heart} className="px-4">
-              Нажмите ♡ на странице коктейля — он появится здесь
+              Нажмите сердце на странице коктейля — он появится здесь
             </HintLine>
           </State>
           <State label="Каталог ?fav=1, избранное пусто" inset>
-            <EmptyState icon={Heart} title="Здесь будут любимые коктейли" hint="Нажмите ♡ на странице коктейля" action={<Button variant="secondary" size="m">Весь каталог</Button>} />
+            <EmptyState icon={Heart} title="Здесь будут любимые коктейли" hint="Нажмите ♡ на странице коктейля" action={<Button variant="secondary" size="m">Сбросить фильтр</Button>} />
           </State>
           <State label="Чип фильтра" inset>
             <ChipRow label="Фильтры">
-              <Chip variant="removable" icon={Heart}>Избранное</Chip>
+              <Chip variant="removable" icon={Heart} iconClassName="fill-current text-accent">Избранное</Chip>
             </ChipRow>
           </State>
         </div>

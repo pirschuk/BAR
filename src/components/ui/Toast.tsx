@@ -15,7 +15,7 @@ type Props = {
 };
 
 /**
- * Тост [Swiggy, Doji]: тёмная стеклянная пилюля внизу над safe-area, иконка + текст + текстовое действие.
+ * Тост [Swiggy, Doji]: плотное стекло таб-бара (surface 90% + blur) внизу над safe-area — читается поверх белого Unbounded; иконка + текст + текстовое действие.
  * Живёт 3 с, читается скринридером (aria-live). Без таймера — для витрины.
  */
 export function Toast({ icon: Icon, text, action, onDone, inline }: Props) {
@@ -32,8 +32,8 @@ export function Toast({ icon: Icon, text, action, onDone, inline }: Props) {
       role="status"
       aria-live="polite"
     >
-      <div className="pointer-events-auto glass flex h-btn-l items-center gap-3 rounded-full pr-2 pl-4 text-subhead text-on-media motion-safe:animate-toast-in">
-        <Icon className="size-5 shrink-0 fill-current text-on-media-accent" aria-hidden />
+      <div className="pointer-events-auto tabbar-glass flex h-btn-l items-center gap-3 rounded-full pr-2 pl-4 text-subhead text-fg motion-safe:animate-toast-in">
+        <Icon className="size-5 shrink-0 fill-current text-accent" aria-hidden />
         <span className="min-w-0 flex-1 truncate">{text}</span>
         {action}
       </div>
@@ -44,7 +44,7 @@ export function Toast({ icon: Icon, text, action, onDone, inline }: Props) {
 /** Действие тоста — ссылка-текст акцентом, тач-зона 44 */
 export function ToastAction({ to, children, onClick }: { to: string; children: ReactNode; onClick?: () => void }) {
   return (
-    <Link to={to} onClick={onClick} className="pressable inline-flex h-tap shrink-0 items-center rounded-full px-3 text-subhead font-semibold text-on-media-accent">
+    <Link to={to} onClick={onClick} className="pressable inline-flex h-tap shrink-0 items-center rounded-full px-3 text-subhead font-semibold text-accent">
       {children}
     </Link>
   );

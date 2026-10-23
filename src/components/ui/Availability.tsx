@@ -71,8 +71,8 @@ export function InfoNote({ icon: Icon, children, className, tile }: { icon: Luci
 /** Информер-подсказка без подложки: иконка 16 + subhead fg-2 (пустой ряд «Избранное») */
 export function HintLine({ icon: Icon, children, className }: { icon: LucideIcon; children: ReactNode; className?: string }) {
   return (
-    <p className={cn('flex min-h-tap items-center gap-2 text-subhead text-fg-2', className)}>
-      <Icon className="size-4 shrink-0" aria-hidden />
+    <p className={cn('flex min-h-tap items-start gap-2 py-3 text-subhead text-fg-2', className)}>
+      <Icon className="mt-0.5 size-4 shrink-0" aria-hidden />
       <span className="min-w-0">{children}</span>
     </p>
   );

@@ -16,7 +16,7 @@ type Props = {
   className?: string;
   /** всё есть в «Моём баре» — аккуратная отметка ✓ в правом верхнем углу */
   available?: boolean;
-  /** в избранном — ♥ под ✓ (индикатор, не кнопка: карточка — одна ссылка) */
+  /** в избранном — ♥ сверху, ✓ под ним (♥ — постоянная отметка, ✓ зависит от бара); индикатор, не кнопка */
   favorite?: boolean;
   /** узкая карточка ленты (CardRail): без плашки крепости и бокал ниже — иначе текст налезает */
   compact?: boolean;
@@ -43,14 +43,14 @@ export function CocktailCard({ cocktail, pressed, className, available, favorite
       {(available || favorite) && (
         // столбиком: в строку с плашкой «Безалкогольный» два значка не помещаются даже в 173
         <span className="absolute top-3 right-3 flex flex-col gap-1">
-          {available && (
-            <span className="glass flex size-6 items-center justify-center rounded-full text-on-media-accent" title="Всё есть дома" aria-label="Всё есть дома" role="img">
-              <Check className="size-3.5" strokeWidth={3} aria-hidden />
+          {favorite && (
+            <span className="glass-strong flex size-6 items-center justify-center rounded-full text-on-media-accent" title="В избранном" aria-label="В избранном" role="img">
+              <Heart className="size-3.5 fill-current" aria-hidden />
             </span>
           )}
-          {favorite && (
-            <span className="glass flex size-6 items-center justify-center rounded-full text-on-media-accent" title="В избранном" aria-label="В избранном" role="img">
-              <Heart className="size-3 fill-current" aria-hidden />
+          {available && (
+            <span className="glass-strong flex size-6 items-center justify-center rounded-full text-on-media-accent" title="Всё есть дома" aria-label="Всё есть дома" role="img">
+              <Check className="size-3.5" strokeWidth={3} aria-hidden />
             </span>
           )}
         </span>

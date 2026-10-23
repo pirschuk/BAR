@@ -46,6 +46,38 @@ export function BarPage() {
   }, [q]);
   const selected: Item[] = [...inv].map((id) => getIngredient(id) ?? TOOL_ITEMS.find((t) => t.id === id)).filter((d): d is Item => !!d);
 
+  // Избранное — первой секцией: лента [Google — Saved], «Все ›» — каталог с фильтром.
+  // Пусты и бар, и избранное — главное «Бар пока пуст» выше, подсказка про избранное после него.
+  const favLast = favs.length === 0 && inv.size === 0;
+  const favSection = (
+    <section className={favLast ? 'mt-6' : 'mt-4'} aria-label="Избранное">
+      <SectionHeader
+        title="Избранное"
+        action={
+          favs.length > 0 && (
+            <Link to="/?fav=1" className="pressable -mr-2 inline-flex h-tap items-center gap-0.5 rounded-control px-2 text-subhead text-fg-2">
+              Все {favs.length}
+              <ChevronRight className="size-4" aria-hidden />
+            </Link>
+          )
+        }
+      />
+      {favs.length > 0 ? (
+        <CardRail label="Избранные коктейли" className="mt-2">
+          {favs.map((c) => (
+            <CardRailItem key={c.id}>
+              <CocktailCard cocktail={c} available={canMake(c, inv)} compact />
+            </CardRailItem>
+          ))}
+        </CardRail>
+      ) : (
+        <HintLine icon={Heart} className="px-4">
+          Нажмите сердце на странице коктейля — он появится здесь
+        </HintLine>
+      )}
+    </section>
+  );
+
   return (
     <main className="pb-tabbar">
       <header className="pt-safe px-4">
@@ -63,33 +95,7 @@ export function BarPage() {
         </InfoNote>
       )}
 
-      {/* Избранное — первой секцией: лента карточек [Google — Saved], «Все ›» — каталог с фильтром */}
-      <section className="mt-4" aria-label="Избранное">
-        <SectionHeader
-          title="Избранное"
-          action={
-            favs.length > 0 && (
-              <Link to="/?fav=1" className="pressable -mr-2 inline-flex h-tap items-center gap-0.5 rounded-control px-2 text-subhead text-fg-2">
-                Все {favs.length}
-                <ChevronRight className="size-4" aria-hidden />
-              </Link>
-            )
-          }
-        />
-        {favs.length > 0 ? (
-          <CardRail label="Избранные коктейли" className="mt-2">
-            {favs.map((c) => (
-              <CardRailItem key={c.id}>
-                <CocktailCard cocktail={c} available={canMake(c, inv)} compact />
-              </CardRailItem>
-            ))}
-          </CardRail>
-        ) : (
-          <HintLine icon={Heart} className="px-4">
-            Нажмите ♡ на странице коктейля — он появится здесь
-          </HintLine>
-        )}
-      </section>
+      {!favLast && favSection}
 
       {inv.size === 0 ? (
         <EmptyState
@@ -107,6 +113,8 @@ export function BarPage() {
           <BarSummary can={summary.can} nearly={summary.nearly} to="/?can=1" />
         </div>
       )}
+
+      {favLast && favSection}
 
       <div className={`${inv.size ? 'mt-6' : 'mt-0'} px-4`}>
         <SearchBar value={query} onChange={setQuery} placeholder="Найти ингредиент" aria-label="Найти ингредиент" showCancel={!!query} onCancel={() => setQuery('')} />

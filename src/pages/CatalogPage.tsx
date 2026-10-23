@@ -176,7 +176,7 @@ export function CatalogPage() {
             </Chip>
             <ChipDivider />
             {f.fav && (
-              <Chip variant="removable" icon={Heart} aria-label="Убрать фильтр «Избранное»" onClick={() => setFilters({ ...f, fav: false })}>
+              <Chip variant="removable" icon={Heart} iconClassName="fill-current text-accent" aria-label="Убрать фильтр «Избранное»" onClick={() => setFilters({ ...f, fav: false })}>
                 Избранное
               </Chip>
             )}
@@ -264,7 +264,7 @@ export function CatalogPage() {
               hint="Нажмите ♡ на странице коктейля"
               action={
                 <Button variant="secondary" size="m" onClick={() => setFilters({ ...f, fav: false })}>
-                  Весь каталог
+                  Сбросить фильтр
                 </Button>
               }
             />
