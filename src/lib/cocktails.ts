@@ -42,18 +42,20 @@ export function countLabel(n: number): string {
 
 // --- Бокалы: утверждённый список, у каждого свой силуэт ---
 
-export const GLASSES: { id: Glass; label: string }[] = [
-  { id: 'rocks', label: 'Рокс' },
-  { id: 'highball', label: 'Хайбол' },
-  { id: 'collins', label: 'Коллинз' },
-  { id: 'coupe', label: 'Купе' },
-  { id: 'martini', label: 'Мартини' },
-  { id: 'flute', label: 'Флюте' },
-  { id: 'wine', label: 'Винный' },
-  { id: 'hurricane', label: 'Харрикейн' },
-  { id: 'copper-mug', label: 'Медная кружка' },
-  { id: 'irish-coffee', label: 'Айриш-кофе' },
+/** Утверждённые бокалы; ml — стандартный барный объём подачи (для порции с доливкой «до верха») */
+export const GLASSES: { id: Glass; label: string; ml: number }[] = [
+  { id: 'rocks', label: 'Рокс', ml: 250 },
+  { id: 'highball', label: 'Хайбол', ml: 300 },
+  { id: 'collins', label: 'Коллинз', ml: 350 },
+  { id: 'coupe', label: 'Купе', ml: 180 },
+  { id: 'martini', label: 'Мартини', ml: 180 },
+  { id: 'flute', label: 'Флюте', ml: 180 },
+  { id: 'wine', label: 'Винный', ml: 400 },
+  { id: 'hurricane', label: 'Харрикейн', ml: 450 },
+  { id: 'copper-mug', label: 'Медная кружка', ml: 400 },
+  { id: 'irish-coffee', label: 'Айриш-кофе', ml: 250 },
 ];
+const GLASS_ML = Object.fromEntries(GLASSES.map((g) => [g.id, g.ml])) as Record<Glass, number>;
 
 const GLASS_LABEL = Object.fromEntries(GLASSES.map((g) => [g.id, g.label])) as Record<Glass, string>;
 
@@ -142,12 +144,16 @@ export function scaleIngredient(ing: Ingredient, servings: Servings): Amount {
 }
 
 /**
- * Выход порции для меты «Ингредиентов» [Alma, Apple News]: сумма мл без дэшей и бар. ложек;
- * доливка не измерена — «+ доливка». 1× — «≈ 90 мл», 2× — «2 × 90 мл».
+ * Объём одной порции, мл: есть доливка «до верха» — объём бокала (GLASSES.ml);
+ * иначе — сумма мл ингредиентов (дэши и бар. ложки не считаются).
  */
-export function servingVolume(c: Pick<Cocktail, 'ingredients'>, servings: Servings): string {
+export function portionMl(c: Pick<Cocktail, 'ingredients' | 'glass'>): number {
   const ml = c.ingredients.reduce((sum, i) => sum + (i.unit === 'top' ? 0 : (i.amountMl ?? 0)), 0);
-  const top = c.ingredients.some((i) => i.unit === 'top') ? ' + доливка' : '';
-  return `${servings === 1 ? '≈ ' : `${servings} × `}${formatNumber(ml)} мл${top}`;
+  return c.ingredients.some((i) => i.unit === 'top') ? Math.max(ml, GLASS_ML[c.glass]) : ml;
+}
+
+/** Выход порции для строки 1×/2×/4× [Alma, Apple News]: «≈ 90 мл», «2 × 90 мл» */
+export function servingVolume(c: Pick<Cocktail, 'ingredients' | 'glass'>, servings: Servings): string {
+  return `${servings === 1 ? '≈ ' : `${servings} × `}${formatNumber(portionMl(c))} мл`;
 }
 
