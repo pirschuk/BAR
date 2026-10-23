@@ -147,8 +147,6 @@
   /* язык v2 (Итерация 3): крупнее и круглее */
   --radius-tile: 24px;
   --radius-row: 16px;
-  /* подписи капсом («ШАГ 1») */
-  --tracking-caps: 0.08em;
   --radius-control: 12px;
   --radius-thumb: 8px;
   --radius-sheet: 28px;
