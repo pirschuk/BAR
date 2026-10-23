@@ -152,8 +152,8 @@ export function portionMl(c: Pick<Cocktail, 'ingredients' | 'glass'>): number {
   return c.ingredients.some((i) => i.unit === 'top') ? Math.max(ml, GLASS_ML[c.glass]) : ml;
 }
 
-/** Выход порции для строки 1×/2×/4× [Alma, Apple News]: «≈ 90 мл», «2 × 90 мл» */
+/** Итоговый объём для строки 1×/2×/4× [Alma, Apple News]: порция × множитель — «≈ 90 мл», при 2× «≈ 180 мл» */
 export function servingVolume(c: Pick<Cocktail, 'ingredients' | 'glass'>, servings: Servings): string {
-  return `${servings === 1 ? '≈ ' : `${servings} × `}${formatNumber(portionMl(c))} мл`;
+  return `≈ ${formatNumber(portionMl(c) * servings)} мл`;
 }
 
