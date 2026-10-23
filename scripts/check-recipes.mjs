@@ -30,7 +30,7 @@ const ratio = (a, b) => {
 const css = readFileSync(new URL('../src/styles/index.css', import.meta.url), 'utf8');
 const token = (name) => hex(css.match(new RegExp(`--${name}:\\s*(#[0-9a-f]{6})`, 'i'))[1]);
 const [BG, FG, FG2] = [token('bg'), token('text'), token('text-2')];
-const mixes = ['top', 'low'].map((k) => Number(css.match(new RegExp(`--tint-${k}: color-mix\\(in srgb, var\\(--cover-to\\) (\\d+)%`))[1]) / 100);
+const mixes = ['top'].map((k) => Number(css.match(new RegExp(`--tint-${k}: color-mix\\(in srgb, var\\(--cover-to\\) (\\d+)%`))[1]) / 100);
 
 const problems = [];
 for (const c of cocktails) {

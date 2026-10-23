@@ -31,8 +31,8 @@ export default defineConfig({
         display: 'standalone',
         orientation: 'portrait',
         // = --bg тёмной темы (styles/index.css)
-        background_color: '#0E0E10',
-        theme_color: '#0E0E10',
+        background_color: '#000000',
+        theme_color: '#000000',
         icons: [
           // пути относительно манифеста (он лежит в base)
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },

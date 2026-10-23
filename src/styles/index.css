@@ -26,7 +26,8 @@
 :root {
   /* светлой темы нет (решение владельца, Итерация 3) */
   color-scheme: dark;
-  --bg: #0e0e10;
+  /* основной фон системы — чистый чёрный: все градиенты уходят в него (решение владельца) */
+  --bg: #000000;
   --surface: #1a1a1d;
   --surface-2: #26262a;
   --text: #f5f5f7;
@@ -232,9 +233,8 @@
    Нужны --cover-from / --cover-to на элементе или предке (coverStyle). */
 @utility recipe-tint {
   --tint-top: color-mix(in srgb, var(--cover-to) 45%, var(--bg));
-  /* до конца страницы остаётся лёгкий тинт — ингредиенты и шаги тоже «в цвете напитка» */
-  --tint-low: color-mix(in srgb, var(--cover-to) 15%, var(--bg));
-  background: linear-gradient(to bottom, var(--tint-top) 0, var(--tint-top) 55svh, var(--tint-low) calc(55svh + 1000px)) var(--tint-low);
+  /* тинт плавно тянется через всю страницу и к концу уходит в чёрный фон */
+  background: linear-gradient(to bottom, var(--tint-top) 0, var(--tint-top) 55svh, var(--bg) 100%) var(--bg);
 }
 /* низ обложки переходит в цвет тинта — без шва */
 @utility hero-fade {
@@ -343,7 +343,7 @@
 @utility cover-gradient {
   background:
     radial-gradient(60% 45% at 50% 42%, rgb(255 255 255 / 0.16), transparent 70%),
-    linear-gradient(170deg, var(--cover-from), var(--cover-to) 80%);
+    linear-gradient(170deg, var(--cover-from), var(--cover-to) 65%, var(--bg));
 }
 
 @layer components {
