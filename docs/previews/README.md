@@ -32,6 +32,7 @@
 | Шаг 4c | [step4c-design-system-dark.png](step4c-design-system-dark.png) · [light](step4c-design-system-light.png) | Витрина: + LuckySheet / LuckyDeck | 2026-10-22 |
 | Шаг 5 · `/look` карточки | [до](step5-cards-before-dark.png) → [после dark](step5-cards-dark.png) · [light](step5-cards-light.png) · [харрикейн](step5-cards-hurricane-dark.png) | Карточки: крепость словом вместо «30%», бокал под названием | 2026-10-23 |
 | Шаг 5 | [step5-glasses.png](step5-glasses.png) | Утверждённый список — 10 бокалов, у каждого свой силуэт, без льда | 2026-10-23 |
+| Шаг 6 · `/ref` страница коктейля | [step6-refs-board.png](step6-refs-board.png) | 8 референсов: градиент в теле страницы, плитки 2×2, ингредиенты плитками, крупные шаги | 2026-10-23 |
 
 ![Шаг 1 — референсы](step1-refs-board.png)
 
