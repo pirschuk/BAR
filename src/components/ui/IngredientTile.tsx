@@ -1,44 +1,62 @@
+import type { ReactNode } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import type { Amount } from '../../lib/cocktails';
+import { cn } from '../../lib/cn';
+
+/**
+ * Список ингредиентов — общая сетка «название | число | единица» (subgrid): числа выровнены по правому краю,
+ * колонка единиц шириной по самой длинной единице в рецепте — справа нет пустоты.
+ */
+export function IngredientList({ children, className }: { children: ReactNode; className?: string }) {
+  return <ul className={cn('grid grid-cols-[minmax(0,1fr)_auto_auto] gap-y-2', className)}>{children}</ul>;
+}
 
 type Props = {
   name: string;
-  amount?: Amount;
+  amount: Amount;
   optional?: boolean;
   /** нет в «Моём баре» — тег */
   missing?: boolean;
-  /** подпись под названием вместо тегов («Украшение») */
-  note?: string;
-  icon?: LucideIcon;
 };
 
 /**
- * Ингредиент — своя округлая плитка [Apple News]: название слева, объём крупно справа колонкой.
- * Не кнопка: отметки «налил» нет (решение владельца, Итерация 3).
+ * Ингредиент — своя округлая плитка [Apple News]: название слева, объём крупно справа.
+ * Не кнопка: отметки «налил» нет. Без числа («долить», «по вкусу») — слово стилем значения, а не единицы.
+ * Только внутри IngredientList.
  */
-export function IngredientTile({ name, amount, optional, missing, note, icon: Icon }: Props) {
+export function IngredientTile({ name, amount, optional, missing }: Props) {
   return (
-    <div className="flex min-h-row-l items-center gap-3 rounded-row bg-tile px-4 py-3">
-      <span className="min-w-0 flex-1">
+    <li className="col-span-3 grid min-h-row-l grid-cols-subgrid items-center rounded-row bg-tile px-4 py-3">
+      <span className="min-w-0 pr-3">
         <span className="block text-body text-fg">{name}</span>
-        {(optional || missing || note) && (
+        {(optional || missing) && (
           <span className="mt-1 flex items-center gap-2">
-            {missing && (
-              <span className="inline-flex h-5 items-center rounded-full bg-tile-strong px-2 text-caption text-fg">нет дома</span>
-            )}
+            {missing && <span className="inline-flex h-5 items-center rounded-full bg-tile-strong px-2 text-caption text-fg">нет дома</span>}
             {optional && <span className="text-footnote text-fg-2">по желанию</span>}
-            {note && <span className="text-footnote text-fg-2">{note}</span>}
           </span>
         )}
       </span>
-      {amount && (
-        <span className="flex shrink-0 items-baseline gap-1.5">
-          <span className="min-w-9 text-right text-headline text-fg tabular-nums">{amount.value}</span>
-          <span className="w-14 text-footnote text-fg-2">{amount.unit}</span>
-        </span>
+      {amount.value ? (
+        <>
+          <span className="text-right text-headline text-fg tabular-nums">{amount.value}</span>
+          <span className="pl-1.5 text-footnote text-fg-2">{amount.unit}</span>
+        </>
+      ) : (
+        <span className="col-span-2 text-right text-headline text-fg">{amount.unit}</span>
       )}
-      {/* иконка справа, в колонке объёма: левый край текста у всех плиток один */}
-      {Icon && <Icon className="size-5 shrink-0 text-fg-2" aria-hidden />}
+    </li>
+  );
+}
+
+/** Украшение — по логике ингредиента: слева что это («Украшение» с иконкой), справа чем украсить */
+export function GarnishTile({ value, icon: Icon, className }: { value: string; icon: LucideIcon; className?: string }) {
+  return (
+    <div className={cn('flex min-h-row-l items-center gap-3 rounded-row bg-tile px-4 py-3', className)}>
+      <span className="flex shrink-0 items-center gap-1.5 text-body text-fg-2">
+        <Icon className="size-4" aria-hidden />
+        Украшение
+      </span>
+      <span className="min-w-0 flex-1 text-right text-body text-fg">{value}</span>
     </div>
   );
 }

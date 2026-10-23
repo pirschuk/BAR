@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { ChevronLeft, Citrus, HardDriveDownload, Moon, SearchX, SlidersHorizontal, Wine, Wrench } from 'lucide-react';
+import { ChevronLeft, HardDriveDownload, Moon, SearchX, SlidersHorizontal, Sparkles, Wine, Wrench } from 'lucide-react';
 import { Link } from 'react-router';
-import { GLASSES, cocktails, countLabel, getCocktail, scaleIngredient, type Servings } from '../lib/cocktails';
+import { GLASSES, STRENGTH_LABEL, cocktails, countLabel, getCocktail, scaleIngredient, type Servings } from '../lib/cocktails';
 import type { Cocktail, Glass } from '../types/cocktail';
 import { Button, IconButton, buttonClass } from '../components/ui/Button';
 import { Chip, ChipDivider, ChipRow, ChipWrap } from '../components/ui/Chip';
@@ -19,13 +19,13 @@ import { EMPTY_FILTERS, applyFilters, type FilterState } from '../lib/filters';
 import { GlassIllustration } from '../components/ui/GlassIllustration';
 import { CocktailCard, coverStyle } from '../components/ui/CocktailCard';
 import { CocktailHero } from '../components/ui/CocktailHero';
-import { ParamTiles, StrengthTicks } from '../components/ui/ParamTiles';
+import { ParamTiles } from '../components/ui/ParamTiles';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { SegmentedControl } from '../components/ui/SegmentedControl';
-import { IngredientTile } from '../components/ui/IngredientTile';
+import { GarnishTile, IngredientList, IngredientTile } from '../components/ui/IngredientTile';
 import { Steps } from '../components/ui/Steps';
-import { cocktailParams } from '../components/cocktailStats';
-import { SERVINGS, stepsMeta } from './CocktailPage';
+import { STRENGTH_TONE, cocktailParams } from '../components/cocktailStats';
+import { SERVINGS, timeMeta } from './CocktailPage';
 
 // --- оболочка витрины ---
 
@@ -475,7 +475,7 @@ export function DesignSystemPage() {
           <AvailabilityBanner state="empty-bar" />
           <BarSummary can={7} nearly={5} to="/?can=1" />
           <BarSummary can={0} nearly={2} to="/?can=1" />
-          <InfoNote icon={Wrench}>Нужен шейкер — подойдёт банка с плотной крышкой.</InfoNote>
+          <InfoNote icon={Wrench}>Понадобится шейкер — подойдёт банка с плотной крышкой.</InfoNote>
           <InfoNote icon={HardDriveDownload}>Браузер не даёт сохранить бар — он сохранится до закрытия вкладки.</InfoNote>
         </div>
       </Section>
@@ -572,7 +572,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Tinted id="params" title="ParamTiles" note="2×2, gap 12, плитка r 24: иконка в круге 32 → значение title-3 одной строкой → подпись. Крепость — словом + 4 деления по ABV: ≤10 · ≤18 · ≤26 · >26 %." cocktail="negroni">
+      <Tinted id="params" title="ParamTiles" note="2×2, gap 12, плитка r 24: сверху подпись с иконкой 16, под ней значение title-3 одной строкой. Крепость — словом и цветом шкалы, без делений." cocktail="negroni">
         <div className="flex flex-col gap-5 px-4">
           <State label="Негрони">
             <ParamTiles items={cocktailParams(must('negroni'))} />
@@ -583,20 +583,22 @@ export function DesignSystemPage() {
           <State label="Московский мул">
             <ParamTiles items={cocktailParams(must('moscow-mule'))} />
           </State>
-          <State label="StrengthTicks · уровни 0–4">
-            <div className="flex gap-4">
-              {([0, 1, 2, 3, 4] as const).map((level) => (
-                <StrengthTicks key={level} level={level} />
+          <State label="Шкала крепости — цвет значения">
+            <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+              {(Object.keys(STRENGTH_LABEL) as (keyof typeof STRENGTH_LABEL)[]).map((k) => (
+                <span key={k} className={`text-headline ${STRENGTH_TONE[k]}`}>
+                  {STRENGTH_LABEL[k]}
+                </span>
               ))}
             </div>
           </State>
         </div>
       </Tinted>
 
-      <Tinted id="section" title="SectionHeader" note="l — Unbounded 24/30 + контрол или мета-пилюля h 28; m — title-2 (каталог, бар)." cocktail="daiquiri">
+      <Tinted id="section" title="SectionHeader" note="l — Unbounded 24/30, мета-пилюля «~N мин» справа в строке заголовка, контрол — строкой ниже; m — title-2 (каталог, бар)." cocktail="daiquiri">
         <div className="flex flex-col gap-3">
           <SectionHeader size="l" title="Ингредиенты" action={<SegmentedControl size="l" label="Порции" options={SERVINGS} value={servings} onChange={setServings} />} />
-          <SectionHeader size="l" title="Приготовление" meta={stepsMeta(4, 3)} />
+          <SectionHeader size="l" title="Приготовление" meta={timeMeta(3)} />
           <SectionHeader title="Похожие" />
         </div>
       </Tinted>
@@ -615,39 +617,29 @@ export function DesignSystemPage() {
         </div>
       </Tinted>
 
-      <Tinted id="ingredient" title="IngredientTile" note={`Плитка r 16, min-h 52, gap 8; без чекбокса и тапа. Объём — колонкой справа (сейчас ${servings}×). Наличие — первой плиткой.`} cocktail="mojito">
-        <ul className="flex flex-col gap-2 px-4">
-          <li>
-            <AvailabilityBanner tile state="all" />
-          </li>
-          <li>
-            <AvailabilityBanner tile state="missing" names={['Кампари']} onHave={() => {}} />
-          </li>
-          <li>
-            <AvailabilityBanner tile state="empty-bar" />
-          </li>
+      <Tinted id="ingredient" title="IngredientTile" note={`Плитка r 16, min-h 52, gap 8; без чекбокса и тапа. Общая сетка: числа по правому краю, единицы — колонка по самой длинной (сейчас ${servings}×). «Долить» — стилем значения. Наличие — отдельный статус над списком.`} cocktail="mojito">
+        <div className="flex flex-col gap-2 px-4">
+          <AvailabilityBanner tile state="all" />
+          <AvailabilityBanner tile state="missing" names={['Кампари']} onHave={() => {}} />
+          <AvailabilityBanner tile state="missing" names={['Кампари', 'Красный вермут', 'Апельсиновый биттер']} onHave={() => {}} />
+          <AvailabilityBanner tile state="empty-bar" />
+        </div>
+        <IngredientList className="mx-4 mt-4">
           {mojito.ingredients.map((ing) => (
-            <li key={ing.name}>
-              <IngredientTile name={ing.name} amount={scaleIngredient(ing, servings)} />
-            </li>
+            <IngredientTile key={ing.name} name={ing.name} amount={scaleIngredient(ing, servings)} />
           ))}
-          <li>
-            <IngredientTile name="Кампари" amount={{ value: '30', unit: 'мл' }} missing />
-          </li>
-          <li>
-            <IngredientTile name="Яичный белок" optional amount={scaleIngredient(sour.ingredients[3] ?? { ref: 'egg-white', name: '', category: 'egg' }, servings)} />
-          </li>
-          <li>
-            <IngredientTile name={mojito.garnish ?? 'Веточка мяты'} note="Украшение" icon={Citrus} />
-          </li>
-        </ul>
-        <p className="mt-2 px-4 text-caption text-fg-3 uppercase">наличие: всё / не хватает / бар пуст · мл / лист / долить · нет дома · по желанию · украшение</p>
+          <IngredientTile name="Кампари" amount={{ value: '30', unit: 'мл' }} missing />
+          <IngredientTile name="Яичный белок" optional amount={scaleIngredient(sour.ingredients[3] ?? { ref: 'egg-white', name: '', category: 'egg' }, servings)} />
+        </IngredientList>
+        <GarnishTile value={mojito.garnish ?? 'Веточка мяты'} icon={Sparkles} className="mx-4 mt-2" />
+        <GarnishTile value="Долька апельсина и коктейльная вишня" icon={Sparkles} className="mx-4 mt-2" />
+        <p className="mt-2 px-4 text-caption text-fg-3 uppercase">наличие — статус над списком: всё / не хватает 1 / 3 / бар пуст · мл / листа / долить · нет дома · по желанию · украшение</p>
       </Tinted>
 
       <Tinted id="steps" title="Steps" note="«ШАГ N» caption капсом + текст title-3 (400), между шагами 24; без карточек. Подсказка — InfoNote-плитка." cocktail="whiskey-sour">
         <Steps steps={sour.steps} />
         <InfoNote tile icon={Wrench} className="mx-4 mt-6">
-          Нужен шейкер — подойдёт банка с плотной крышкой.
+          Понадобится шейкер — подойдёт банка с плотной крышкой.
         </InfoNote>
       </Tinted>
 

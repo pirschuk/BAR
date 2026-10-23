@@ -10,40 +10,58 @@ type BannerProps =
   | { state: 'all' }
   | { state: 'missing'; names: string[]; onHave: () => void };
 
-/** Наличие в рецепте: «Всё есть дома» / «Не хватает N: …» + «Это есть» / приглашение заполнить бар */
+/**
+ * Наличие в рецепте: «Всё есть дома» / «Не хватает N: …» + «Это есть» / приглашение заполнить бар.
+ * tile — статус над списком ингредиентов на тинте: не плитка-строка, а другой тип блока —
+ * «всё есть» с зелёной подложкой, остальное — контур без заливки; кнопка справа.
+ */
 export function AvailabilityBanner(props: BannerProps & { focusOnMount?: boolean; tile?: boolean }) {
-  // tile — плитка r 16 поверх тинта рецепта (Итерация 3); иначе карточка на surface
-  const base = cn('flex gap-3 px-4 py-3', props.tile ? 'min-h-row-l rounded-row bg-tile' : 'rounded-control bg-surface');
   const ref = useRef<HTMLDivElement>(null);
   // после «Это есть» кнопка исчезает — фокус переводим на новый баннер, а не теряем на <body>
   useEffect(() => {
     if (props.focusOnMount) ref.current?.focus();
   }, [props.focusOnMount]);
+  const t = props.tile;
+  const base = cn('flex gap-3 px-4', t ? 'min-h-row-l rounded-row py-2.5' : 'rounded-control bg-surface py-3');
+  const outline = t && 'border border-tile-strong';
   if (props.state === 'all')
     return (
-      <div ref={ref} tabIndex={-1} className={cn(base, 'items-center outline-none')} role="status">
+      <div ref={ref} tabIndex={-1} className={cn(base, 'items-center outline-none', t && 'bg-success/12')} role="status">
         <CircleCheck className="size-5 shrink-0 text-success" aria-hidden />
         <p className="text-subhead text-fg">Всё есть дома</p>
       </div>
     );
   if (props.state === 'empty-bar')
     return (
-      <Link to="/bar" className={cn(base, 'pressable items-center')}>
+      <Link to="/bar" className={cn(base, outline, 'pressable items-center')}>
         <Wine className="size-5 shrink-0 text-fg-2" aria-hidden />
         <p className="min-w-0 flex-1 text-subhead text-fg">Отметьте свой бар — покажем, чего не хватает</p>
         <ChevronRight className="size-4 shrink-0 text-fg-3" aria-hidden />
       </Link>
     );
   const n = props.names.length;
+  const text = (
+    <p className="text-subhead text-fg">
+      Не хватает {n}: <span className="text-fg-2">{props.names.join(', ')}</span>
+    </p>
+  );
+  if (t)
+    return (
+      <div className={cn(base, outline, 'items-center')} role="status">
+        <CircleDashed className="size-5 shrink-0 text-fg-2" aria-hidden />
+        <div className="min-w-0 flex-1">{text}</div>
+        <Button variant="secondary" size="s" className="bg-tile-strong!" onClick={props.onHave}>
+          Это есть
+        </Button>
+      </div>
+    );
   return (
     <div className={cn(base, 'items-start')} role="status">
       <CircleDashed className="mt-px size-5 shrink-0 text-fg-2" aria-hidden />
       {/* две строки: текст на всю ширину, кнопка под ним — название не рвётся */}
       <div className="flex min-w-0 flex-1 flex-col items-start gap-2">
-        <p className="text-subhead text-fg">
-          Не хватает {n}: <span className="text-fg-2">{props.names.join(', ')}</span>
-        </p>
-        <Button variant="secondary" size="s" className={props.tile ? 'bg-tile-strong!' : undefined} onClick={props.onHave}>
+        {text}
+        <Button variant="secondary" size="s" onClick={props.onHave}>
           Это есть
         </Button>
       </div>

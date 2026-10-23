@@ -34,7 +34,7 @@ export function CocktailHero({ cocktail, onBack, height = 'screen' }: Props) {
 
       {onBack && (
         <div className={cn('absolute left-4', height === 'screen' ? 'top-safe' : 'top-3')}>
-          <IconButton icon={ChevronLeft} label="Назад" variant="glass" onClick={onBack} />
+          <IconButton icon={ChevronLeft} label="Назад" variant="glass" size="l" onClick={onBack} />
         </div>
       )}
 

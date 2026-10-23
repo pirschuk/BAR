@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { Citrus, Wrench } from 'lucide-react';
+import { Sparkles, Wrench } from 'lucide-react';
 import { missing, toolsFor, useInventory } from '../lib/inventory';
 import { AvailabilityBanner, InfoNote } from '../components/ui/Availability';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { getCocktail, plural, scaleIngredient, type Servings } from '../lib/cocktails';
+import { getCocktail, scaleIngredient, type Servings } from '../lib/cocktails';
 import { CocktailHero } from '../components/ui/CocktailHero';
 import { ParamTiles } from '../components/ui/ParamTiles';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { SegmentedControl } from '../components/ui/SegmentedControl';
-import { IngredientTile } from '../components/ui/IngredientTile';
+import { GarnishTile, IngredientList, IngredientTile } from '../components/ui/IngredientTile';
 import { Steps } from '../components/ui/Steps';
 import { cocktailParams } from '../components/cocktailStats';
 import { coverStyle } from '../components/ui/CocktailCard';
@@ -20,10 +20,8 @@ export const SERVINGS: { value: Servings; label: string }[] = [
   { value: 4, label: '4×' },
 ];
 
-/** «4 шага · ~3 мин» — мета-пилюля «Приготовления» */
-export function stepsMeta(steps: number, timeMin: number) {
-  return `${steps} ${plural(steps, ['шаг', 'шага', 'шагов'])} · ~${timeMin} мин`;
-}
+/** «~3 мин» — мета-пилюля «Приготовления» */
+export const timeMeta = (timeMin: number) => `~${timeMin} мин`;
 
 export function CocktailPage() {
   const { slug } = useParams();
@@ -57,38 +55,33 @@ export function CocktailPage() {
         className="mt-10"
         action={<SegmentedControl size="l" label="Порции" options={SERVINGS} value={servings} onChange={setServings} />}
       />
-      <ul className="mt-3 flex flex-col gap-2 px-4">
-        <li>
-          {inv.size === 0 ? (
-            <AvailabilityBanner tile state="empty-bar" />
-          ) : lacking.length === 0 ? (
-            <AvailabilityBanner tile state="all" focusOnMount={justAdded} />
-          ) : (
-            <AvailabilityBanner tile state="missing" names={lacking.map((m) => m.name)} onHave={() => (add(lacking.map((m) => m.ref)), setJustAdded(true))} />
-          )}
-        </li>
-        {cocktail.ingredients.map((ing) => (
-          <li key={ing.name}>
-            <IngredientTile
-              name={ing.name}
-              optional={ing.optional}
-              amount={scaleIngredient(ing, servings)}
-              missing={inv.size > 0 && lackingRefs.has(ing.ref)}
-            />
-          </li>
-        ))}
-        {cocktail.garnish && (
-          <li>
-            <IngredientTile name={cocktail.garnish} note="Украшение" icon={Citrus} />
-          </li>
+      <div className="mx-4 mt-4">
+        {inv.size === 0 ? (
+          <AvailabilityBanner tile state="empty-bar" />
+        ) : lacking.length === 0 ? (
+          <AvailabilityBanner tile state="all" focusOnMount={justAdded} />
+        ) : (
+          <AvailabilityBanner tile state="missing" names={lacking.map((m) => m.name)} onHave={() => (add(lacking.map((m) => m.ref)), setJustAdded(true))} />
         )}
-      </ul>
+      </div>
+      <IngredientList className="mx-4 mt-3">
+        {cocktail.ingredients.map((ing) => (
+          <IngredientTile
+            key={ing.name}
+            name={ing.name}
+            optional={ing.optional}
+            amount={scaleIngredient(ing, servings)}
+            missing={inv.size > 0 && lackingRefs.has(ing.ref)}
+          />
+        ))}
+      </IngredientList>
+      {cocktail.garnish && <GarnishTile value={cocktail.garnish} icon={Sparkles} className="mx-4 mt-2" />}
 
-      <SectionHeader size="l" title="Приготовление" meta={stepsMeta(cocktail.steps.length, cocktail.timeMin)} className="mt-10" />
+      <SectionHeader size="l" title="Приготовление" meta={timeMeta(cocktail.timeMin)} className="mt-10" />
       <Steps steps={cocktail.steps} className="mt-4" />
       {toolHints.map((t) => (
         <InfoNote key={t.id} tile icon={Wrench} className="mx-4 mt-6">
-          Нужен {t.name.toLowerCase()} — {t.substitute}.
+          Понадобится {t.name.toLowerCase()} — {t.substitute}.
         </InfoNote>
       ))}
     </main>

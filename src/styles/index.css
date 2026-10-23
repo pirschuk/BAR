@@ -42,6 +42,11 @@
   /* плитки поверх тинта напитка (рецепт, Итерация 3) */
   --tile: rgb(255 255 255 / 0.07);
   --tile-strong: rgb(255 255 255 / 0.12);
+  /* шкала крепости — цветом значения, без делений (Итерация 3, /look) */
+  --strength-none: #3ddc84;
+  --strength-light: #ffd166;
+  --strength-medium: #ff8a3d;
+  --strength-strong: #ff5a5f;
 }
 
 @theme inline {
@@ -67,6 +72,10 @@
   /* полупрозрачные плитки поверх тинта напитка (рецепт) */
   --color-tile: var(--tile);
   --color-tile-strong: var(--tile-strong);
+  --color-strength-none: var(--strength-none);
+  --color-strength-light: var(--strength-light);
+  --color-strength-medium: var(--strength-medium);
+  --color-strength-strong: var(--strength-strong);
 
   --font-sans: -apple-system, 'SF Pro Text', BlinkMacSystemFont, Inter, Roboto, system-ui, sans-serif;
   /* заголовки с характером: название коктейля, заголовки секций рецепта */
