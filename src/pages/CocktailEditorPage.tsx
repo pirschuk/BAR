@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 import { useBlocker, useLocation, useNavigate, useParams } from 'react-router';
 import { Martini, Plus, Shuffle, Snowflake, Trash2 } from 'lucide-react';
 import { GLASSES, ICES, METHODS, getCocktail, glassLabel, iceLabel, methodLabel } from '../lib/cocktails';
-import { COVERS, EMPTY_DRAFT, baseOf, computeAbv, coverFor, draftErrors, lineFor, stepOf, strengthOf, toCocktail, toDraft, useCustomCocktails, type Draft } from '../lib/custom';
+import { COVERS, EMPTY_DRAFT, baseOf, computeAbv, coverFor, draftErrors, lineFor, shortUnit, stepOf, strengthOf, toCocktail, toDraft, useCustomCocktails, type Draft } from '../lib/custom';
 import type { Glass, Ice, Method } from '../types/cocktail';
 import { NavBar, useNavReveal } from '../components/ui/NavBar';
 import { CocktailHero } from '../components/ui/CocktailHero';
@@ -14,7 +14,6 @@ import { PickRow } from '../components/ui/BarRows';
 import { AbvLine, ColorDots, IngredientEditRow, ParamPickRow, StepEditRow, Stepper, TextArea } from '../components/ui/EditorFields';
 import { IngredientPickSheet } from '../components/IngredientPickSheet';
 import { NotFoundPage } from './NotFoundPage';
-import { scaleIngredient } from '../lib/cocktails';
 
 type Param = 'glass' | 'method' | 'ice';
 
@@ -128,8 +127,8 @@ export function CocktailEditorPage() {
       </div>
 
       <div className="mt-6 flex flex-col gap-4 px-4">
-        <TextField label="Название" value={d.name} onChange={(name) => set({ name })} placeholder="Например: Вечер в Оахаке" maxLength={40} />
-        <TextArea label="Описание" value={d.description} onChange={(description) => set({ description })} placeholder="Каким получился — пара слов о вкусе" maxLength={200} />
+        <TextField label="Название" value={d.name} onChange={(name) => set({ name })} placeholder="Введите текст" maxLength={40} />
+        <TextArea label="Описание" value={d.description} onChange={(description) => set({ description })} placeholder="Введите текст" maxLength={200} />
       </div>
 
       <SectionHeader size="l" title="Параметры" className="mt-10" />
@@ -159,7 +158,7 @@ export function CocktailEditorPage() {
                   <Stepper
                     label={`Количество: ${ing.name}`}
                     value={top ? undefined : amount}
-                    unit={scaleIngredient(ing, 1).unit}
+                    unit={shortUnit(ing)}
                     step={stepOf(ing)}
                     min={stepOf(ing)}
                     onChange={top ? undefined : (v) => setAmount(k, v)}
@@ -175,7 +174,7 @@ export function CocktailEditorPage() {
           {d.ingredients.length ? 'Добавить ещё' : 'Добавить ингредиенты'}
         </Button>
       </div>
-      <TextField className="mx-4 mt-5" label="Украшение" value={d.garnish} onChange={(garnish) => set({ garnish })} placeholder="Например: цедра апельсина" maxLength={60} />
+      <TextField className="mx-4 mt-5" label="Украшение" value={d.garnish} onChange={(garnish) => set({ garnish })} placeholder="Введите текст" maxLength={60} />
 
       <SectionHeader size="l" title="Приготовление" className="mt-10" />
       <ol className="mt-3 flex flex-col gap-2 px-4">

@@ -43,7 +43,11 @@ export function TextArea({
   );
 }
 
-/** Степпер количества «−  30 мл  +»: кнопки 44, шаг по единице; без числа («долить») — только подпись */
+/**
+ * Степпер количества «−  30 мл  +»: кнопки 44, шаг по единице; середина фиксированной ширины —
+ * все степперы в списке одного размера, единицы короткие (мл, дш, л, шт, щ — shortUnit).
+ * Без числа («долить») — та же пилюля с подписью по центру, без кнопок.
+ */
 export function Stepper({
   value,
   unit,
@@ -59,13 +63,18 @@ export function Stepper({
   min?: number;
   label: string;
 }) {
-  if (value === undefined || !onChange) return <span className="px-3 text-headline text-fg">{unit}</span>;
+  if (value === undefined || !onChange)
+    return (
+      <span className="flex h-tap w-stepper items-center justify-center rounded-full bg-tile-strong text-subhead text-fg-2" aria-label={label}>
+        {unit}
+      </span>
+    );
   return (
-    <span className="flex items-center rounded-full bg-tile-strong" role="group" aria-label={label}>
+    <span className="flex w-stepper items-center rounded-full bg-tile-strong" role="group" aria-label={label}>
       <button type="button" aria-label="Меньше" disabled={value - step < min} onClick={() => onChange(Math.max(min, value - step))} className="pressable flex size-tap items-center justify-center rounded-full text-fg disabled:text-fg-3">
         <Minus className="size-4" aria-hidden />
       </button>
-      <span className="min-w-14 text-center text-headline text-fg tabular-nums">
+      <span className="flex-1 text-center text-headline whitespace-nowrap text-fg tabular-nums">
         {value} <span className="text-footnote text-fg-2">{unit}</span>
       </span>
       <button type="button" aria-label="Больше" onClick={() => onChange(value + step)} className="pressable flex size-tap items-center justify-center rounded-full text-fg">
@@ -150,7 +159,7 @@ export function IngredientEditRow({
 }) {
   return (
     <RowShell index={index} onMove={onMove} onRemove={onRemove} removeLabel={`Убрать ${name}`} error={error}>
-      <span className="line-clamp-2 min-w-0 flex-1 text-subhead text-fg">{name}</span>
+      <span className="line-clamp-2 min-w-0 flex-1 wrap-break-word hyphens-auto text-subhead text-fg">{name}</span>
       {stepper}
     </RowShell>
   );
@@ -173,7 +182,7 @@ export function StepEditRow({ index, value, onChange, onMove, onRemove }: { inde
         rows={1}
         value={value}
         aria-label={`Шаг ${index + 1}`}
-        placeholder="Что сделать"
+        placeholder="Введите текст"
         onChange={(e) => onChange(e.target.value)}
         className="min-w-0 flex-1 resize-none bg-transparent px-2 py-2.5 text-body text-fg outline-none placeholder:text-fg-3"
       />

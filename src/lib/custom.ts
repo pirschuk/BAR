@@ -107,6 +107,19 @@ export function lineFor(ref: string): Ingredient {
   return { ref, name: def.name, category: CATEGORY[def.group], ...defaultUsage(ref) };
 }
 
+/** Короткая единица для степпера (полная — на странице рецепта): одна ширина у всех строк */
+const SHORT: Record<NonNullable<Ingredient['unit']>, string> = {
+  ml: 'мл',
+  dash: 'дш',
+  barspoon: 'л',
+  piece: 'шт',
+  slice: 'дл',
+  leaf: 'лст',
+  pinch: 'щ',
+  top: 'долить',
+};
+export const shortUnit = (i: Ingredient) => (i.unit === 'top' ? SHORT.top : i.amountMl !== undefined ? SHORT.ml : SHORT[i.unit ?? 'piece']);
+
 /** Шаг степпера: мл — 5, штучное — 1 */
 export const stepOf = (i: Ingredient) => (i.amountMl !== undefined ? 5 : 1);
 

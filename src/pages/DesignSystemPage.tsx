@@ -90,7 +90,7 @@ function EditorShowcase() {
       </State>
       <State label="TextArea · пусто / заполнено / ошибка" inset>
         <div className="flex flex-col gap-3 px-4">
-          <TextArea label="Описание" value="" onChange={noop} placeholder="Каким получился — пара слов о вкусе" />
+          <TextArea label="Описание" value="" onChange={noop} placeholder="Введите текст" />
           <TextArea label="Описание" value={desc} onChange={setDesc} />
           <TextArea label="Описание" value="" onChange={noop} error hint="Обязательное поле" />
         </div>
@@ -106,7 +106,7 @@ function EditorShowcase() {
         <div className="flex flex-wrap items-center gap-3 px-4">
           <Stepper label="Джин" value={ml} unit="мл" step={5} min={5} onChange={setMl} />
           <Stepper label="Сироп" value={5} unit="мл" step={5} min={5} onChange={noop} />
-          <Stepper label="Биттер" value={2} unit="дэш" step={1} min={1} onChange={noop} />
+          <Stepper label="Биттер" value={2} unit="дш" step={1} min={1} onChange={noop} />
           <Stepper label="Содовая" unit="долить" step={1} />
         </div>
       </State>
@@ -849,7 +849,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="editor" title="Редактор авторского коктейля" note="Поля 56 на bg-tile; TextArea растёт по тексту. ParamPickRow → шторка с радио. Ингредиенты — только из справочника: IngredientPickSheet без своей бутылки и «Советуем»; строка ≡ · название (2 строки) · Stepper (−/+ 44, мл шаг 5, штучное 1; «долить» — без числа) · ×. AbvLine — живая крепость по составу. Шаги — номер в круге, как Steps. Карточка — «· авторский» в строке бокала, обложка — «Авторский коктейль».">
+      <Section id="editor" title="Редактор авторского коктейля" note="Поля 56 на bg-tile; TextArea растёт по тексту. ParamPickRow → шторка с радио. Ингредиенты — только из справочника: IngredientPickSheet без своей бутылки и «Советуем»; строка ≡ · название (2 строки) · Stepper одной ширины (−/+ 44, короткие единицы мл · дш · л · шт · щ; мл шаг 5, штучное 1; «долить» — та же пилюля без кнопок) · ×. AbvLine — живая крепость по составу. Шаги — номер в круге, как Steps. Карточка — «· авторский» в строке бокала, обложка — «Авторский коктейль».">
         <EditorShowcase />
       </Section>
 
