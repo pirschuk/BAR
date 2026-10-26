@@ -5,7 +5,7 @@
 //   data-nav = forward | back | tab | grid | none — что за переход сейчас.
 
 export type Platform = 'ios' | 'android';
-export type NavKind = 'forward' | 'back' | 'tab' | 'grid' | 'none';
+export type NavKind = 'forward' | 'back' | 'tab' | 'grid' | 'none' | 'expand' | 'collapse';
 
 const OVERRIDE_KEY = 'bar-motion-platform';
 
@@ -61,9 +61,15 @@ export function setNav(kind: NavKind) {
 }
 let transitioning = false;
 
+/** Следующий «назад» уже показан пальцем (свайп от края) — без перехода страницы */
+let skipPop = false;
+export const skipNextBack = () => (skipPop = true);
+
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 const TAB_ROOTS = new Set(['/', '/bar']);
 /** Обе страницы — корни вкладок: переход между ними — «вкладка», а не вглубь */
+const isRecipe = (p: string) => /^\/cocktail\/[^/]+$/.test(p.slice(BASE.length));
+const isTabRoot = (p: string) => TAB_ROOTS.has(p.slice(BASE.length) || '/');
 const isTabSwitch = (from: string, to: string) => from !== to && TAB_ROOTS.has(from.slice(BASE.length) || '/') && TAB_ROOTS.has(to.slice(BASE.length) || '/');
 
 /**
@@ -75,7 +81,15 @@ export function initMotion() {
   document.documentElement.dataset.nav = 'forward';
   let path = location.pathname;
   window.addEventListener('popstate', () => {
-    setNav(location.pathname === path ? 'none' : isTabSwitch(path, location.pathname) ? 'tab' : 'back');
+    const to = location.pathname;
+    if (skipPop) {
+      skipPop = false;
+      setNav('none');
+      path = to;
+      return;
+    }
+    // рецепт → каталог / «Мой бар»: обложка садится обратно в карточку
+    setNav(to === path ? 'none' : isTabSwitch(path, to) ? 'tab' : isRecipe(path) && isTabRoot(to) ? 'collapse' : 'back');
     path = location.pathname;
   });
   // переходы вперёд: роутер пишет историю до старта перехода — между вкладками ставим «вкладку» (Каталог ↔ Мой бар, ссылки в карточках)

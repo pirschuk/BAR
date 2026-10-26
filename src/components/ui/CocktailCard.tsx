@@ -6,6 +6,7 @@ import { glassLabel, strengthLabel } from '../../lib/cocktails';
 import { cn } from '../../lib/cn';
 import { GlassIllustration } from './GlassIllustration';
 import { useIsGhost } from '../SwipeBack';
+import { setNav } from '../../lib/motion';
 
 export function coverStyle(cocktail: Pick<Cocktail, 'cover'>): CSSProperties {
   return { '--cover-from': cocktail.cover.from, '--cover-to': cocktail.cover.to } as CSSProperties;
@@ -37,18 +38,23 @@ export function CocktailCard({ cocktail, pressed, className, available, favorite
   const transitioning = useViewTransitionState(to);
   const ghost = useIsGhost();
   const shared = transitioning && !replace && !ghost;
+  // «раскрытие»: фон, бокал и название летят каждый сам по себе — без растянутых плашек и текста
+  const vt = (name: string) => (shared ? { viewTransitionName: name } : undefined);
   return (
     <Link
       to={to}
       viewTransition={!replace}
+      onClick={replace ? undefined : () => setNav('expand')}
       replace={replace}
       tabIndex={tabIndex}
       data-pressed={pressed || undefined}
       className={cn('vt-card pressable-scale cover-gradient block aspect-card overflow-hidden rounded-tile outline-1 -outline-offset-1 outline-border', className)}
-      style={{ ...coverStyle(cocktail), ...(shared ? { viewTransitionName: 'cover' } : { '--vt': `card-${cocktail.id}` }) } as CSSProperties}
+      style={{ ...coverStyle(cocktail), ...(shared ? {} : { '--vt': `card-${cocktail.id}` }) } as CSSProperties}
     >
+      {/* фон для «раскрытия» — только градиент, без плашки и подписей */}
+      {shared && <span className="cover-gradient absolute inset-0 rounded-[inherit]" style={vt('cover')} aria-hidden />}
       {/* compact (лента 140): бокал ниже ростом — двухстрочное название не наезжает */}
-      <GlassIllustration shape={cocktail.glass} className={cn('absolute inset-x-0 mx-auto', compact ? 'top-5 h-2/5' : 'top-9 h-1/2')} />
+      <GlassIllustration shape={cocktail.glass} style={vt('cover-glass')} className={cn('absolute inset-x-0 mx-auto', compact ? 'top-5 h-2/5' : 'top-9 h-1/2')} />
       <span className="scrim-bottom absolute inset-0" aria-hidden />
       {/* крепость — словом, как в фильтре «Крепость»; бокал — под названием */}
       {!compact && (
@@ -66,7 +72,7 @@ export function CocktailCard({ cocktail, pressed, className, available, favorite
       )}
       <span className={cn('absolute', large ? 'inset-x-5 bottom-5' : 'inset-x-3 bottom-3')}>
         {/* Unbounded 14 (`text-card`): название не спорит с обложкой; длинное слово — перенос, а не обрезка */}
-        <span className={cn('line-clamp-2 font-display wrap-break-word hyphens-auto text-on-media', large ? 'text-section' : 'text-card')}>{cocktail.name}</span>
+        <span style={vt('cover-title')} className={cn('line-clamp-2 block font-display wrap-break-word hyphens-auto text-on-media', large ? 'text-section' : 'text-card')}>{cocktail.name}</span>
         {/* «можно приготовить» — статусом в строке бокала (язык v2: информер, не значок) */}
         <span className={cn('mt-1 block truncate text-on-media-2', large ? 'text-subhead' : 'text-footnote')}>
           {glassLabel(cocktail.glass)}

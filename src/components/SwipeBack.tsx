@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocation, useNavigate, useNavigationType, useRoutes, type Location, type RouteObject } from 'react-router';
-import { currentPlatform, isStandalone, setNav } from '../lib/motion';
+import { currentPlatform, isStandalone, skipNextBack } from '../lib/motion';
 
 // --- Свайп назад от левого края — как в iOS. В установленном PWA на iPhone системного жеста «назад» нет. ---
 
@@ -172,7 +172,7 @@ export function SwipeBack({ routes, disabledOn, ghostChrome, children }: Props) 
       setTimeout(() => {
         if (!commit) return drop();
         // анимацию уже показали пальцем — переход страницы без повторной анимации
-        setNav('none');
+        skipNextBack();
         restore.current = prevScrollRef.current;
         navigate(-1);
         // уход заблокирован (несохранённая форма) — вернуть страницу на место
