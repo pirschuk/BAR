@@ -26,7 +26,7 @@ export function BarSectionPage() {
   // навбар проявляется, как только заголовок подходит к нему
   const titleRef = useRef<HTMLHeadingElement>(null);
   const navVisible = useNavReveal(titleRef, [section]);
-  if (!isSectionKey(section)) return <NotFoundPage title="Раздел не найден" />;
+  if (!isSectionKey(section)) return <NotFoundPage title="Раздел не найден" to="/bar" toLabel="В «Мой бар»" />;
 
   const meta = SECTIONS.find((s) => s.id === section)!;
   const mine = rows.filter((r) => r.section === section);
