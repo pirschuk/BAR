@@ -495,7 +495,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="lucky" title="LuckySheet / LuckyReel" note="Барабан: та же карточка, что в каталоге (CocktailCard large), кадры проезжают снизу вверх ~900 мс и тормозят с отскоком (--ease-spring); свечение цветом напитка; «Ещё раз» — новый спин без повторов. Один вариант — pop без спина; reduced-motion — без анимации. 🎲 в таб-баре — tile-strong, бросок на тап.">
+      <Section id="lucky" title="LuckySheet / LuckyReel" note="Барабан карточками: та же карточка каталога (CocktailCard large) на всю ширину, отдельные карточки проезжают сверху вниз ~900 мс и тормозят с отскоком (--ease-spring); свечение цветом напитка; «Ещё раз» — новый спин без повторов. Один вариант — pop без спина; reduced-motion — без анимации. 🎲 в таб-баре — tile-strong, бросок на тап.">
         <div className="flex flex-col gap-6 px-4">
           <State label="барабан (интерактивно: «Ещё раз»)">
             <div className="overflow-hidden rounded-sheet border border-border">

@@ -334,10 +334,6 @@
 @utility animate-pop {
   animation: pop 200ms var(--ease-soft);
 }
-/* карточка «Мне повезёт» помещается в шторку medium (62svh) целиком: минус шапка, подпись и футер (~190) */
-@utility h-lucky-card {
-  height: min(400px, calc(62svh - 190px));
-}
 /* бросок кубика 🎲 */
 @keyframes roll {
   to {

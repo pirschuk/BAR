@@ -65,6 +65,7 @@ export function LuckySheet({ open, onClose, pool, caption, onOpenRecipe, empty, 
       onClose={onClose}
       inline={inline}
       title="Мне повезёт"
+      initialDetent="large"
       footer={
         top ? (
           <SheetFooter>
@@ -80,8 +81,9 @@ export function LuckySheet({ open, onClose, pool, caption, onOpenRecipe, empty, 
       }
     >
       {top ? (
-        <div className="px-4 pb-2">
-          <p className="mb-4 truncate text-footnote text-fg-2" aria-live="polite">
+        <div className="px-4 pt-2 pb-2">
+          {/* подпись «из чего выбираем» — только для скринридера: на экране — карточка и заголовок */}
+          <p className="sr-only" aria-live="polite">
             {caption}
             {single && ' · единственный подходящий'}
           </p>
