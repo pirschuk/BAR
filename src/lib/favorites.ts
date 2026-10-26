@@ -1,5 +1,7 @@
 import { useCallback, useSyncExternalStore } from 'react';
 import { getCocktail } from './cocktails';
+// авторские попадают в cocktails до загрузки избранного — иначе их id отсеются как «нет в базе»
+import './custom';
 
 // --- Избранное: localStorage, новые — в начале (порядок ряда в «Моём баре» = порядок добавления) ---
 

@@ -77,7 +77,7 @@ describe('поиск', () => {
 describe('фильтры', () => {
   it('URL ↔ состояние, мусор отбрасывается', () => {
     const f = parseFilters(new URLSearchParams('q=лайм&base=rum,gin,zzz&taste=sour&strength=light&ing=nope'));
-    expect(f).toEqual({ q: 'лайм', base: ['rum', 'gin'], taste: ['sour'], strength: ['light'], ing: null, can: false, fav: false });
+    expect(f).toEqual({ q: 'лайм', base: ['rum', 'gin'], taste: ['sour'], strength: ['light'], ing: null, can: false, fav: false, my: false });
     expect(filtersToParams(f)).toEqual({ q: 'лайм', base: 'rum,gin', taste: 'sour', strength: 'light' });
     expect(filtersToParams(EMPTY_FILTERS)).toEqual({});
   });

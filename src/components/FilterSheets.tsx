@@ -19,6 +19,8 @@ type Props = {
   barEmpty?: boolean;
   /** в избранном ничего — галочка «Только избранное» недоступна */
   favEmpty?: boolean;
+  /** авторских нет — галочка «Только авторские» недоступна */
+  myEmpty?: boolean;
   /** для витрины */
   inline?: boolean;
 };
@@ -30,7 +32,7 @@ function toggle<T>(list: T[], id: T): T[] {
 }
 
 /** Черновик внутри шторки: применяется только по «Показать N»; закрытие без него ничего не меняет */
-export function FilterSheet({ open, facet, value, count, onApply, onClose, barEmpty = false, favEmpty = false, inline }: Props) {
+export function FilterSheet({ open, facet, value, count, onApply, onClose, barEmpty = false, favEmpty = false, myEmpty = false, inline }: Props) {
   const [draft, setDraft] = useState(value);
   useEffect(() => {
     if (open) setDraft(value);
@@ -40,7 +42,7 @@ export function FilterSheet({ open, facet, value, count, onApply, onClose, barEm
   const n = count(draft);
   const reset = () =>
     setDraft(facet ? { ...draft, [facet]: [] } : { ...EMPTY_FILTERS, q: draft.q });
-  const dirty = keys.some((k) => (draft[k] as string[]).length) || (!facet && (draft.ing !== null || draft.can || draft.fav));
+  const dirty = keys.some((k) => (draft[k] as string[]).length) || (!facet && (draft.ing !== null || draft.can || draft.fav || draft.my));
 
   return (
     <BottomSheet
@@ -81,6 +83,13 @@ export function FilterSheet({ open, facet, value, count, onApply, onClose, barEm
             on={draft.fav && !favEmpty}
             disabled={favEmpty}
             onToggle={() => setDraft({ ...draft, fav: !draft.fav })}
+          />
+          <CheckRow
+            title="Только авторские"
+            subtitle={myEmpty ? 'Сначала соберите свой коктейль — «+» в каталоге' : 'Коктейли, которые вы собрали'}
+            on={draft.my && !myEmpty}
+            disabled={myEmpty}
+            onToggle={() => setDraft({ ...draft, my: !draft.my })}
           />
         </section>
       )}

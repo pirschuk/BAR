@@ -52,9 +52,11 @@ export type FilterState = {
   can: boolean;
   /** «Только избранное» */
   fav: boolean;
+  /** «Только авторские» */
+  my: boolean;
 };
 
-export const EMPTY_FILTERS: FilterState = { q: '', base: [], taste: [], strength: [], ing: null, can: false, fav: false };
+export const EMPTY_FILTERS: FilterState = { q: '', base: [], taste: [], strength: [], ing: null, can: false, fav: false, my: false };
 
 function pickList<T extends string>(raw: string | null, allowed: readonly { id: T }[]): T[] {
   if (!raw) return [];
@@ -72,6 +74,7 @@ export function parseFilters(params: URLSearchParams): FilterState {
     ing: ing && byId.has(ing) ? ing : null,
     can: params.get('can') === '1',
     fav: params.get('fav') === '1',
+    my: params.get('my') === '1',
   };
 }
 
@@ -84,12 +87,13 @@ export function filtersToParams(f: FilterState): Record<string, string> {
   if (f.ing) out.ing = f.ing;
   if (f.can) out.can = '1';
   if (f.fav) out.fav = '1';
+  if (f.my) out.my = '1';
   return out;
 }
 
 /** Число выбранных значений во всех фасетах — бейдж на «Фильтры» (без текста поиска) */
 export function activeCount(f: FilterState): number {
-  return f.base.length + f.taste.length + f.strength.length + (f.ing ? 1 : 0) + (f.can ? 1 : 0) + (f.fav ? 1 : 0);
+  return f.base.length + f.taste.length + f.strength.length + (f.ing ? 1 : 0) + (f.can ? 1 : 0) + (f.fav ? 1 : 0) + (f.my ? 1 : 0);
 }
 
 export function hasFacetFilters(f: FilterState): boolean {
@@ -147,6 +151,7 @@ export function applyFilters(
     (c) =>
       (!f.can || (canMake?.(c) ?? false)) &&
       (!f.fav || (isFav?.(c) ?? false)) &&
+      (!f.my || !!c.custom) &&
       matchesQuery(c, f.q) &&
       (!f.base.length || f.base.includes(c.base)) &&
       (!f.taste.length || f.taste.some((t) => c.tags.includes(t))) &&

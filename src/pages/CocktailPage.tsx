@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { Heart, Wrench } from 'lucide-react';
+import { Heart, Pencil, Wrench } from 'lucide-react';
+import { IconButton } from '../components/ui/Button';
 import { missing, toolsFor, useInventory } from '../lib/inventory';
 import { AvailabilityLine, InfoNote } from '../components/ui/Availability';
 import { useLocation, useNavigate, useParams } from 'react-router';
@@ -57,7 +58,18 @@ export function CocktailPage() {
     // тинт напитка: цвет обложки продолжается под контентом и растворяется в фоне
     <main className="recipe-tint min-h-svh pb-safe" style={coverStyle(cocktail)}>
       {/* «Назад» и ♡ закреплены сразу (навбар), обложка — без своих кнопок */}
-      <NavBar title={cocktail.name} onBack={back} visible={navVisible} action={<FavoriteButton on={isFav} onToggle={toggleFav} />} />
+      <NavBar title={cocktail.name} onBack={back} visible={navVisible} action={
+          // авторский — «Изменить» рядом с ♡
+          cocktail.custom ? (
+            <div className="flex gap-2">
+              <IconButton icon={Pencil} label="Изменить" variant="glass" size="xl" iconClassName="size-6!" onClick={() => navigate(`/cocktail/${cocktail.id}/edit`)} />
+              <FavoriteButton on={isFav} onToggle={toggleFav} />
+            </div>
+          ) : (
+            <FavoriteButton on={isFav} onToggle={toggleFav} />
+          )
+        }
+      />
       <CocktailHero cocktail={cocktail} titleRef={titleRef} />
 
       <p className="mt-2 px-4 text-body text-fg-2">{cocktail.description}</p>

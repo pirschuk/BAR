@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
-import { Citrus, Heart, SlidersHorizontal } from 'lucide-react';
+import { Citrus, Heart, PenLine, Plus, SlidersHorizontal, Trash2 } from 'lucide-react';
+import { Toast, ToastAction } from '../components/ui/Toast';
+import { useCustomCocktails } from '../lib/custom';
 import { cocktails, countLabel } from '../lib/cocktails';
 import {
   EMPTY_FILTERS,
@@ -75,8 +77,12 @@ export function CatalogPage() {
   const { inv } = useInventory();
   const isAvailable = useMemo(() => (c: Cocktail) => canMake(c, inv), [inv]);
   const { list: favList } = useFavorites();
+  // версия списка авторских — зависимость мемо: массив cocktails меняется на месте
+  const { list: myList, upsert } = useCustomCocktails();
+  // удалили авторский в редакторе — тост «Вернуть» (сам коктейль приходит в state перехода)
+  const [deleted, setDeleted] = useState(() => (location.state as { deleted?: Cocktail } | null)?.deleted ?? null);
   const isFav = useMemo(() => (c: Cocktail) => favList.includes(c.id), [favList]);
-  const list = useMemo(() => applyFilters(cocktails, f, isAvailable, isFav), [f, isAvailable, isFav]);
+  const list = useMemo(() => applyFilters(cocktails, f, isAvailable, isFav), [f, isAvailable, isFav, myList]);
   const markAvailable = f.can ? () => false : isAvailable;
   const sheet = sheetFromHash(location.hash);
 
@@ -99,6 +105,11 @@ export function CatalogPage() {
     pending.current = next;
     closeSheet();
   };
+  // state с удалённым не переживает перезагрузку: тост показан один раз
+  useEffect(() => {
+    if (deleted) navigate({ search: location.search, hash: location.hash }, { replace: true, state: null, preventScrollReset: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   // прямая ссылка с #filters: подкладываем запись без хэша, чтобы «Назад» закрыл шторку, а не ушёл с сайта
   useEffect(() => {
     if (location.hash && !(location.state as { sheet?: boolean } | null)?.sheet) {
@@ -138,8 +149,12 @@ export function CatalogPage() {
   return (
     <main className="pb-tabbar">
       {!searching && (
-        <header className="pt-safe flex min-h-tap items-center px-4">
+        <header className="pt-safe flex min-h-tap items-center justify-between gap-3 px-4">
           <h1 className="font-display text-display text-fg">Коктейли</h1>
+          {/* авторский коктейль — «+» в шапке каталога */}
+          <Link to="/new" aria-label="Собрать свой коктейль" title="Собрать свой коктейль" className="pressable-scale flex size-tap shrink-0 items-center justify-center rounded-full bg-tile-strong text-fg">
+            <Plus className="size-6" strokeWidth={2.25} aria-hidden />
+          </Link>
         </header>
       )}
 
@@ -178,6 +193,11 @@ export function CatalogPage() {
             {f.fav && (
               <Chip variant="removable" icon={Heart} iconClassName="fill-current text-accent" aria-label="Убрать фильтр «Избранное»" onClick={() => setFilters({ ...f, fav: false })}>
                 Избранное
+              </Chip>
+            )}
+            {f.my && (
+              <Chip variant="removable" icon={PenLine} aria-label="Убрать фильтр «Авторские»" onClick={() => setFilters({ ...f, my: false })}>
+                Авторские
               </Chip>
             )}
             {f.ing && (
@@ -313,6 +333,16 @@ export function CatalogPage() {
         </>
       )}
 
+      {deleted && (
+        <Toast
+          icon={Trash2}
+          filled={false}
+          aboveTabBar
+          text={`«${deleted.name}» удалён`}
+          action={<ToastAction onClick={() => (upsert(deleted), setDeleted(null))}>Вернуть</ToastAction>}
+          onDone={() => setDeleted(null)}
+        />
+      )}
       <FilterSheet
         open={sheet.open}
         facet={sheet.facet}
@@ -322,6 +352,7 @@ export function CatalogPage() {
         onClose={closeSheet}
         barEmpty={inv.size === 0}
         favEmpty={favList.length === 0}
+        myEmpty={myList.length === 0}
       />
     </main>
   );

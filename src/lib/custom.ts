@@ -73,6 +73,56 @@ const CATEGORY: Record<IngredientGroup, IngredientCategory> = {
   other: 'other',
 };
 
+// --- Строка ингредиента по умолчанию: как его чаще всего льют в базовых рецептах ---
+
+type Usage = Pick<Ingredient, 'amountMl' | 'amount' | 'unit'>;
+const kindOf = (i: Usage) => (i.unit === 'top' ? 'top' : i.amountMl !== undefined ? 'ml' : (i.unit ?? 'piece'));
+const median = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)]!;
+
+/** Нет в рецептах — по группе словаря */
+const GROUP_DEFAULT: Record<IngredientGroup, Usage> = {
+  spirit: { amountMl: 45 },
+  liqueur: { amountMl: 20 },
+  bitter: { amount: 2, unit: 'dash' },
+  syrup: { amountMl: 15 },
+  'juice-fruit': { amountMl: 20 },
+  soda: { unit: 'top' },
+  other: { amountMl: 15 },
+};
+
+export function defaultUsage(ref: string): Usage {
+  const uses = cocktails.filter((c) => !c.custom).flatMap((c) => c.ingredients.filter((i) => i.ref === ref));
+  if (!uses.length) return { ...GROUP_DEFAULT[getIngredient(ref)?.group ?? 'other'] };
+  const count = new Map<string, Ingredient[]>();
+  for (const u of uses) count.set(kindOf(u), [...(count.get(kindOf(u)) ?? []), u]);
+  const [kind, same] = [...count].sort((a, b) => b[1].length - a[1].length)[0]!;
+  if (kind === 'top') return { unit: 'top' };
+  if (kind === 'ml') return { amountMl: median(same.map((u) => u.amountMl!)) };
+  return { amount: median(same.map((u) => u.amount ?? 1)), unit: same[0]!.unit };
+}
+
+/** Новая строка: имя и категория — из словаря, количество — defaultUsage */
+export function lineFor(ref: string): Ingredient {
+  const def = getIngredient(ref)!;
+  return { ref, name: def.name, category: CATEGORY[def.group], ...defaultUsage(ref) };
+}
+
+/** Шаг степпера: мл — 5, штучное — 1 */
+export const stepOf = (i: Ingredient) => (i.amountMl !== undefined ? 5 : 1);
+
+/** База по составу: крепкий с наибольшим объёмом; без крепкого — аперитив, без алкоголя — безалкогольный */
+const SPIRIT_BASE: Record<string, Base> = {
+  gin: 'gin', 'white-rum': 'rum', 'dark-rum': 'rum', bourbon: 'whiskey', 'rye-whiskey': 'whiskey', scotch: 'whiskey',
+  'peated-scotch': 'whiskey', 'irish-whiskey': 'whiskey', tequila: 'tequila', mezcal: 'tequila', vodka: 'vodka',
+  'citrus-vodka': 'vodka', cognac: 'brandy', pisco: 'brandy',
+};
+export function baseOf(list: Ingredient[]): Base | null {
+  if (!list.length) return null;
+  const spirit = [...list].filter((i) => SPIRIT_BASE[i.ref]).sort((a, b) => (b.amountMl ?? 0) - (a.amountMl ?? 0))[0];
+  if (spirit) return SPIRIT_BASE[spirit.ref]!;
+  return list.some((i) => (getIngredient(i.ref)?.abv ?? 0) > 0) ? 'aperitif' : 'non-alcoholic';
+}
+
 export type Draft = {
   id?: string;
   name: string;

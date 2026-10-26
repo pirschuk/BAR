@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { ChevronLeft, HardDriveDownload, Heart, Plus, Trash2, SlidersHorizontal, Wrench } from 'lucide-react';
+import { ChevronLeft, Flame, HardDriveDownload, Heart, Martini, Plus, Trash2, SlidersHorizontal, Wrench } from 'lucide-react';
 import { Link } from 'react-router';
 import { GLASSES, STRENGTH_LABEL, cocktails, servingVolume, countLabel, getCocktail, scaleIngredient, type Servings } from '../lib/cocktails';
 import type { Cocktail, Glass } from '../types/cocktail';
@@ -38,6 +38,9 @@ import { GarnishNote, IngredientList, IngredientTile } from '../components/ui/In
 import { Steps } from '../components/ui/Steps';
 import { STRENGTH_TONE, cocktailParams } from '../components/cocktailStats';
 import { SERVINGS, timeMeta } from './CocktailPage';
+import { AbvLine, ColorDots, IngredientEditRow, ParamPickRow, StepEditRow, Stepper, TextArea } from '../components/ui/EditorFields';
+import { IngredientPickSheet } from '../components/IngredientPickSheet';
+import { COVERS } from '../lib/custom';
 
 // --- оболочка витрины ---
 
@@ -67,6 +70,76 @@ function State({ label, children, className, inset }: { label: string; children:
     <div className={className}>
       <p className={`mb-2 text-caption text-fg-3 uppercase ${inset ? 'px-4' : ''}`}>{label}</p>
       {children}
+    </div>
+  );
+}
+
+// --- редактор авторского коктейля: живые состояния ---
+
+function EditorShowcase() {
+  const [ml, setMl] = useState(30);
+  const [desc, setDesc] = useState('Дымный, горький, с долгим апельсиновым послевкусием');
+  const [cover, setCover] = useState(COVERS[0]!.cover);
+  const noop = () => {};
+  return (
+    <div className="flex flex-col gap-6">
+      <State label="ColorDots · цвет обложки" inset>
+        <div className="px-4">
+          <ColorDots items={COVERS} value={cover} onChange={setCover} />
+        </div>
+      </State>
+      <State label="TextArea · пусто / заполнено / ошибка" inset>
+        <div className="flex flex-col gap-3 px-4">
+          <TextArea label="Описание" value="" onChange={noop} placeholder="Каким получился — пара слов о вкусе" />
+          <TextArea label="Описание" value={desc} onChange={setDesc} />
+          <TextArea label="Описание" value="" onChange={noop} error hint="Обязательное поле" />
+        </div>
+      </State>
+      <State label="ParamPickRow · default / pressed / не выбрано" inset>
+        <div className="flex flex-col gap-2 px-4">
+          <ParamPickRow icon={Martini} label="Бокал" value="Рокс" onClick={noop} />
+          <ParamPickRow icon={Martini} label="Бокал" value="Рокс" onClick={noop} pressed />
+          <ParamPickRow icon={Flame} label="База" onClick={noop} />
+        </div>
+      </State>
+      <State label="Stepper · мл / минимум / штучное / долить" inset>
+        <div className="flex flex-wrap items-center gap-3 px-4">
+          <Stepper label="Джин" value={ml} unit="мл" step={5} min={5} onChange={setMl} />
+          <Stepper label="Сироп" value={5} unit="мл" step={5} min={5} onChange={noop} />
+          <Stepper label="Биттер" value={2} unit="дэш" step={1} min={1} onChange={noop} />
+          <Stepper label="Содовая" unit="долить" step={1} />
+        </div>
+      </State>
+      <State label="IngredientEditRow · default / длинное имя / ошибка" inset>
+        <ul className="flex flex-col gap-2 px-4">
+          <IngredientEditRow index={0} name="Мескаль" onMove={noop} onRemove={noop} stepper={<Stepper label="Мескаль" value={ml} unit="мл" step={5} min={5} onChange={setMl} />} />
+          <IngredientEditRow index={1} name="Красный вермут" onMove={noop} onRemove={noop} stepper={<Stepper label="Вермут" value={30} unit="мл" step={5} min={5} onChange={noop} />} />
+          <IngredientEditRow index={2} name="Содовая" error onMove={noop} onRemove={noop} stepper={<Stepper label="Содовая" unit="долить" step={1} />} />
+        </ul>
+      </State>
+      <State label="AbvLine · пусто / посчитано" inset>
+        <div className="px-4">
+          <AbvLine />
+          <AbvLine abv={24} strength="strong" />
+        </div>
+      </State>
+      <State label="StepEditRow · пусто / текст" inset>
+        <ol className="flex flex-col gap-2 px-4">
+          <StepEditRow index={0} value="Смешать всё со льдом 20–30 секунд." onChange={noop} onMove={noop} onRemove={noop} />
+          <StepEditRow index={1} value="" onChange={noop} onMove={noop} onRemove={noop} />
+        </ol>
+      </State>
+      <State label="IngredientPickSheet · поиск без своей бутылки">
+        <IngredientPickSheet inline open onClose={noop} picked={new Set(['mezcal', 'campari'])} onToggle={noop} initialQuery="ме" />
+      </State>
+      <State label="Button · Сохранить (disabled, пока форма неполная)" inset>
+        <div className="flex gap-3 px-4">
+          <Button className="h-nav-btn! rounded-full! px-5!">Сохранить</Button>
+          <Button className="h-nav-btn! rounded-full! px-5!" disabled>
+            Сохранить
+          </Button>
+        </div>
+      </State>
     </div>
   );
 }
@@ -774,6 +847,10 @@ export function DesignSystemPage() {
             <Toast inline icon={Trash2} filled={false} text="«Кампари» убрано" action={<ToastAction>Вернуть</ToastAction>} />
           </State>
         </div>
+      </Section>
+
+      <Section id="editor" title="Редактор авторского коктейля" note="Поля 56 на bg-tile; TextArea растёт по тексту. ParamPickRow → шторка с радио. Ингредиенты — только из справочника: IngredientPickSheet без своей бутылки и «Советуем»; строка ≡ · название (2 строки) · Stepper (−/+ 44, мл шаг 5, штучное 1; «долить» — без числа) · ×. AbvLine — живая крепость по составу. Шаги — номер в круге, как Steps. Карточка — «· авторский» в строке бокала, обложка — «Авторский коктейль».">
+        <EditorShowcase />
       </Section>
 
       <Section id="tint" title="Тинт напитка" note="recipe-tint: cover.to 45% поверх --bg под обложкой, дальше растворяется в фон. Плитки — --tile поверх тинта.">

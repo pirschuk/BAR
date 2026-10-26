@@ -62,6 +62,7 @@ export function CocktailCard({ cocktail, pressed, className, available, favorite
         {/* «можно приготовить» — статусом в строке бокала (язык v2: информер, не значок) */}
         <span className={cn('mt-1 block truncate text-on-media-2', large ? 'text-subhead' : 'text-footnote')}>
           {glassLabel(cocktail.glass)}
+          {cocktail.custom && ' · авторский'}
           {available && <span className="text-success"> · всё есть</span>}
         </span>
       </span>

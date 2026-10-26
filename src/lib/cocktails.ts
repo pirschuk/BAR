@@ -95,6 +95,9 @@ export const STRENGTH_LABEL: Record<Strength, string> = {
 export const strengthLabel = (s: Strength) => STRENGTH_LABEL[s];
 export const methodLabel = (m: Method) => METHOD_LABEL[m];
 export const iceLabel = (i: Ice) => ICE_LABEL[i];
+/** Списки для выбора параметра (редактор авторского коктейля) */
+export const METHODS = Object.keys(METHOD_LABEL) as Method[];
+export const ICES = Object.keys(ICE_LABEL) as Ice[];
 
 /** Крепость в 4 деления: 0 — безалкогольный */
 export function strengthLevel(abv: number): 0 | 1 | 2 | 3 | 4 {

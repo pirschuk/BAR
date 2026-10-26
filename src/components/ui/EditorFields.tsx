@@ -150,7 +150,7 @@ export function IngredientEditRow({
 }) {
   return (
     <RowShell index={index} onMove={onMove} onRemove={onRemove} removeLabel={`Убрать ${name}`} error={error}>
-      <span className="min-w-0 flex-1 truncate text-body text-fg">{name}</span>
+      <span className="line-clamp-2 min-w-0 flex-1 text-subhead text-fg">{name}</span>
       {stepper}
     </RowShell>
   );
@@ -181,10 +181,10 @@ export function StepEditRow({ index, value, onChange, onMove, onRemove }: { inde
   );
 }
 
-/** Цвета обложки: кружки 36 (тач-зона 44), выбранный — обводка fg */
+/** Цвета обложки: кружки 32 (тач-зона 44) в одну строку на 390, выбранный — обводка fg */
 export function ColorDots({ items, value, onChange }: { items: { id: string; cover: Cover }[]; value: Cover; onChange: (c: Cover) => void }) {
   return (
-    <div role="radiogroup" aria-label="Цвет обложки" className="flex flex-wrap gap-3">
+    <div role="radiogroup" aria-label="Цвет обложки" className="flex flex-wrap gap-3.5">
       {items.map(({ id, cover }) => {
         const on = cover.from === value.from && cover.to === value.to;
         return (
@@ -195,7 +195,7 @@ export function ColorDots({ items, value, onChange }: { items: { id: string; cov
             aria-checked={on}
             aria-label={`Цвет ${id}`}
             onClick={() => onChange(cover)}
-            className={cn('cover-gradient hit-44 size-9 rounded-full outline-2 outline-offset-2', on ? 'outline-fg' : 'outline-transparent')}
+            className={cn('cover-gradient hit-44 size-8 rounded-full outline-2 outline-offset-2', on ? 'outline-fg' : 'outline-transparent')}
             style={{ '--cover-from': cover.from, '--cover-to': cover.to } as React.CSSProperties}
           />
         );

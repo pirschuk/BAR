@@ -46,7 +46,7 @@ export function CocktailHero({ cocktail, onBack, action, titleRef, height = 'scr
 
       <div className="relative px-4 pb-5">
         <h1 ref={titleRef} className="line-clamp-2 font-display text-display text-balance text-on-media">{cocktail.name}</h1>
-        <p className="mt-1 text-subhead text-on-media-2">{cocktail.nameEn}</p>
+        <p className="mt-1 text-subhead text-on-media-2">{cocktail.custom ? 'Авторский коктейль' : cocktail.nameEn}</p>
       </div>
     </header>
   );

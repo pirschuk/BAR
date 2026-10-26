@@ -5,6 +5,7 @@ import { createBrowserRouter, Outlet, RouterProvider, ScrollRestoration, useLoca
 import { LuckySheet } from './components/LuckySheet';
 import { Button } from './components/ui/Button';
 import { cocktails, countLabel } from './lib/cocktails';
+import { useCustomCocktails } from './lib/custom';
 import { useFavorites } from './lib/favorites';
 import { applyFilters, hasFacetFilters, parseFilters } from './lib/filters';
 import { canMake, useInventory } from './lib/inventory';
@@ -15,6 +16,7 @@ import { BarSectionPage } from './pages/BarSectionPage';
 import './styles/index.css';
 import { CatalogPage } from './pages/CatalogPage';
 import { CocktailPage } from './pages/CocktailPage';
+import { CocktailEditorPage } from './pages/CocktailEditorPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // таб-бар — только на корневых экранах; на рецепте обложка во весь экран
@@ -25,6 +27,7 @@ function Layout() {
   const navigate = useNavigate();
   const { inv } = useInventory();
   const { list: favList } = useFavorites();
+  const { list: myList } = useCustomCocktails();
   const onRoot = TAB_ROOTS.has(location.pathname);
 
   // «Мне повезёт» по контексту таба: каталог — текущие фильтры, «Мой бар» — только то, что можно приготовить
@@ -38,7 +41,7 @@ function Layout() {
     const pool = applyFilters(cocktails, f, able, (c) => favList.includes(c.id));
     const filtered = hasFacetFilters(f) || !!f.q.trim();
     return { pool, caption: filtered ? `Подходят: ${countLabel(pool.length)}` : `Весь каталог: ${countLabel(pool.length)}` };
-  }, [location.pathname, location.search, inv, favList]);
+  }, [location.pathname, location.search, inv, favList, myList]);
 
   const isLucky = onRoot && location.hash === '#lucky';
   const openLucky = () =>
@@ -101,6 +104,9 @@ const router = createBrowserRouter([
       { path: '/bar', element: <BarPage /> },
       { path: '/bar/:section', element: <BarSectionPage /> },
       { path: '/cocktail/:slug', element: <CocktailPage /> },
+      // авторский коктейль: новый и правка — одна форма
+      { path: '/new', element: <CocktailEditorPage /> },
+      { path: '/cocktail/:slug/edit', element: <CocktailEditorPage /> },
       // витрина — отдельным чанком: пользователю приложения она не нужна
       { path: '/design-system', lazy: async () => ({ Component: (await import('./pages/DesignSystemPage')).DesignSystemPage }) },
       { path: '*', element: <NotFoundPage /> },
