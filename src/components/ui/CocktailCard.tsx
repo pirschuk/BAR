@@ -5,6 +5,7 @@ import type { Cocktail } from '../../types/cocktail';
 import { glassLabel, strengthLabel } from '../../lib/cocktails';
 import { cn } from '../../lib/cn';
 import { GlassIllustration } from './GlassIllustration';
+import { useIsGhost } from '../SwipeBack';
 
 export function coverStyle(cocktail: Pick<Cocktail, 'cover'>): CSSProperties {
   return { '--cover-from': cocktail.cover.from, '--cover-to': cocktail.cover.to } as CSSProperties;
@@ -33,7 +34,9 @@ export function CocktailCard({ cocktail, pressed, className, available, favorite
   const to = `/cocktail/${cocktail.id}`;
   // общий элемент: эта карточка вырастает в обложку рецепта (и садится обратно) — имя только на время перехода к ней;
   // из шторки «Мне повезёт» (replace) — без перехода: та же карточка может быть и в сетке под шторкой
-  const shared = useViewTransitionState(to) && !replace;
+  const transitioning = useViewTransitionState(to);
+  const ghost = useIsGhost();
+  const shared = transitioning && !replace && !ghost;
   return (
     <Link
       to={to}

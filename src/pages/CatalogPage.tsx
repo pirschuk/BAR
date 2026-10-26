@@ -4,6 +4,7 @@ import { Citrus, Heart, PenLine, Plus, SlidersHorizontal, Trash2 } from 'lucide-
 import { Toast, ToastAction } from '../components/ui/Toast';
 import { useCustomCocktails } from '../lib/custom';
 import { setNav } from '../lib/motion';
+import { useIsGhost } from '../components/SwipeBack';
 import { cocktails, countLabel } from '../lib/cocktails';
 import {
   EMPTY_FILTERS,
@@ -80,8 +81,10 @@ export function CatalogPage() {
   const { list: favList } = useFavorites();
   // версия списка авторских — зависимость мемо: массив cocktails меняется на месте
   const { list: myList, upsert } = useCustomCocktails();
+  // «призрак» под свайпом назад — без побочных эффектов
+  const ghost = useIsGhost();
   // удалили авторский в редакторе — тост «Вернуть» (сам коктейль приходит в state перехода)
-  const [deleted, setDeleted] = useState(() => (location.state as { deleted?: Cocktail } | null)?.deleted ?? null);
+  const [deleted, setDeleted] = useState(() => (ghost ? null : ((location.state as { deleted?: Cocktail } | null)?.deleted ?? null)));
   const isFav = useMemo(() => (c: Cocktail) => favList.includes(c.id), [favList]);
   const list = useMemo(() => applyFilters(cocktails, f, isAvailable, isFav), [f, isAvailable, isFav, myList]);
   const markAvailable = f.can ? () => false : isAvailable;
@@ -112,12 +115,12 @@ export function CatalogPage() {
   };
   // state с удалённым не переживает перезагрузку: тост показан один раз
   useEffect(() => {
-    if (deleted) navigate({ search: location.search, hash: location.hash }, { replace: true, state: null, preventScrollReset: true });
+    if (deleted && !ghost) navigate({ search: location.search, hash: location.hash }, { replace: true, state: null, preventScrollReset: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // прямая ссылка с #filters: подкладываем запись без хэша, чтобы «Назад» закрыл шторку, а не ушёл с сайта
   useEffect(() => {
-    if (location.hash && !(location.state as { sheet?: boolean } | null)?.sheet) {
+    if (!ghost && location.hash && !(location.state as { sheet?: boolean } | null)?.sheet) {
       const hash = location.hash;
       navigate({ search: location.search, hash: '' }, { replace: true, preventScrollReset: true });
       navigate({ search: location.search, hash }, { state: { sheet: true }, preventScrollReset: true });

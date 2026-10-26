@@ -1,7 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useMemo } from 'react';
-import { createBrowserRouter, Outlet, ScrollRestoration, useLocation, useNavigate } from 'react-router';
+import { createBrowserRouter, Outlet, ScrollRestoration, useLocation, useNavigate, type RouteObject } from 'react-router';
+import { SwipeBack } from './components/SwipeBack';
 // RouterProvider из react-router/dom — с flushSync: переходы View Transitions снимают кадр синхронно
 import { RouterProvider } from 'react-router/dom';
 import { initMotion } from './lib/motion';
@@ -80,7 +81,9 @@ function Layout() {
   return (
     <>
       <ScrollRestoration />
-      <Outlet />
+      <SwipeBack routes={PAGES} disabledOn={(p) => TAB_ROOTS.has(p)} ghostChrome={(p) => TAB_ROOTS.has(p) && <TabBar />}>
+        <Outlet />
+      </SwipeBack>
       {onRoot && <TabBar onLucky={openLucky} />}
       {onRoot && (
         <LuckySheet
@@ -102,17 +105,22 @@ function Layout() {
 initMotion();
 
 // basename = base из vite.config.ts: '/' локально и на Vercel, '/BAR/' на GitHub Pages
+// страницы приложения — их же рисует «призрак» под свайпом назад
+const PAGES: RouteObject[] = [
+  { path: '/', element: <CatalogPage /> },
+  { path: '/bar', element: <BarPage /> },
+  { path: '/bar/:section', element: <BarSectionPage /> },
+  { path: '/cocktail/:slug', element: <CocktailPage /> },
+  // авторский коктейль: новый и правка — одна форма
+  { path: '/new', element: <CocktailEditorPage /> },
+  { path: '/cocktail/:slug/edit', element: <CocktailEditorPage /> },
+];
+
 const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
-      { path: '/', element: <CatalogPage /> },
-      { path: '/bar', element: <BarPage /> },
-      { path: '/bar/:section', element: <BarSectionPage /> },
-      { path: '/cocktail/:slug', element: <CocktailPage /> },
-      // авторский коктейль: новый и правка — одна форма
-      { path: '/new', element: <CocktailEditorPage /> },
-      { path: '/cocktail/:slug/edit', element: <CocktailEditorPage /> },
+      ...PAGES,
       // витрина — отдельным чанком: пользователю приложения она не нужна
       { path: '/design-system', lazy: async () => ({ Component: (await import('./pages/DesignSystemPage')).DesignSystemPage }) },
       { path: '*', element: <NotFoundPage /> },
