@@ -1,9 +1,9 @@
 import { useMemo, useRef, useState } from 'react';
 import { useBlocker, useLocation, useNavigate, useParams } from 'react-router';
-import { Flame, Martini, Plus, Shuffle, Snowflake, Trash2 } from 'lucide-react';
-import { BASES, GLASSES, ICES, METHODS, getCocktail, glassLabel, iceLabel, methodLabel } from '../lib/cocktails';
+import { Martini, Plus, Shuffle, Snowflake, Trash2 } from 'lucide-react';
+import { GLASSES, ICES, METHODS, getCocktail, glassLabel, iceLabel, methodLabel } from '../lib/cocktails';
 import { COVERS, EMPTY_DRAFT, baseOf, computeAbv, coverFor, draftErrors, lineFor, stepOf, strengthOf, toCocktail, toDraft, useCustomCocktails, type Draft } from '../lib/custom';
-import type { Base, Glass, Ice, Method } from '../types/cocktail';
+import type { Glass, Ice, Method } from '../types/cocktail';
 import { NavBar, useNavReveal } from '../components/ui/NavBar';
 import { CocktailHero } from '../components/ui/CocktailHero';
 import { TextField } from '../components/ui/TextField';
