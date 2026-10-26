@@ -110,7 +110,10 @@ export function lineFor(ref: string): Ingredient {
 /** Шаг степпера: мл — 5, штучное — 1 */
 export const stepOf = (i: Ingredient) => (i.amountMl !== undefined ? 5 : 1);
 
-/** База по составу: крепкий с наибольшим объёмом; без крепкого — аперитив, без алкоголя — безалкогольный */
+/**
+ * База по составу (её не выбирают — она нужна только фильтру «База»): крепкий с наибольшим объёмом;
+ * поровну (Лонг-Айленд) — тот, что выше в списке; без крепкого — аперитив, без алкоголя — безалкогольный.
+ */
 const SPIRIT_BASE: Record<string, Base> = {
   gin: 'gin', 'white-rum': 'rum', 'dark-rum': 'rum', bourbon: 'whiskey', 'rye-whiskey': 'whiskey', scotch: 'whiskey',
   'peated-scotch': 'whiskey', 'irish-whiskey': 'whiskey', tequila: 'tequila', mezcal: 'tequila', vodka: 'vodka',
@@ -185,7 +188,7 @@ export function toCocktail(d: Draft, now = Date.now()): Cocktail {
     difficulty: 1,
     timeMin: 2 + steps.length,
     tags: [],
-    base: d.base,
+    base: baseOf(ingredients) ?? d.base,
     cover: d.cover,
     custom: true,
     createdAt: now,

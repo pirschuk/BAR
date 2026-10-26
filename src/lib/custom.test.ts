@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import data from '../data/cocktails.json';
 import type { Cocktail } from '../types/cocktail';
-import { computeAbv, draftErrors, EMPTY_DRAFT, strengthOf, toCocktail } from './custom';
+import { baseOf, computeAbv, draftErrors, EMPTY_DRAFT, lineFor, strengthOf, toCocktail } from './custom';
 
 const base = data as Cocktail[];
 
@@ -47,5 +47,22 @@ describe('черновик', () => {
   it('свой ингредиент не пройдёт', () => {
     const d = { ...EMPTY_DRAFT, name: 'X', steps: ['a'], ingredients: [{ ref: 'elderflower-homemade', name: 'Бузина', amountMl: 30, category: 'syrup' as const }, { ref: 'gin', name: '', amountMl: 30, category: 'spirit' as const }] };
     expect(draftErrors(d)).toContain('Ингредиенты — только из справочника');
+  });
+});
+
+describe('база по составу', () => {
+  // негрони в каталоге — «Аперитив» (редакторский выбор: джин, кампари и вермут поровну); правило даёт «Джин»
+  it('совпадает с base у базовых рецептов (кроме негрони)', () => {
+    const wrong = base.filter((c) => c.id !== 'negroni' && baseOf(c.ingredients) !== c.base).map((c) => `${c.id}: ${baseOf(c.ingredients)} ≠ ${c.base}`);
+    expect(wrong).toEqual([]);
+  });
+  it('поровну крепких (Лонг-Айленд) — тот, что выше в списке', () => {
+    const li = ['vodka', 'gin', 'white-rum', 'tequila'].map((ref) => ({ ...lineFor(ref), amountMl: 15 }));
+    expect(baseOf(li)).toBe('vodka');
+    expect(baseOf([li[2]!, ...li])).toBe('rum');
+  });
+  it('без крепкого — аперитив, без алкоголя — безалкогольный', () => {
+    expect(baseOf([lineFor('campari'), lineFor('soda')])).toBe('aperitif');
+    expect(baseOf([lineFor('lime'), lineFor('soda')])).toBe('non-alcoholic');
   });
 });

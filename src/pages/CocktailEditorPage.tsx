@@ -16,10 +16,9 @@ import { IngredientPickSheet } from '../components/IngredientPickSheet';
 import { NotFoundPage } from './NotFoundPage';
 import { scaleIngredient } from '../lib/cocktails';
 
-type Param = 'base' | 'glass' | 'method' | 'ice';
+type Param = 'glass' | 'method' | 'ice';
 
 const OPTIONS: Record<Param, { title: string; items: { id: string; label: string }[] }> = {
-  base: { title: 'База', items: BASES },
   glass: { title: 'Бокал', items: GLASSES },
   method: { title: 'Метод', items: METHODS.map((id) => ({ id, label: methodLabel(id) })) },
   ice: { title: 'Лёд', items: ICES.map((id) => ({ id, label: iceLabel(id) })) },
@@ -46,13 +45,13 @@ export function CocktailEditorPage() {
 
   const initial = useMemo(() => (editing?.custom ? toDraft(editing) : EMPTY_DRAFT), [editing]);
   const [d, setD] = useState<Draft>(initial);
-  // база и обложка следуют за составом, пока их не выбрали вручную
-  const [manual, setManual] = useState({ base: !!editing, cover: !!editing });
+  // база всегда по составу; обложка следует за ней, пока цвет не выбрали вручную
+  const [manualCover, setManualCover] = useState(!!editing);
   const set = (patch: Partial<Draft>) =>
     setD((x) => {
       const next = { ...x, ...patch };
-      if (patch.ingredients && !manual.base) next.base = baseOf(patch.ingredients) ?? next.base;
-      if (!manual.cover) next.cover = coverFor(next.base);
+      if (patch.ingredients) next.base = baseOf(patch.ingredients) ?? next.base;
+      if (!manualCover) next.cover = coverFor(next.base);
       return next;
     });
   const dirty = JSON.stringify(d) !== JSON.stringify(initial);
@@ -99,16 +98,13 @@ export function CocktailEditorPage() {
   const setAmount = (index: number, v: number) =>
     set({ ingredients: d.ingredients.map((i, k) => (k !== index ? i : i.amountMl !== undefined ? { ...i, amountMl: v } : { ...i, amount: v })) });
   const pick = (param: Param, id: string) => {
-    if (param === 'base') {
-      setManual((m) => ({ ...m, base: true }));
-      set({ base: id as Base });
-    } else if (param === 'glass') set({ glass: id as Glass });
+    if (param === 'glass') set({ glass: id as Glass });
     else if (param === 'method') set({ method: id as Method });
     else set({ ice: id as Ice });
     closeSheet();
   };
   const param = (Object.keys(OPTIONS) as Param[]).find((p) => sheet === `pick-${p}`);
-  const value: Record<Param, string> = { base: BASES.find((b) => b.id === d.base)!.label, glass: glassLabel(d.glass), method: methodLabel(d.method), ice: iceLabel(d.ice) };
+  const value: Record<Param, string> = { glass: glassLabel(d.glass), method: methodLabel(d.method), ice: iceLabel(d.ice) };
 
   return (
     <main className="min-h-svh bg-bg pb-safe">
@@ -126,7 +122,7 @@ export function CocktailEditorPage() {
       <CocktailHero cocktail={preview} titleRef={titleRef} height="preview" />
 
       <div className="mt-4 px-4">
-        <ColorDots items={COVERS} value={d.cover} onChange={(cover) => (setManual((m) => ({ ...m, cover: true })), setD((x) => ({ ...x, cover })))} />
+        <ColorDots items={COVERS} value={d.cover} onChange={(cover) => (setManualCover(true), setD((x) => ({ ...x, cover })))} />
       </div>
 
       <div className="mt-6 flex flex-col gap-4 px-4">
@@ -136,7 +132,6 @@ export function CocktailEditorPage() {
 
       <SectionHeader size="l" title="Параметры" className="mt-10" />
       <div className="mt-3 flex flex-col gap-2 px-4">
-        <ParamPickRow icon={Flame} label="База" value={value.base} onClick={() => openSheet('pick-base')} />
         <ParamPickRow icon={Martini} label="Бокал" value={value.glass} onClick={() => openSheet('pick-glass')} />
         <ParamPickRow icon={Shuffle} label="Метод" value={value.method} onClick={() => openSheet('pick-method')} />
         <ParamPickRow icon={Snowflake} label="Лёд" value={value.ice} onClick={() => openSheet('pick-ice')} />
