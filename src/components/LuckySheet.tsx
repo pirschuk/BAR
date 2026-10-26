@@ -65,7 +65,6 @@ export function LuckySheet({ open, onClose, pool, caption, onOpenRecipe, empty, 
       onClose={onClose}
       inline={inline}
       title="Мне повезёт"
-      initialDetent="large"
       footer={
         top ? (
           <SheetFooter>

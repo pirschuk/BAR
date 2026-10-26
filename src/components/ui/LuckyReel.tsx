@@ -22,7 +22,8 @@ const SPIN_MS = 900;
 const reduced = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
 /**
- * «Мне повезёт» — барабан **карточками**: та же карточка, что в каталоге (CocktailCard large), на всю ширину.
+ * «Мне повезёт» — барабан **карточками**: та же карточка, что в каталоге (CocktailCard large), на всю ширину,
+ * высота — `h-lucky-card` (не 3:4: иначе карточка огромная).
  * Спин — отдельные карточки с зазором 12 проезжают сверху вниз ~900 мс (видны целиком, не в окне) и тормозят
  * с перелётом и отскоком (--ease-spring); за выпавшей — свечение цветом напитка. Один вариант — «pop»;
  * reduced-motion — без анимации. Лента прижата низом: остальные карточки выше выпавшей (не растят прокрутку).
@@ -74,14 +75,14 @@ export function LuckyReel({ current, strip, spinKey, onSettle, onSpin, isAvailab
   const frameStyle = frame !== undefined ? { transform: `translateY(calc(${(1 - frame) * (frames.length - 1)} * (100% / ${frames.length} + ${GAP / frames.length}px)))` } : undefined;
 
   return (
-    <div className="relative aspect-card w-full">
+    <div className="h-lucky-card relative w-full">
       {/* свечение цветом напитка — проявляется после остановки */}
       {settled && <span key={`${spinKey}-${current.id}`} className="lucky-glow absolute -inset-6" style={coverStyle(current)} aria-hidden />}
       <div className={cn('relative h-full', spinning && 'pointer-events-none')}>
         {/* лента прижата низом: последняя (выпавшая) — на месте карточки, остальные выше */}
         <div ref={reel} className="absolute inset-x-0 bottom-0 flex flex-col" style={{ gap: GAP, ...frameStyle }}>
           {shown.map((c, i) => (
-            <div key={`${c.id}-${i}`} className={cn('aspect-card w-full', settled && strip.length === 0 && frame === undefined && 'motion-safe:animate-card-pop')}>
+            <div key={`${c.id}-${i}`} className={cn('h-lucky-card w-full', settled && strip.length === 0 && frame === undefined && 'motion-safe:animate-card-pop')}>
               <CocktailCard
                 cocktail={c}
                 large
@@ -89,7 +90,7 @@ export function LuckyReel({ current, strip, spinKey, onSettle, onSpin, isAvailab
                 tabIndex={settled ? undefined : -1}
                 available={isAvailable?.(c)}
                 favorite={isFavorite?.(c)}
-                className="h-full"
+                className="aspect-auto! h-full"
               />
             </div>
           ))}

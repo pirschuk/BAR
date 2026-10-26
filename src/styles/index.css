@@ -334,6 +334,10 @@
 @utility animate-pop {
   animation: pop 200ms var(--ease-soft);
 }
+/* карточка «Мне повезёт»: на всю ширину, высота — как была (влезает в шторку medium с футером) */
+@utility h-lucky-card {
+  height: min(400px, calc(62svh - 160px));
+}
 /* бросок кубика 🎲 */
 @keyframes roll {
   to {
