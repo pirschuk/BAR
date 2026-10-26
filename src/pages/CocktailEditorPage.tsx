@@ -14,6 +14,7 @@ import { PickRow } from '../components/ui/BarRows';
 import { AbvLine, ColorDots, IngredientEditRow, ParamPickRow, StepEditRow, Stepper, TextArea } from '../components/ui/EditorFields';
 import { IngredientPickSheet } from '../components/IngredientPickSheet';
 import { NotFoundPage } from './NotFoundPage';
+import { setNav } from '../lib/motion';
 
 type Param = 'glass' | 'method' | 'ice';
 
@@ -84,13 +85,14 @@ export function CocktailEditorPage() {
     leaving.current = true;
     // новый — рецепт вместо формы; правка — назад к рецепту
     if (editing && location.key !== 'default') navigate(-1);
-    else navigate(`/cocktail/${c.id}`, { replace: true });
+    else navigate(`/cocktail/${c.id}`, { replace: true, viewTransition: true });
   };
   const del = () => {
     if (!editing) return;
     remove(editing.id);
     leaving.current = true;
-    navigate('/', { replace: true, state: { deleted: editing } });
+    setNav('back');
+    navigate('/', { replace: true, state: { deleted: editing }, viewTransition: true });
   };
 
   const picked = new Set(d.ingredients.map((i) => i.ref));

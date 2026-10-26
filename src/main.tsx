@@ -1,7 +1,10 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useMemo } from 'react';
-import { createBrowserRouter, Outlet, RouterProvider, ScrollRestoration, useLocation, useNavigate } from 'react-router';
+import { createBrowserRouter, Outlet, ScrollRestoration, useLocation, useNavigate } from 'react-router';
+// RouterProvider из react-router/dom — с flushSync: переходы View Transitions снимают кадр синхронно
+import { RouterProvider } from 'react-router/dom';
+import { initMotion } from './lib/motion';
 import { LuckySheet } from './components/LuckySheet';
 import { Button } from './components/ui/Button';
 import { cocktails, countLabel } from './lib/cocktails';
@@ -94,6 +97,9 @@ function Layout() {
     </>
   );
 }
+
+// до роутера: popstate должен узнать направление раньше, чем роутер запустит переход
+initMotion();
 
 // basename = base из vite.config.ts: '/' локально и на Vercel, '/BAR/' на GitHub Pages
 const router = createBrowserRouter([

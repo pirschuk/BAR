@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { Link } from 'react-router';
+import { Link, useViewTransitionState } from 'react-router';
 import { Heart } from 'lucide-react';
 import type { Cocktail } from '../../types/cocktail';
 import { glassLabel, strengthLabel } from '../../lib/cocktails';
@@ -30,14 +30,19 @@ type Props = {
 
 /** Карточка каталога 3:4: градиент напитка, силуэт бокала, плашка крепости (словом), название и бокал поверх скрима */
 export function CocktailCard({ cocktail, pressed, className, available, favorite, compact, large, replace, tabIndex }: Props) {
+  const to = `/cocktail/${cocktail.id}`;
+  // общий элемент: эта карточка вырастает в обложку рецепта (и садится обратно) — имя только на время перехода к ней;
+  // из шторки «Мне повезёт» (replace) — без перехода: та же карточка может быть и в сетке под шторкой
+  const shared = useViewTransitionState(to) && !replace;
   return (
     <Link
-      to={`/cocktail/${cocktail.id}`}
+      to={to}
+      viewTransition={!replace}
       replace={replace}
       tabIndex={tabIndex}
       data-pressed={pressed || undefined}
-      className={cn('pressable-scale cover-gradient block aspect-card overflow-hidden rounded-tile outline-1 -outline-offset-1 outline-border', className)}
-      style={coverStyle(cocktail)}
+      className={cn('vt-card pressable-scale cover-gradient block aspect-card overflow-hidden rounded-tile outline-1 -outline-offset-1 outline-border', className)}
+      style={{ ...coverStyle(cocktail), ...(shared ? { viewTransitionName: 'cover' } : { '--vt': `card-${cocktail.id}` }) } as CSSProperties}
     >
       {/* compact (лента 140): бокал ниже ростом — двухстрочное название не наезжает */}
       <GlassIllustration shape={cocktail.glass} className={cn('absolute inset-x-0 mx-auto', compact ? 'top-5 h-2/5' : 'top-9 h-1/2')} />

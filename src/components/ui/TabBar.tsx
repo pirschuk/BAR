@@ -35,6 +35,7 @@ export function TabBar({ tabs = TABS, onLucky, luckyDisabled, inline, pressedTo,
       key={t.to}
       to={t.to}
       end
+      viewTransition
       data-pressed={pressedTo === t.to || undefined}
       className={({ isActive }) =>
         cn(
@@ -51,6 +52,7 @@ export function TabBar({ tabs = TABS, onLucky, luckyDisabled, inline, pressedTo,
     <div className={cn(inline ? 'px-4' : 'pointer-events-none fixed inset-x-0 bottom-0 z-30 mx-auto max-w-app px-4 pb-tabbar-gap')}>
       <nav
         aria-label="Разделы"
+        style={inline ? undefined : { viewTransitionName: 'tabbar' }}
         className="tabbar-glass pointer-events-auto flex h-16 items-center gap-2 rounded-full border border-border px-2"
       >
         {left.map(item)}

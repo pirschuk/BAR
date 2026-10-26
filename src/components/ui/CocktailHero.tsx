@@ -1,5 +1,6 @@
 import type { ReactNode, RefObject } from 'react';
 import { ChevronLeft } from 'lucide-react';
+import { useViewTransitionState } from 'react-router';
 import type { Cocktail } from '../../types/cocktail';
 import { cn } from '../../lib/cn';
 import { IconButton } from './Button';
@@ -24,10 +25,14 @@ type Props = {
  * Колонка: бокал занимает всё место над названием — длинное название уменьшает бокал, а не наезжает на него.
  */
 export function CocktailHero({ cocktail, onBack, action, titleRef, height = 'screen', glassMuted }: Props) {
+  // общий элемент с карточкой: только в переходе со страниц, где есть карточки (каталог, «Мой бар»)
+  const fromCatalog = useViewTransitionState('/');
+  const fromBar = useViewTransitionState('/bar');
+  const shared = height === 'screen' && (fromCatalog || fromBar);
   return (
     <header
       className={cn('cover-gradient relative flex flex-col overflow-hidden', height === 'screen' ? 'h-hero pt-safe' : 'h-80 pt-3')}
-      style={coverStyle(cocktail)}
+      style={{ ...coverStyle(cocktail), ...(shared ? { viewTransitionName: 'cover' } : {}) }}
     >
       <span className="scrim-top absolute inset-0" aria-hidden />
       <span className="scrim-bottom absolute inset-0" aria-hidden />

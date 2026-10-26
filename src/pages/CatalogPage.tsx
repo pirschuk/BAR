@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { Citrus, Heart, PenLine, Plus, SlidersHorizontal, Trash2 } from 'lucide-react';
 import { Toast, ToastAction } from '../components/ui/Toast';
 import { useCustomCocktails } from '../lib/custom';
+import { setNav } from '../lib/motion';
 import { cocktails, countLabel } from '../lib/cocktails';
 import {
   EMPTY_FILTERS,
@@ -90,8 +91,12 @@ export function CatalogPage() {
   const [searching, setSearching] = useState(false);
   const [recent, setRecent] = useState(getRecent);
 
-  const setFilters = (next: FilterState) =>
-    setParams(filtersToParams(next), { replace: true, preventScrollReset: true });
+  // фильтры (не набор текста в поиске) — сетка перестраивается переходом: карточки переезжают, лишние гаснут
+  const setFilters = (next: FilterState) => {
+    const animate = next.q === f.q;
+    if (animate) setNav('grid');
+    setParams(filtersToParams(next), { replace: true, preventScrollReset: true, viewTransition: animate });
+  };
 
   // --- шторки живут в хэше: «Назад» закрывает шторку, а не уходит со страницы ---
   const pending = useRef<FilterState | null>(null);
@@ -152,7 +157,7 @@ export function CatalogPage() {
         <header className="pt-safe flex min-h-tap items-center justify-between gap-3 px-4">
           <h1 className="font-display text-display text-fg">Коктейли</h1>
           {/* авторский коктейль — «+» в шапке каталога */}
-          <Link to="/new" aria-label="Собрать свой коктейль" title="Собрать свой коктейль" className="pressable-scale flex size-tap shrink-0 items-center justify-center rounded-full bg-tile-strong text-fg">
+          <Link to="/new" viewTransition aria-label="Собрать свой коктейль" title="Собрать свой коктейль" className="pressable-scale flex size-tap shrink-0 items-center justify-center rounded-full bg-tile-strong text-fg">
             <Plus className="size-6" strokeWidth={2.25} aria-hidden />
           </Link>
         </header>
@@ -292,7 +297,7 @@ export function CatalogPage() {
               title={inv.size ? 'Пока ничего не получится' : 'Бар пока пуст'}
               hint={inv.size ? 'Добавьте 1–2 ингредиента в «Мой бар»' : 'Отметьте, что есть дома'}
               action={
-                <Link to="/bar" className={buttonClass('secondary', 'm')}>
+                <Link to="/bar" viewTransition className={buttonClass('secondary', 'm')}>
                   Открыть «Мой бар»
                 </Link>
               }

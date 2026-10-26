@@ -61,7 +61,7 @@ export function BarCategoryCard({
   pressed?: boolean;
 }) {
   return (
-    <Link to={to} data-pressed={pressed || undefined} className="pressable flex items-center gap-3 rounded-tile bg-tile p-4">
+    <Link to={to} viewTransition data-pressed={pressed || undefined} className="pressable flex items-center gap-3 rounded-tile bg-tile p-4">
       <span className="min-w-0 flex-1">
         <span className="block font-display text-section text-fg">{title}</span>
         <span className="mt-1 block text-footnote text-fg-2">{meta}</span>

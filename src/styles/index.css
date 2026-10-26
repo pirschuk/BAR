@@ -318,8 +318,25 @@
     opacity: 0;
   }
 }
+@keyframes sheet-out {
+  to {
+    transform: translateY(100%);
+  }
+}
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+/* шторка: вход и выход — токены движения платформы */
 @utility animate-sheet-in {
-  animation: sheet-in 320ms var(--ease-soft);
+  animation: sheet-in var(--dur-sheet-in) var(--ease-sheet-in);
+}
+@utility animate-sheet-out {
+  animation: sheet-out var(--dur-sheet-out) var(--ease-sheet-out) forwards;
+}
+@utility animate-fade-out {
+  animation: fade-out var(--dur-sheet-out) var(--ease-sheet-out) forwards;
 }
 /* «пульс» сердца при добавлении в избранное */
 @keyframes pop {
@@ -378,8 +395,217 @@
 @utility animate-toast-in {
   animation: toast-in 200ms var(--ease-soft);
 }
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+@utility animate-toast-out {
+  animation: toast-out var(--dur-toast-out) var(--ease-sheet-out) forwards;
+}
 @utility animate-fade-in {
-  animation: fade-in 200ms ease-out;
+  animation: fade-in var(--dur-sheet-in) ease-out;
+}
+
+/* ============================================================================================
+   Движение (Итерация 5): язык платформы — html[data-platform=ios|android] (lib/motion.ts).
+   iOS — UIKit: push справа 100% → 0, старая страница уезжает на 30% и темнеет; шторка с «пружиной».
+   Android — Material 3: shared axis X (±30 px + fade), fade-through для вкладок, emphasized-кривые.
+   ============================================================================================ */
+:root,
+html[data-platform='android'] {
+  --dur-push: 300ms;
+  --ease-push: cubic-bezier(0.2, 0, 0, 1);
+  --dur-tab: 240ms;
+  --dur-sheet-in: 350ms;
+  --ease-sheet-in: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --dur-sheet-out: 200ms;
+  --ease-sheet-out: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --dur-toast-out: 160ms;
+  --dur-grid: 250ms;
+  --dur-shared: 400ms;
+}
+html[data-platform='ios'] {
+  --dur-push: 400ms;
+  --ease-push: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-tab: 150ms;
+  --dur-sheet-in: 420ms;
+  --ease-sheet-in: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-sheet-out: 250ms;
+  --ease-sheet-out: cubic-bezier(0.32, 0, 0.67, 0);
+  --dur-toast-out: 160ms;
+  --dur-grid: 300ms;
+  --dur-shared: 450ms;
+}
+
+/* корень и «резина»: навбар и таб-бар не отрываются при оттягивании; на Android — без pull-to-refresh */
+html,
+body {
+  overscroll-behavior: none;
+}
+
+::view-transition-group(*),
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: var(--dur-push);
+  animation-timing-function: var(--ease-push);
+}
+
+/* --- iOS: push / pop --- */
+@keyframes ios-in-right {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes ios-out-left {
+  to {
+    transform: translateX(-30%);
+    filter: brightness(0.6);
+  }
+}
+@keyframes ios-out-right {
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes ios-in-left {
+  from {
+    transform: translateX(-30%);
+    filter: brightness(0.6);
+  }
+}
+html[data-platform='ios'][data-nav='forward']::view-transition-old(root) {
+  animation-name: ios-out-left;
+}
+html[data-platform='ios'][data-nav='forward']::view-transition-new(root) {
+  animation-name: ios-in-right;
+}
+html[data-platform='ios'][data-nav='back']::view-transition-old(root) {
+  animation-name: ios-out-right;
+  z-index: 1;
+}
+html[data-platform='ios'][data-nav='back']::view-transition-new(root) {
+  animation-name: ios-in-left;
+}
+
+/* --- Android: shared axis X; «назад» — как предиктивный жест: страница сжимается и уходит вправо --- */
+@keyframes md-out-left {
+  35%,
+  100% {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+}
+@keyframes md-in-right {
+  0%,
+  35% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+}
+@keyframes md-out-back {
+  to {
+    opacity: 0;
+    transform: translateX(15%) scale(0.9);
+    border-radius: 28px;
+  }
+}
+@keyframes md-in-left {
+  0%,
+  20% {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+}
+html[data-platform='android'][data-nav='forward']::view-transition-old(root) {
+  animation-name: md-out-left;
+}
+html[data-platform='android'][data-nav='forward']::view-transition-new(root) {
+  animation-name: md-in-right;
+}
+html[data-platform='android'][data-nav='back']::view-transition-old(root) {
+  animation-name: md-out-back;
+  z-index: 1;
+}
+html[data-platform='android'][data-nav='back']::view-transition-new(root) {
+  animation-name: md-in-left;
+}
+
+/* --- вкладки: iOS — быстрый crossfade, Android — fade-through (новое проявляется с 92%) --- */
+@keyframes fade-through-in {
+  0%,
+  35% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+@keyframes fade-through-out {
+  35%,
+  100% {
+    opacity: 0;
+  }
+}
+html[data-nav='tab']::view-transition-old(root) {
+  animation: fade-out var(--dur-tab) ease-out both;
+}
+html[data-nav='tab']::view-transition-new(root) {
+  animation: fade-in var(--dur-tab) ease-out both;
+}
+html[data-platform='android'][data-nav='tab']::view-transition-old(root) {
+  animation-name: fade-through-out;
+}
+html[data-platform='android'][data-nav='tab']::view-transition-new(root) {
+  animation-name: fade-through-in;
+  animation-timing-function: var(--ease-sheet-in);
+}
+
+/* --- сетка каталога перестраивается: корень без анимации, карточки переезжают / гаснут / проявляются --- */
+html[data-nav='grid']::view-transition-old(root),
+html[data-nav='grid']::view-transition-new(root) {
+  animation: none;
+}
+html[data-nav='grid'] .vt-card {
+  view-transition-name: var(--vt);
+}
+html[data-nav='grid']::view-transition-group(*) {
+  animation-duration: var(--dur-grid);
+}
+
+/* --- общий элемент: обложка карточки ↔ обложка рецепта --- */
+::view-transition-group(cover) {
+  animation-duration: var(--dur-shared);
+  z-index: 2;
+}
+::view-transition-old(cover),
+::view-transition-new(cover) {
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+/* --- таб-бар стоит на месте при смене вкладок --- */
+::view-transition-group(tabbar) {
+  z-index: 3;
+}
+
+/* --- без перехода: закрыли шторку «Назад» (сменился только хэш) --- */
+html[data-nav='none']::view-transition-group(*),
+html[data-nav='none']::view-transition-old(*),
+html[data-nav='none']::view-transition-new(*) {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*) {
+    animation: none !important;
+  }
+  ::view-transition-old(*) {
+    animation: fade-out 150ms ease-out both !important;
+  }
+  ::view-transition-new(*) {
+    animation: fade-in 150ms ease-out both !important;
+  }
 }
 
 @utility h-hero {

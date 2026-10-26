@@ -104,7 +104,7 @@ export function BarPage() {
             size="l"
             title="Избранное"
             meta={
-              <Link to="/?fav=1" className="pressable -mr-2 inline-flex h-tap items-center gap-0.5 rounded-control px-2 text-subhead text-fg-2">
+              <Link to="/?fav=1" viewTransition className="pressable -mr-2 inline-flex h-tap items-center gap-0.5 rounded-control px-2 text-subhead text-fg-2">
                 Все {favs.length}
                 <ChevronRight className="size-4" aria-hidden />
               </Link>

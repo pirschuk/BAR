@@ -13,7 +13,7 @@ export function AvailabilityLine(props: AvailabilityProps) {
   const dot = (cls: string) => <span className={cn('size-2 shrink-0 self-center rounded-full', cls)} aria-hidden />;
   if (props.state === 'empty-bar')
     return (
-      <Link to="/bar" className="pressable -mx-2 flex min-h-tap items-center gap-2 rounded-control px-2 text-subhead text-fg-2">
+      <Link to="/bar" viewTransition className="pressable -mx-2 flex min-h-tap items-center gap-2 rounded-control px-2 text-subhead text-fg-2">
         {dot('bg-fg-3')}
         <span className="min-w-0">Отметьте, что есть дома</span>
         <ChevronRight className="-ml-1 size-4 shrink-0 text-fg-3" aria-hidden />

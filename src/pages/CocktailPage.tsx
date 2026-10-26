@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Heart, Pencil, Wrench } from 'lucide-react';
 import { IconButton } from '../components/ui/Button';
+import { setNav } from '../lib/motion';
 import { missing, toolsFor, useInventory } from '../lib/inventory';
 import { AvailabilityLine, InfoNote } from '../components/ui/Availability';
 import { useLocation, useNavigate, useParams } from 'react-router';
@@ -45,7 +46,7 @@ export function CocktailPage() {
   if (!cocktail) return <NotFoundPage title="Коктейль не найден" />;
 
   // пришли из приложения — назад по истории (фильтр и скролл каталога сохраняются), иначе — в каталог
-  const back = () => (location.key !== 'default' ? navigate(-1) : navigate('/'));
+  const back = () => (location.key !== 'default' ? navigate(-1) : (setNav('back'), navigate('/', { viewTransition: true })));
 
   const isFav = favorites.has(cocktail.id);
   const toggleFav = () => setToast(favorites.toggle(cocktail.id) ? (n) => n + 1 : 0);
@@ -62,7 +63,7 @@ export function CocktailPage() {
           // авторский — «Изменить» рядом с ♡
           cocktail.custom ? (
             <div className="flex gap-2">
-              <IconButton icon={Pencil} label="Изменить" variant="glass" size="xl" iconClassName="size-6!" onClick={() => navigate(`/cocktail/${cocktail.id}/edit`)} />
+              <IconButton icon={Pencil} label="Изменить" variant="glass" size="xl" iconClassName="size-6!" onClick={() => navigate(`/cocktail/${cocktail.id}/edit`, { viewTransition: true })} />
               <FavoriteButton on={isFav} onToggle={toggleFav} />
             </div>
           ) : (

@@ -44,6 +44,7 @@ export function BarHero({ can, nearly, covers, to, onBuy, pressed }: Props) {
   return (
     <Link
       to={to}
+      viewTransition
       data-pressed={pressed || undefined}
       className="pressable-scale hero-brand relative flex min-h-56 overflow-hidden rounded-sheet p-5 text-on-media"
       aria-label={`Можно приготовить ${countLabel(can)} — показать`}

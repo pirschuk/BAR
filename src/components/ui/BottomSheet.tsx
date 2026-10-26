@@ -22,22 +22,57 @@ type Props = {
 
 const CLOSE_DRAG = 90;
 const EXPAND_DRAG = -60;
+/** быстрый смах вниз закрывает даже с короткого хода, px/мс */
+const FLICK = 0.5;
+
+/** Длительность из токена движения (мс); reduced-motion — 0 */
+export function motionMs(token: string, fallback: number): number {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return 0;
+  const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(token));
+  return Number.isFinite(v) ? v : fallback;
+}
+
+/**
+ * Шторка закрывается анимацией: после open=false живёт ещё --dur-sheet-out и показывает
+ * **прежнее** содержимое (родитель к этому времени мог его уже убрать).
+ */
+function useLeaving(open: boolean, content: { title: string; children: ReactNode; footer?: ReactNode; onBack?: () => void }) {
+  const [shown, setShown] = useState(open);
+  const last = useRef(content);
+  if (open) last.current = content;
+  useEffect(() => {
+    if (open) {
+      setShown(true);
+      return;
+    }
+    const t = setTimeout(() => setShown(false), motionMs('--dur-sheet-out', 250));
+    return () => clearTimeout(t);
+  }, [open]);
+  return { visible: open || shown, leaving: !open && shown, content: open ? content : last.current };
+}
 
 /**
  * Нижняя шторка: хэндл 36×5, радиус 28 сверху, детенты medium/large,
  * свайп за хэндл/шапку вниз — закрыть (или large → medium), вверх — large;
  * тап по скриму и Esc закрывают. Футер липкий, с safe-area. [Fresha, Viator]
  */
-export function BottomSheet({ open, onClose, title, onBack, children, footer, initialDetent = 'medium', inline }: Props) {
+export function BottomSheet({ open: openProp, onClose, initialDetent = 'medium', inline, ...props }: Props) {
+  const open = openProp;
+  const { visible, leaving, content } = useLeaving(open, props);
+  const { title, children, footer, onBack } = content;
   const [detent, setDetent] = useState<Detent>(initialDetent);
   const [drag, setDrag] = useState(0);
   const start = useRef<number | null>(null);
+  const last = useRef({ y: 0, t: 0, v: 0 });
   const titleId = useId();
   const dialog = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    if (open) setDetent(initialDetent);
+    if (open) {
+      setDetent(initialDetent);
+      setDrag(0);
+    }
   }, [open, initialDetent]);
 
   useEffect(() => {
@@ -59,24 +94,33 @@ export function BottomSheet({ open, onClose, title, onBack, children, footer, in
     };
   }, [open, inline, onClose]);
 
-  if (!open) return null;
+  if (!visible) return null;
 
   const onDown = (e: PointerEvent) => {
     // кнопки в шапке (✕) — не жест: иначе pointer capture уводит click с кнопки на шапку
-    if ((e.target as HTMLElement).closest('button')) return;
+    if (leaving || (e.target as HTMLElement).closest('button')) return;
     start.current = e.clientY;
+    last.current = { y: e.clientY, t: e.timeStamp, v: 0 };
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
   const onMove = (e: PointerEvent) => {
-    if (start.current !== null) setDrag(e.clientY - start.current);
+    if (start.current === null) return;
+    const dt = e.timeStamp - last.current.t;
+    if (dt > 0) last.current = { y: e.clientY, t: e.timeStamp, v: (e.clientY - last.current.y) / dt };
+    setDrag(e.clientY - start.current);
   };
   const onUp = () => {
     if (start.current === null) return;
-    if (drag > CLOSE_DRAG) {
-      if (detent === 'large' && initialDetent === 'medium') setDetent('medium');
-      else onClose();
-    } else if (drag < EXPAND_DRAG) setDetent('large');
     start.current = null;
+    const flick = last.current.v > FLICK && drag > 10;
+    if (drag > CLOSE_DRAG || flick) {
+      if (detent === 'large' && initialDetent === 'medium' && !flick) setDetent('medium');
+      else {
+        // уезжает вниз с того места, где отпустили (drag не сбрасываем)
+        onClose();
+        return;
+      }
+    } else if (drag < EXPAND_DRAG) setDetent('large');
     setDrag(0);
   };
 
@@ -89,7 +133,7 @@ export function BottomSheet({ open, onClose, title, onBack, children, footer, in
       aria-labelledby={titleId}
       className={cn(
         'flex w-full flex-col overflow-hidden rounded-t-sheet bg-surface text-fg outline-none',
-        inline ? 'relative max-h-sheet-medium' : 'animate-sheet-in pointer-events-auto mx-auto max-w-app',
+        inline ? 'relative max-h-sheet-medium' : cn('pointer-events-auto mx-auto max-w-app', leaving ? 'animate-sheet-out' : 'animate-sheet-in'),
         !inline && (detent === 'large' ? 'h-sheet-large' : 'max-h-sheet-medium'),
       )}
       style={drag ? { transform: `translateY(${Math.max(drag, -40)}px)`, transition: 'none' } : undefined}
@@ -124,8 +168,8 @@ export function BottomSheet({ open, onClose, title, onBack, children, footer, in
   if (inline) return sheet;
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex flex-col justify-end">
-      <button type="button" aria-hidden tabIndex={-1} onClick={onClose} className="animate-fade-in absolute inset-0 bg-scrim" />
+    <div className={cn('fixed inset-0 z-50 flex flex-col justify-end', leaving && 'pointer-events-none')}>
+      <button type="button" aria-hidden tabIndex={-1} onClick={onClose} className={cn('absolute inset-0 bg-scrim', leaving ? 'animate-fade-out' : 'animate-fade-in')} />
       <div className="pointer-events-none relative">{sheet}</div>
     </div>,
     document.body,

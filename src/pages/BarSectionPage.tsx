@@ -1,3 +1,4 @@
+import { setNav } from '../lib/motion';
 import { useRef } from 'react';
 import { Plus } from 'lucide-react';
 import { useLocation, useNavigate, useParams } from 'react-router';
@@ -35,7 +36,7 @@ export function BarSectionPage() {
     .map((sub) => ({ sub, items: mine.filter((r) => r.sub === sub.id) }))
     .filter((t) => t.items.length > 0);
   // пришли из бара — назад по истории, по прямой ссылке — в «Мой бар»
-  const back = () => (location.key !== 'default' ? navigate(-1) : navigate('/bar'));
+  const back = () => (location.key !== 'default' ? navigate(-1) : (setNav('back'), navigate('/bar', { viewTransition: true })));
 
   return (
     <main className="pb-safe">
