@@ -74,6 +74,9 @@ export type Cocktail = {
   iba?: boolean;
   base: Base;
   cover: Cover;
+  /** авторский коктейль пользователя (src/lib/custom.ts): живёт в localStorage, не в cocktails.json */
+  custom?: boolean;
+  createdAt?: number;
 };
 
 export type IngredientGroup = 'spirit' | 'liqueur' | 'bitter' | 'syrup' | 'juice-fruit' | 'soda' | 'other';
@@ -84,6 +87,8 @@ export type IngredientDef = {
   name: string;
   aliases: string[];
   group: IngredientGroup;
+  /** типичная крепость продукта, % (целое 0–80); 0 — безалкогольные и pantry */
+  abv: number;
   /** вода, лёд, сахар, соль — всегда «есть» */
   pantry?: boolean;
   popular?: boolean;

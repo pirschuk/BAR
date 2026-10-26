@@ -19,7 +19,8 @@ const STRENGTHS = ['non-alcoholic', 'light', 'medium', 'strong'];
 const BASES = ['gin', 'rum', 'whiskey', 'tequila', 'vodka', 'brandy', 'aperitif', 'non-alcoholic'];
 const TASTES = ['sour', 'sweet', 'bitter', 'fruity', 'herbal', 'refreshing', 'creamy', 'spicy'];
 const GROUPS = ['spirit', 'liqueur', 'bitter', 'syrup', 'juice-fruit', 'soda', 'other'];
-const DICT_KEYS = ['id', 'name', 'aliases', 'group', 'pantry', 'popular'];
+const DICT_KEYS = ['id', 'name', 'aliases', 'group', 'abv', 'pantry', 'popular'];
+const NON_ALC_GROUPS = ['soda', 'juice-fruit', 'syrup'];
 const TAGS = ['classic', 'sour', 'bitter', 'sweet', 'fruity', 'herbal', 'citrus', 'creamy', 'spicy',
   'refreshing', 'summer', 'winter', 'brunch', 'aperitif', 'digestif', 'tiki', 'party', 'easy', 'non-alcoholic'];
 const NO_ICE_GLASSES = ['coupe', 'martini', 'flute'];
@@ -87,6 +88,9 @@ for (const [idx, d] of dict.entries()) {
   if (typeof d.name !== 'string' || !d.name.trim()) err(did, 'пустое name');
   else if (d.name[0] !== d.name[0].toLocaleUpperCase('ru')) err(did, 'name с заглавной');
   if (!GROUPS.includes(d.group)) err(did, `group "${d.group}" вне словаря`);
+  if (!Number.isInteger(d.abv) || d.abv < 0 || d.abv > 80) err(did, `abv "${d.abv}" — нужно целое 0–80`);
+  else if (NON_ALC_GROUPS.includes(d.group) && d.abv !== 0) err(did, `abv ${d.abv} у группы ${d.group} — должно быть 0`);
+  else if (d.pantry && d.abv !== 0) err(did, `abv ${d.abv} у pantry — должно быть 0`);
   if (d.pantry !== undefined && d.pantry !== true) err(did, 'pantry — только true или нет поля');
   if (d.popular !== undefined && d.popular !== true) err(did, 'popular — только true или нет поля');
   if (d.pantry && d.popular) err(did, 'pantry и popular одновременно');
