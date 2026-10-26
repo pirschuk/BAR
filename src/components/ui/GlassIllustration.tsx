@@ -1,4 +1,3 @@
-import type { CSSProperties } from 'react';
 import { useId } from 'react';
 import type { Glass } from '../../types/cocktail';
 import { cn } from '../../lib/cn';
@@ -76,17 +75,16 @@ const GEOMETRY: Record<Glass, GlassGeometry> = {
   },
 };
 
-type Props = { shape: Glass; className?: string; title?: string; style?: CSSProperties };
+type Props = { shape: Glass; className?: string; title?: string };
 
 /** Силуэт бокала: белые линии + полупрозрачный напиток. Рисуется поверх cover-gradient. */
-export function GlassIllustration({ shape, className, title, style }: Props) {
+export function GlassIllustration({ shape, className, title }: Props) {
   const clip = useId();
   const g = GEOMETRY[shape];
   return (
     <svg
       viewBox="0 0 120 160"
       className={cn('glass-illustration text-on-media', className)}
-      style={style}
       role={title ? 'img' : undefined}
       aria-label={title}
       aria-hidden={title ? undefined : true}

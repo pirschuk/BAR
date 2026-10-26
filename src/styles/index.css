@@ -424,8 +424,6 @@ html[data-platform='android'] {
   --ease-sheet-out: cubic-bezier(0.3, 0, 0.8, 0.15);
   --dur-toast-out: 160ms;
   --dur-grid: 250ms;
-  --dur-shared: 450ms;
-  --ease-expand: cubic-bezier(0.32, 0.72, 0, 1);
 }
 html[data-platform='ios'] {
   --dur-push: 400ms;
@@ -437,8 +435,6 @@ html[data-platform='ios'] {
   --ease-sheet-out: cubic-bezier(0.32, 0, 0.67, 0);
   --dur-toast-out: 160ms;
   --dur-grid: 300ms;
-  --dur-shared: 500ms;
-  --ease-expand: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* корень и «резина»: навбар и таб-бар не отрываются при оттягивании; на Android — без pull-to-refresh */
@@ -572,71 +568,6 @@ html[data-nav='grid'] .vt-card {
 }
 html[data-nav='grid']::view-transition-group(*) {
   animation-duration: var(--dur-grid);
-}
-
-/* --- карточка ↔ рецепт («раскрытие», как App Store): каталог отступает вглубь и темнеет, фон обложки,
-   бокал и название летят каждый сам по себе (без растянутых плашек и текста), остальной рецепт проявляется снизу.
-   Назад — то же в обратную сторону. Одинаково на iOS и Android. --- */
-@keyframes recede {
-  to {
-    transform: scale(0.94);
-    opacity: 0.4;
-  }
-}
-@keyframes rise-in {
-  0%,
-  30% {
-    opacity: 0;
-    transform: translateY(48px);
-  }
-}
-@keyframes sink-out {
-  to {
-    opacity: 0;
-    transform: translateY(48px);
-  }
-}
-html[data-nav='expand']::view-transition-old(root) {
-  animation: recede var(--dur-shared) var(--ease-expand) both;
-}
-html[data-nav='expand']::view-transition-new(root) {
-  animation: rise-in var(--dur-shared) var(--ease-expand) both;
-}
-html[data-nav='collapse']::view-transition-old(root) {
-  animation: sink-out calc(var(--dur-shared) * 0.5) ease-in both;
-  z-index: 1;
-}
-html[data-nav='collapse']::view-transition-new(root) {
-  animation: recede var(--dur-shared) var(--ease-expand) reverse both;
-}
-::view-transition-group(cover),
-::view-transition-group(cover-glass),
-::view-transition-group(cover-title) {
-  animation-duration: var(--dur-shared);
-  animation-timing-function: var(--ease-expand);
-  z-index: 2;
-}
-/* фон: градиенты одного напитка — быстрая смена картинки незаметна, движение несёт рамка */
-::view-transition-old(cover),
-::view-transition-new(cover) {
-  height: 100%;
-  object-fit: cover;
-  object-position: top;
-  animation-duration: calc(var(--dur-shared) * 0.35);
-  animation-timing-function: linear;
-}
-/* бокал — один и тот же силуэт: вписываем, не растягиваем */
-::view-transition-old(cover-glass),
-::view-transition-new(cover-glass) {
-  height: 100%;
-  object-fit: contain;
-}
-/* название: Unbounded растёт от 14 до 40 — у левого нижнего края */
-::view-transition-old(cover-title),
-::view-transition-new(cover-title) {
-  height: 100%;
-  object-fit: contain;
-  object-position: left bottom;
 }
 
 /* --- таб-бар стоит на месте при смене вкладок --- */

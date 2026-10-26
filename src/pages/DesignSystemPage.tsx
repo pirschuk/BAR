@@ -78,7 +78,7 @@ function State({ label, children, className, inset }: { label: string; children:
 
 // --- движение: переключатель платформы, живые шторка / тост / переход, токены ---
 
-const MOTION_TOKENS = ['--dur-push', '--ease-push', '--dur-tab', '--dur-sheet-in', '--ease-sheet-in', '--dur-sheet-out', '--ease-sheet-out', '--dur-shared', '--dur-grid'];
+const MOTION_TOKENS = ['--dur-push', '--ease-push', '--dur-tab', '--dur-sheet-in', '--ease-sheet-in', '--dur-sheet-out', '--ease-sheet-out', '--dur-grid'];
 
 function MotionShowcase() {
   const [platform, setPlatform] = useState<Platform | 'auto'>(() => platformOverride() ?? 'auto');
@@ -935,7 +935,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="motion" title="Движение" note="Язык платформы — html[data-platform]: iOS (UIKit) — push справа 100%, старая страница на 30% и темнеет, 400 мс cubic-bezier(.32,.72,0,1), свайп назад от края (standalone); Android (Material 3) — shared axis X ±30 px + fade, «назад» — страница сжимается и уходит, 300 мс emphasized. Обложка карточки вырастает в обложку рецепта. Шторки и тосты уходят анимацией; сетка каталога перестраивается. reduced-motion — только fade. Переходы страниц — View Transitions (Safari 18+, Chrome 111+); без них — мгновенно.">
+      <Section id="motion" title="Движение" note="Язык платформы — html[data-platform]: iOS (UIKit) — push справа 100%, старая страница на 30% и темнеет, 400 мс cubic-bezier(.32,.72,0,1), свайп назад от края (standalone); Android (Material 3) — shared axis X ±30 px + fade, «назад» — страница сжимается и уходит, 300 мс emphasized. Шторки и тосты уходят анимацией; сетка каталога перестраивается. reduced-motion — только fade. Переходы страниц — View Transitions (Safari 18+, Chrome 111+); без них — мгновенно.">
         <MotionShowcase />
       </Section>
 

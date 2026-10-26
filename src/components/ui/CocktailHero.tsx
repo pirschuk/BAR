@@ -1,6 +1,5 @@
 import type { ReactNode, RefObject } from 'react';
 import { ChevronLeft } from 'lucide-react';
-import { useViewTransitionState } from 'react-router';
 import type { Cocktail } from '../../types/cocktail';
 import { cn } from '../../lib/cn';
 import { IconButton } from './Button';
@@ -25,19 +24,11 @@ type Props = {
  * Колонка: бокал занимает всё место над названием — длинное название уменьшает бокал, а не наезжает на него.
  */
 export function CocktailHero({ cocktail, onBack, action, titleRef, height = 'screen', glassMuted }: Props) {
-  // общий элемент с карточкой: только в переходе со страниц, где есть карточки (каталог, «Мой бар»)
-  const fromCatalog = useViewTransitionState('/');
-  const fromBar = useViewTransitionState('/bar');
-  const shared = height === 'screen' && (fromCatalog || fromBar);
-  // пары к карточке: фон, бокал, название (CocktailCard)
-  const vt = (name: string) => (shared ? { viewTransitionName: name } : undefined);
   return (
     <header
       className={cn('cover-gradient relative flex flex-col overflow-hidden', height === 'screen' ? 'h-hero pt-safe' : 'h-80 pt-3')}
       style={coverStyle(cocktail)}
     >
-      {/* пара к фону карточки — чистый градиент */}
-      {shared && <span className="cover-gradient absolute inset-0" style={vt('cover')} aria-hidden />}
       <span className="scrim-top absolute inset-0" aria-hidden />
       <span className="scrim-bottom absolute inset-0" aria-hidden />
       {/* низ обложки растворяется в тинт напитка — тело страницы продолжает градиент */}
@@ -45,7 +36,7 @@ export function CocktailHero({ cocktail, onBack, action, titleRef, height = 'scr
 
       {/* под кнопкой «Назад» (44) — отступ 48, бокал вписывается в оставшуюся высоту */}
       <div className="relative mt-12 mb-3 min-h-0 flex-1">
-        <GlassIllustration shape={cocktail.glass} style={vt('cover-glass')} className={cn('absolute inset-0 size-full', glassMuted && 'opacity-30')} />
+        <GlassIllustration shape={cocktail.glass} className={cn('absolute inset-0 size-full', glassMuted && 'opacity-30')} />
       </div>
 
       {onBack && (
@@ -56,7 +47,7 @@ export function CocktailHero({ cocktail, onBack, action, titleRef, height = 'scr
       {action && <div className={cn('absolute right-4', height === 'screen' ? 'top-safe' : 'top-3')}>{action}</div>}
 
       <div className="relative px-4 pb-5">
-        <h1 ref={titleRef} style={vt('cover-title')} className="line-clamp-2 font-display text-display text-balance text-on-media">{cocktail.name}</h1>
+        <h1 ref={titleRef} className="line-clamp-2 font-display text-display text-balance text-on-media">{cocktail.name}</h1>
         <p className="mt-1 text-subhead text-on-media-2">{cocktail.custom ? 'Авторский коктейль' : cocktail.nameEn}</p>
       </div>
     </header>
