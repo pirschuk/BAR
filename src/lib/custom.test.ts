@@ -22,11 +22,14 @@ describe('крепость авторских — формула откалиб�
 
 describe('черновик', () => {
   it('пустой — нельзя сохранить', () => {
-    expect(draftErrors(EMPTY_DRAFT).length).toBeGreaterThan(0);
+    expect(draftErrors(EMPTY_DRAFT)).toEqual(expect.arrayContaining(['Название', 'Бокал', 'Метод', 'Лёд']));
   });
   it('собранный — Cocktail с custom и посчитанной крепостью', () => {
     const d = {
       ...EMPTY_DRAFT,
+      glass: 'rocks' as const,
+      method: 'stir' as const,
+      ice: 'big-cube' as const,
       name: 'Мескаль Негрони',
       ingredients: [
         { ref: 'mezcal', name: '', amountMl: 30, category: 'spirit' as const },

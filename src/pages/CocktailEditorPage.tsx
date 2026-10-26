@@ -56,7 +56,9 @@ export function CocktailEditorPage() {
     });
   const dirty = JSON.stringify(d) !== JSON.stringify(initial);
   const errors = draftErrors(d);
-  const abv = d.ingredients.length ? computeAbv(d.ingredients, d.method, d.glass) : undefined;
+  // крепость зависит от метода (разбавление) и бокала (доливка) — без них не считаем
+  const abv = d.ingredients.length && d.method && d.glass ? computeAbv(d.ingredients, d.method, d.glass) : undefined;
+  const abvHint = !d.ingredients.length ? 'посчитаем по составу' : !d.method || !d.glass ? 'выберите бокал и метод' : undefined;
   const preview = toCocktail({ ...d, name: d.name || 'Название', ingredients: d.ingredients.filter((i) => i.ref) }, 0);
 
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -104,7 +106,7 @@ export function CocktailEditorPage() {
     closeSheet();
   };
   const param = (Object.keys(OPTIONS) as Param[]).find((p) => sheet === `pick-${p}`);
-  const value: Record<Param, string> = { glass: glassLabel(d.glass), method: methodLabel(d.method), ice: iceLabel(d.ice) };
+  const value: Record<Param, string | undefined> = { glass: d.glass ? glassLabel(d.glass) : undefined, method: d.method ? methodLabel(d.method) : undefined, ice: d.ice ? iceLabel(d.ice) : undefined };
 
   return (
     <main className="min-h-svh bg-bg pb-safe">
@@ -119,7 +121,7 @@ export function CocktailEditorPage() {
           </Button>
         }
       />
-      <CocktailHero cocktail={preview} titleRef={titleRef} height="preview" />
+      <CocktailHero cocktail={preview} titleRef={titleRef} height="preview" glassMuted={!d.glass} />
 
       <div className="mt-4 px-4">
         <ColorDots items={COVERS} value={d.cover} onChange={(cover) => (setManualCover(true), setD((x) => ({ ...x, cover })))} />
@@ -139,7 +141,7 @@ export function CocktailEditorPage() {
 
       <SectionHeader size="l" title="Ингредиенты" meta={d.ingredients.length || undefined} className="mt-10" />
       <div className="px-4">
-        <AbvLine abv={abv} strength={abv === undefined ? undefined : strengthOf(abv)} />
+        <AbvLine abv={abv} strength={abv === undefined ? undefined : strengthOf(abv)} hint={abvHint} />
       </div>
       {d.ingredients.length > 0 && (
         <ul className="mt-1 flex flex-col gap-2 px-4">

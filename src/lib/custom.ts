@@ -131,9 +131,10 @@ export type Draft = {
   name: string;
   description: string;
   base: Base;
-  glass: Glass;
-  method: Method;
-  ice: Ice;
+  /** null — ещё не выбрали: по умолчанию параметры пустые */
+  glass: Glass | null;
+  method: Method | null;
+  ice: Ice | null;
   garnish: string;
   cover: Cover;
   /** только ref из словаря */
@@ -145,9 +146,9 @@ export const EMPTY_DRAFT: Draft = {
   name: '',
   description: '',
   base: 'gin',
-  glass: 'rocks',
-  method: 'stir',
-  ice: 'big-cube',
+  glass: null,
+  method: null,
+  ice: null,
   garnish: '',
   cover: coverFor('gin'),
   ingredients: [],
@@ -158,6 +159,9 @@ export const EMPTY_DRAFT: Draft = {
 export function draftErrors(d: Draft): string[] {
   const out: string[] = [];
   if (!d.name.trim()) out.push('Название');
+  if (!d.glass) out.push('Бокал');
+  if (!d.method) out.push('Метод');
+  if (!d.ice) out.push('Лёд');
   if (d.ingredients.length < 2) out.push('Хотя бы 2 ингредиента');
   if (d.ingredients.some((i) => !getIngredient(i.ref))) out.push('Ингредиенты — только из справочника');
   if (d.ingredients.some((i) => i.unit !== 'top' && !(i.amountMl || i.amount))) out.push('Количество у каждого ингредиента');
@@ -165,12 +169,15 @@ export function draftErrors(d: Draft): string[] {
   return out;
 }
 
+/** Черновик → коктейль; сохраняется только полный (draftErrors пуст), подстановки ниже — лишь для превью */
 export function toCocktail(d: Draft, now = Date.now()): Cocktail {
+  const glass = d.glass ?? 'rocks';
+  const method = d.method ?? 'build';
   const ingredients = d.ingredients.map((i) => {
     const def = getIngredient(i.ref)!;
     return { ...i, name: def.name, category: CATEGORY[def.group] };
   });
-  const abv = computeAbv(ingredients, d.method, d.glass);
+  const abv = computeAbv(ingredients, method, glass);
   const steps = d.steps.map((s) => s.trim()).filter(Boolean);
   return {
     id: d.id ?? `my-${now.toString(36)}`,
@@ -178,10 +185,10 @@ export function toCocktail(d: Draft, now = Date.now()): Cocktail {
     nameEn: '',
     description: d.description.trim(),
     ingredients,
-    method: d.method,
+    method,
     steps,
-    glass: d.glass,
-    ice: d.ice,
+    glass,
+    ice: d.ice ?? 'none',
     garnish: d.garnish.trim() || undefined,
     abv,
     strength: strengthOf(abv),

@@ -204,13 +204,13 @@ export function ColorDots({ items, value, onChange }: { items: { id: string; cov
   );
 }
 
-/** Живая крепость: «≈ 26% · Крепкий» — слово цветом шкалы; нет состава — подсказка */
-export function AbvLine({ abv, strength }: { abv?: number; strength?: Strength }) {
+/** Живая крепость: «≈ 26% · Крепкий» — слово цветом шкалы; не из чего считать — подсказка (hint) */
+export function AbvLine({ abv, strength, hint = 'посчитаем по составу' }: { abv?: number; strength?: Strength; hint?: string }) {
   return (
     <p className="flex min-h-tap items-center gap-2 text-subhead text-fg-2" aria-live="polite">
       Крепость
       {abv === undefined || !strength ? (
-        <span className="text-fg-3">посчитаем по составу</span>
+        <span className="text-fg-3">{hint}</span>
       ) : (
         <span>
           <span className="text-fg tabular-nums">≈ {abv}%</span> · <span className={cn('font-semibold', STRENGTH_TONE[strength])}>{strengthLabel(strength)}</span>

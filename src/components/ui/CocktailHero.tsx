@@ -15,13 +15,15 @@ type Props = {
   titleRef?: RefObject<HTMLHeadingElement | null>;
   /** screen — 55% высоты экрана; preview — уменьшенная, для витрины */
   height?: 'screen' | 'preview';
+  /** бокал ещё не выбран (превью редактора) — силуэт приглушён */
+  glassMuted?: boolean;
 };
 
 /**
  * Обложка рецепта: градиент напитка, крупный бокал, «Назад» на стекле, название поверх скрима.
  * Колонка: бокал занимает всё место над названием — длинное название уменьшает бокал, а не наезжает на него.
  */
-export function CocktailHero({ cocktail, onBack, action, titleRef, height = 'screen' }: Props) {
+export function CocktailHero({ cocktail, onBack, action, titleRef, height = 'screen', glassMuted }: Props) {
   return (
     <header
       className={cn('cover-gradient relative flex flex-col overflow-hidden', height === 'screen' ? 'h-hero pt-safe' : 'h-80 pt-3')}
@@ -34,7 +36,7 @@ export function CocktailHero({ cocktail, onBack, action, titleRef, height = 'scr
 
       {/* под кнопкой «Назад» (44) — отступ 48, бокал вписывается в оставшуюся высоту */}
       <div className="relative mt-12 mb-3 min-h-0 flex-1">
-        <GlassIllustration shape={cocktail.glass} className="absolute inset-0 size-full" />
+        <GlassIllustration shape={cocktail.glass} className={cn('absolute inset-0 size-full', glassMuted && 'opacity-30')} />
       </div>
 
       {onBack && (
