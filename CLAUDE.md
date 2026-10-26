@@ -28,12 +28,16 @@ Claude Code: план → дизайн-система → экран → виз�
 - `python3 scripts/split-shot.py <png>` — нарезать длинный скриншот на экраны по 844.
 - `node scripts/validate-cocktails.mjs` — валидация `cocktails.json`.
 - `node scripts/make-icons.mjs` — иконки PWA из `public/favicon.svg`.
+- `node scripts/make-splash.mjs` — заставки запуска iPhone (`public/splash/`), печатает `<link>` для `index.html`.
 
 ## Хостинг
 
 - **GitHub Pages — тестовый стенд:** https://pirschuk.github.io/BAR/. Деплой —
   `.github/workflows/deploy-gh-pages.yml` на пуш в `main` и `claude/**`.
 - **Vercel — основная публикация (позже):** от корня `/`, `vercel.json` (rewrites → `index.html`).
+  Сборка с `VITE_INSTALL_PAGE=1`: ссылка, открытая в браузере, сначала показывает страницу установки PWA
+  (на тестовом стенде её нет — смотреть на `/install`). Данные (бар, избранное, авторские) — в `localStorage`
+  телефона, между пользователями не пересекаются.
 - Базовый путь — только через `import.meta.env.BASE_URL` (роутер — `basename`, манифест —
   `start_url`/`scope`, иконки — относительные пути). Абсолютные `/…` ссылки на ресурсы
   в коде не писать: на Pages они уйдут мимо `/BAR/`. Ссылки роутера (`<Link to="/">`) — можно.

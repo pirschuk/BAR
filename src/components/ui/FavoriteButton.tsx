@@ -1,3 +1,4 @@
+import { haptic } from '../../lib/motion';
 import { useState } from 'react';
 import { Heart } from 'lucide-react';
 import { cn } from '../../lib/cn';
@@ -19,7 +20,7 @@ export function FavoriteButton({ on, onToggle, pressed }: Props) {
   const click = () => {
     if (!on) {
       setBeat((b) => b + 1);
-      navigator.vibrate?.(10);
+      haptic();
     }
     onToggle();
   };

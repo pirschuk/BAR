@@ -1,11 +1,14 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { createBrowserRouter, Outlet, ScrollRestoration, useLocation, useNavigate, type RouteObject } from 'react-router';
 import { SwipeBack } from './components/SwipeBack';
 // RouterProvider из react-router/dom — с flushSync: переходы View Transitions снимают кадр синхронно
 import { RouterProvider } from 'react-router/dom';
 import { initMotion } from './lib/motion';
+import { initInstall, installGate, skipInstall } from './lib/install';
+import { InstallPage } from './pages/InstallPage';
+
 import { LuckySheet } from './components/LuckySheet';
 import { Button } from './components/ui/Button';
 import { cocktails, countLabel } from './lib/cocktails';
@@ -103,6 +106,7 @@ function Layout() {
 
 // до роутера: popstate должен узнать направление раньше, чем роутер запустит переход
 initMotion();
+initInstall();
 
 // basename = base из vite.config.ts: '/' локально и на Vercel, '/BAR/' на GitHub Pages
 // страницы приложения — их же рисует «призрак» под свайпом назад
@@ -123,13 +127,22 @@ const router = createBrowserRouter([
       ...PAGES,
       // витрина — отдельным чанком: пользователю приложения она не нужна
       { path: '/design-system', lazy: async () => ({ Component: (await import('./pages/DesignSystemPage')).DesignSystemPage }) },
+      // страница установки — для просмотра (на Vercel её показывает installGate вместо приложения)
+      { path: '/install', element: <InstallPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
 ], { basename: import.meta.env.BASE_URL });
 
+// Vercel: открыли ссылку в браузере — сначала страница установки; «Открыть в браузере» — приложение
+function Root() {
+  const [gate, setGate] = useState(installGate);
+  if (gate) return <InstallPage onContinue={() => (skipInstall(), setGate(false))} />;
+  return <RouterProvider router={router} />;
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <Root />
   </StrictMode>,
 );

@@ -42,6 +42,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,json,woff2}'],
+        // заставки iPhone нужны только при запуске с экрана «Домой» — браузер берёт их сам, в кэш не кладём
+        globIgnores: ['**/splash/**'],
         // офлайн-навигация по любому роуту SPA внутри base
         navigateFallback: `${base}index.html`,
       },

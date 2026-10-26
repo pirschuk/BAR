@@ -1,3 +1,4 @@
+import { haptic } from '../../lib/motion';
 import { Check, ChevronRight, Plus } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router';
@@ -122,7 +123,7 @@ export function PickRow({
       role={radio ? 'radio' : 'checkbox'}
       aria-checked={on}
       data-pressed={pressed || undefined}
-      onClick={onToggle}
+      onClick={() => (haptic(), onToggle())}
       className="pressable flex min-h-row-l w-full items-center gap-3 px-4 py-2 text-left"
     >
       <span className="min-w-0 flex-1">

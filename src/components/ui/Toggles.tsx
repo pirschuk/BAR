@@ -1,3 +1,4 @@
+import { haptic } from '../../lib/motion';
 import type { ReactNode } from 'react';
 import { Check } from 'lucide-react';
 import { cn } from '../../lib/cn';
@@ -52,7 +53,7 @@ export function SwitchRow({ title, subtitle, on, onToggle, disabled, pressed }: 
       aria-checked={on}
       disabled={disabled}
       data-pressed={pressed || undefined}
-      onClick={onToggle}
+      onClick={() => (haptic(), onToggle())}
       className="pressable flex min-h-row-l w-full items-center gap-3 px-4 py-2 text-left disabled:opacity-40"
     >
       <span className="min-w-0 flex-1">
@@ -73,7 +74,7 @@ export function CheckRow({ title, subtitle, on, onToggle, disabled, pressed }: R
       aria-checked={on}
       disabled={disabled}
       data-pressed={pressed || undefined}
-      onClick={onToggle}
+      onClick={() => (haptic(), onToggle())}
       className="pressable flex min-h-row-l w-full items-center gap-3 px-4 py-2 text-left disabled:cursor-default"
     >
       <span className={cn('contents', disabled && '[&>*]:opacity-40')}>

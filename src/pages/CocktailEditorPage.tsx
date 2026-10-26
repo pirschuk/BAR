@@ -14,7 +14,7 @@ import { PickRow } from '../components/ui/BarRows';
 import { AbvLine, ColorDots, IngredientEditRow, ParamPickRow, StepEditRow, Stepper, TextArea } from '../components/ui/EditorFields';
 import { IngredientPickSheet } from '../components/IngredientPickSheet';
 import { NotFoundPage } from './NotFoundPage';
-import { setNav } from '../lib/motion';
+import { haptic, setNav } from '../lib/motion';
 
 type Param = 'glass' | 'method' | 'ice';
 
@@ -82,6 +82,7 @@ export function CocktailEditorPage() {
   const save = () => {
     const c = toCocktail(d);
     upsert(c);
+    haptic();
     leaving.current = true;
     // новый — рецепт вместо формы; правка — назад к рецепту
     if (editing && location.key !== 'default') navigate(-1);

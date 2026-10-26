@@ -41,6 +41,8 @@ import { SERVINGS, timeMeta } from './CocktailPage';
 import { AbvLine, ColorDots, IngredientEditRow, ParamPickRow, StepEditRow, Stepper, TextArea } from '../components/ui/EditorFields';
 import { IngredientPickSheet } from '../components/IngredientPickSheet';
 import { COVERS } from '../lib/custom';
+import { detectPlatform, platformOverride, setPlatformOverride, type Platform } from '../lib/motion';
+import { InstallPage } from './InstallPage';
 
 // --- оболочка витрины ---
 
@@ -70,6 +72,90 @@ function State({ label, children, className, inset }: { label: string; children:
     <div className={className}>
       <p className={`mb-2 text-caption text-fg-3 uppercase ${inset ? 'px-4' : ''}`}>{label}</p>
       {children}
+    </div>
+  );
+}
+
+// --- движение: переключатель платформы, живые шторка / тост / переход, токены ---
+
+const MOTION_TOKENS = ['--dur-push', '--ease-push', '--dur-tab', '--dur-sheet-in', '--ease-sheet-in', '--dur-sheet-out', '--ease-sheet-out', '--dur-shared', '--dur-grid'];
+
+function MotionShowcase() {
+  const [platform, setPlatform] = useState<Platform | 'auto'>(() => platformOverride() ?? 'auto');
+  const [sheet, setSheet] = useState(false);
+  const [toast, setToast] = useState(0);
+  const [swipe, setSwipe] = useState(() => {
+    try {
+      return localStorage.getItem('bar-swipe-back') === '1';
+    } catch {
+      return false;
+    }
+  });
+  const pick = (p: Platform | 'auto') => {
+    setPlatform(p);
+    setPlatformOverride(p === 'auto' ? null : p);
+  };
+  const tokens = MOTION_TOKENS.map((t) => [t, getComputedStyle(document.documentElement).getPropertyValue(t).trim()]);
+  return (
+    <div className="flex flex-col gap-6">
+      <State label={`Платформа · сейчас ${platform === 'auto' ? `авто (${detectPlatform() === 'ios' ? 'iOS' : 'Android'})` : platform === 'ios' ? 'iOS' : 'Android'}`} inset>
+        <div className="px-4">
+          <SegmentedControl
+            label="Язык движения"
+            options={[
+              { value: 'auto', label: 'Авто' },
+              { value: 'ios', label: 'iOS' },
+              { value: 'android', label: 'Android' },
+            ]}
+            value={platform}
+            onChange={pick}
+          />
+        </div>
+      </State>
+      <State label="Попробовать" inset>
+        <div className="flex flex-wrap gap-2 px-4">
+          <Button variant="secondary" size="m" onClick={() => setSheet(true)}>
+            Шторка
+          </Button>
+          <Button variant="secondary" size="m" onClick={() => setToast((n) => n + 1)}>
+            Тост
+          </Button>
+          <Link to="/cocktail/negroni" viewTransition className={buttonClass('secondary', 'm')}>
+            Переход вглубь
+          </Link>
+        </div>
+        <div className="mt-2">
+          <SwitchRow
+            title="Свайп назад во вкладке браузера"
+            subtitle="Обычно — только в установленном приложении на iPhone; здесь — для проверки (нужен язык iOS)"
+            on={swipe}
+            onToggle={() => {
+              const next = !swipe;
+              setSwipe(next);
+              try {
+                if (next) localStorage.setItem('bar-swipe-back', '1');
+                else localStorage.removeItem('bar-swipe-back');
+              } catch {
+                // без хранилища — не включится
+              }
+            }}
+          />
+        </div>
+      </State>
+      <State label="Токены движения (текущая платформа)" inset>
+        <dl key={platform} className="mx-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 rounded-tile bg-tile p-4 text-footnote">
+          {tokens.map(([k, v]) => (
+            <div key={k} className="contents">
+              <dt className="text-fg-2">{k}</dt>
+              <dd className="text-right text-fg tabular-nums">{v}</dd>
+            </div>
+          ))}
+        </dl>
+      </State>
+      <BottomSheet open={sheet} onClose={() => setSheet(false)} title="Шторка">
+        <p className="px-4 pb-4 text-body text-fg-2">Выезжает с кривой платформы и уходит вниз. Смахните вниз — закроется даже с короткого хода.</p>
+      </BottomSheet>
+      {toast > 0 && <Toast key={toast} icon={Heart} text="В избранном" onDone={() => setToast(0)} />}
     </div>
   );
 }
@@ -845,6 +931,25 @@ export function DesignSystemPage() {
           </State>
           <State label="Toast · убрано, над таб-баром" inset>
             <Toast inline icon={Trash2} filled={false} text="«Кампари» убрано" action={<ToastAction>Вернуть</ToastAction>} />
+          </State>
+        </div>
+      </Section>
+
+      <Section id="motion" title="Движение" note="Язык платформы — html[data-platform]: iOS (UIKit) — push справа 100%, старая страница на 30% и темнеет, 400 мс cubic-bezier(.32,.72,0,1), свайп назад от края (standalone); Android (Material 3) — shared axis X ±30 px + fade, «назад» — страница сжимается и уходит, 300 мс emphasized. Обложка карточки вырастает в обложку рецепта. Шторки и тосты уходят анимацией; сетка каталога перестраивается. reduced-motion — только fade. Переходы страниц — View Transitions (Safari 18+, Chrome 111+); без них — мгновенно.">
+        <MotionShowcase />
+      </Section>
+
+      <Section id="install" title="Установка (страница для Vercel)" note="Открыли ссылку в браузере — сначала эта страница (сборка с VITE_INSTALL_PAGE=1; на тестовом стенде её нет, посмотреть — /install). iPhone — три шага с иконками Safari; Android — кнопка «Установить» (системное окно) или путь через ⋮. Данные хранятся только на телефоне.">
+        <div className="flex flex-col gap-6">
+          <State label="iPhone" inset>
+            <div className="mx-4 overflow-hidden rounded-sheet border border-border">
+              <InstallPage platform="ios" onContinue={() => {}} />
+            </div>
+          </State>
+          <State label="Android · окно установки доступно" inset>
+            <div className="mx-4 overflow-hidden rounded-sheet border border-border">
+              <InstallPage platform="android" canPrompt onContinue={() => {}} />
+            </div>
           </State>
         </div>
       </Section>

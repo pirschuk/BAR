@@ -1,10 +1,11 @@
+import type { ReactNode } from 'react';
 import { cn } from '../../lib/cn';
 
 /**
  * Шаги таймлайном [Superpower, Julienne]: номер в круге 32 слева, вертикальная линия к следующему номеру
- * (у последнего — нет), текст body справа; между шагами 32; без подложек.
+ * (у последнего — нет), текст body справа; между шагами 32; без подложек. Шаг — текст или текст с иконкой (установка).
  */
-export function Steps({ steps, className }: { steps: string[]; className?: string }) {
+export function Steps({ steps, className }: { steps: ReactNode[]; className?: string }) {
   return (
     <ol className={cn('px-4', className)}>
       {steps.map((step, i) => (
@@ -13,7 +14,7 @@ export function Steps({ steps, className }: { steps: string[]; className?: strin
           <span className="flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-fg-3/60 text-callout font-semibold text-fg tabular-nums">
             {i + 1}
           </span>
-          <p className="min-w-0 pt-1.25 text-body text-fg">{step}</p>
+          <div className="min-w-0 pt-1.25 text-body text-fg">{step}</div>
         </li>
       ))}
     </ol>
