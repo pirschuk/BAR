@@ -20,13 +20,21 @@ type Props = {
   favorite?: boolean;
   /** узкая карточка ленты (CardRail): без плашки крепости и бокал ниже — иначе текст налезает */
   compact?: boolean;
+  /** крупная («Мне повезёт»): название Unbounded section */
+  large?: boolean;
+  /** переход заменяет запись истории (из шторки «Мне повезёт» назад — на экран без шторки) */
+  replace?: boolean;
+  /** -1 — не в порядке табуляции (кадры барабана) */
+  tabIndex?: number;
 };
 
 /** Карточка каталога 3:4: градиент напитка, силуэт бокала, плашка крепости (словом), название и бокал поверх скрима */
-export function CocktailCard({ cocktail, pressed, className, available, favorite, compact }: Props) {
+export function CocktailCard({ cocktail, pressed, className, available, favorite, compact, large, replace, tabIndex }: Props) {
   return (
     <Link
       to={`/cocktail/${cocktail.id}`}
+      replace={replace}
+      tabIndex={tabIndex}
       data-pressed={pressed || undefined}
       className={cn('pressable-scale cover-gradient block aspect-card overflow-hidden rounded-tile outline-1 -outline-offset-1 outline-border', className)}
       style={coverStyle(cocktail)}
@@ -36,23 +44,23 @@ export function CocktailCard({ cocktail, pressed, className, available, favorite
       <span className="scrim-bottom absolute inset-0" aria-hidden />
       {/* крепость — словом, как в фильтре «Крепость»; бокал — под названием */}
       {!compact && (
-        <span className="glass absolute top-3 left-3 inline-flex h-6 items-center rounded-full px-2.5 text-caption text-on-media">
+        <span className={cn('glass absolute inline-flex items-center rounded-full text-on-media', large ? 'top-4 left-4 h-7 px-3 text-footnote' : 'top-3 left-3 h-6 px-2.5 text-caption')}>
           {strengthLabel(cocktail.strength)}
         </span>
       )}
       {/* правый верхний угол — только избранное: иконка без подложки, тень для светлых обложек */}
       {favorite && (
         <Heart
-          className="absolute top-3.5 right-3.5 size-5 fill-current text-on-media-accent drop-shadow-md"
+          className={cn('absolute fill-current text-on-media-accent drop-shadow-md', large ? 'top-4.5 right-4.5 size-6' : 'top-3.5 right-3.5 size-5')}
           aria-label="В избранном"
           role="img"
         />
       )}
-      <span className="absolute inset-x-3 bottom-3">
+      <span className={cn('absolute', large ? 'inset-x-5 bottom-5' : 'inset-x-3 bottom-3')}>
         {/* Unbounded 14 (`text-card`): название не спорит с обложкой; длинное слово — перенос, а не обрезка */}
-        <span className="line-clamp-2 font-display text-card wrap-break-word hyphens-auto text-on-media">{cocktail.name}</span>
+        <span className={cn('line-clamp-2 font-display wrap-break-word hyphens-auto text-on-media', large ? 'text-section' : 'text-card')}>{cocktail.name}</span>
         {/* «можно приготовить» — статусом в строке бокала (язык v2: информер, не значок) */}
-        <span className="mt-1 block truncate text-footnote text-on-media-2">
+        <span className={cn('mt-1 block truncate text-on-media-2', large ? 'text-subhead' : 'text-footnote')}>
           {glassLabel(cocktail.glass)}
           {available && <span className="text-success"> · всё есть</span>}
         </span>

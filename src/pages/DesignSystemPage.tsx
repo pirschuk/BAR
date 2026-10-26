@@ -495,21 +495,21 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="lucky" title="LuckySheet / LuckyDeck" note="Колода: следующая карта выглядывает сзади (scale .92, сдвиг 24); смахнуть или «Ещё раз» — следующая, без повторов. Подпись — из чего выбираем.">
+      <Section id="lucky" title="LuckySheet / LuckyReel" note="Барабан: та же карточка, что в каталоге (CocktailCard large), кадры проезжают снизу вверх ~900 мс и тормозят с отскоком (--ease-spring); свечение цветом напитка; «Ещё раз» — новый спин без повторов. Один вариант — pop без спина; reduced-motion — без анимации. 🎲 в таб-баре — tile-strong, бросок на тап.">
         <div className="flex flex-col gap-6 px-4">
-          <State label="колода (интерактивно: смахните карту)">
+          <State label="барабан (интерактивно: «Ещё раз»)">
             <div className="overflow-hidden rounded-sheet border border-border">
-              <LuckySheet open inline pool={cocktails.slice(0, 8)} caption="Весь каталог: 8 коктейлей" onClose={() => {}} onOpenRecipe={() => {}} empty={{ title: '', hint: '' }} />
+              <LuckySheet open inline pool={cocktails.slice(0, 8)} caption="Весь каталог: 8 коктейлей" onClose={() => {}} onOpenRecipe={() => {}} empty={{ title: '', hint: '' }} isFavorite={(c) => c.id === 'negroni'} />
             </div>
           </State>
-          <State label="кадр свайпа">
+          <State label="кадр спина">
             <div className="overflow-hidden rounded-sheet border border-border">
-              <LuckySheet open inline frame={-110} pool={cocktails.slice(8, 12)} caption="Подходят: 4 коктейля" onClose={() => {}} onOpenRecipe={() => {}} empty={{ title: '', hint: '' }} />
+              <LuckySheet open inline frame={0.55} pool={cocktails.slice(8, 12)} caption="Подходят: 4 коктейля" onClose={() => {}} onOpenRecipe={() => {}} empty={{ title: '', hint: '' }} />
             </div>
           </State>
-          <State label="единственный вариант — «Ещё раз» disabled">
+          <State label="единственный вариант — pop, «Ещё раз» disabled">
             <div className="overflow-hidden rounded-sheet border border-border">
-              <LuckySheet open inline pool={[must('negroni')]} caption="Всё есть дома: 1 коктейль" onClose={() => {}} onOpenRecipe={() => {}} empty={{ title: '', hint: '' }} />
+              <LuckySheet open inline pool={[must('negroni')]} caption="Всё есть дома: 1 коктейль" onClose={() => {}} onOpenRecipe={() => {}} empty={{ title: '', hint: '' }} isAvailable={() => true} />
             </div>
           </State>
           <State label="выбирать не из чего">

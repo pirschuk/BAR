@@ -77,7 +77,16 @@ function Layout() {
       <Outlet />
       {onRoot && <TabBar onLucky={openLucky} />}
       {onRoot && (
-        <LuckySheet open={isLucky} onClose={closeLucky} pool={lucky.pool} caption={lucky.caption} onOpenRecipe={openRecipe} empty={empty} />
+        <LuckySheet
+          open={isLucky}
+          onClose={closeLucky}
+          pool={lucky.pool}
+          caption={lucky.caption}
+          onOpenRecipe={openRecipe}
+          empty={empty}
+          isAvailable={(c) => canMake(c, inv)}
+          isFavorite={(c) => favList.includes(c.id)}
+        />
       )}
     </>
   );

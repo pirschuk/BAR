@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { NavLink } from 'react-router';
 import { Dices, LayoutGrid, Wine, type LucideIcon } from 'lucide-react';
 import { cn } from '../../lib/cn';
@@ -22,10 +23,11 @@ export const TABS: Tab[] = [
 
 /**
  * Плавающая стеклянная пилюля: отступ 16 от краёв и снизу (над safe-area), высота 64,
- * активный таб — подложка surface-2; по центру — круглая кнопка 48 [GitHub, Crouton, CREME]
+ * активный таб — подложка surface-2; по центру — круглая кнопка 48 «Мне повезёт» (tile-strong, не белая) [GitHub, Crouton, CREME]
  */
 export function TabBar({ tabs = TABS, onLucky, luckyDisabled, inline, pressedTo }: Props) {
   const [left, right] = [tabs.slice(0, 1), tabs.slice(1)];
+  const [roll, setRoll] = useState(0);
   const item = (t: Tab) => (
     <NavLink
       key={t.to}
@@ -52,13 +54,18 @@ export function TabBar({ tabs = TABS, onLucky, luckyDisabled, inline, pressedTo 
         {left.map(item)}
         <button
           type="button"
-          onClick={onLucky}
+          onClick={() => {
+            setRoll((r) => r + 1);
+            onLucky?.();
+          }}
           disabled={luckyDisabled}
           aria-label="Мне повезёт"
           title={luckyDisabled ? 'Скоро' : 'Мне повезёт'}
-          className="pressable-scale hit-44 flex size-12 shrink-0 items-center justify-center rounded-full bg-fg text-bg disabled:opacity-40"
+          // действие, а не раздел: спокойный круг на стекле, без заливки — не путается с выбранным табом
+          className="pressable-scale hit-44 flex size-12 shrink-0 items-center justify-center rounded-full bg-tile-strong text-fg disabled:opacity-40"
         >
-          <Dices className="size-6" aria-hidden />
+          {/* «бросок»: кубик делает оборот на каждый тап */}
+          <Dices key={roll} className={cn('size-6', roll > 0 && 'motion-safe:animate-roll')} aria-hidden />
         </button>
         {right.map(item)}
       </nav>
