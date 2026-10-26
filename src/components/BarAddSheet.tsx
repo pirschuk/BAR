@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ingredients, normalize } from '../lib/filters';
 import { TOOLS, findBottle, sectionOf, subLabel, subOf, subOrder, subsOf, SECTIONS, type Bottle, type Inventory, type SectionKey, type SubKey } from '../lib/inventory';
 import { plural } from '../lib/cocktails';
-import { BottomSheet, SheetFooter } from './ui/BottomSheet';
+import { BottomSheet } from './ui/BottomSheet';
 import { Button } from './ui/Button';
 import { AddCustomRow, GroupHeader, PickRow, SuggestCard } from './ui/BarRows';
 import { TypeNav, typeAnchor } from './ui/TypeNav';
@@ -45,12 +45,10 @@ export function BarAddSheet({ open, onClose, section, sub, owned, bottles, sugge
   const subs = subsOf(section).filter((s) => s.id !== 'custom');
   const [q, setQ] = useState(initialQuery);
   const [step, setStep] = useState<'pick' | 'bottle'>('pick');
-  const [added, setAdded] = useState(0);
   useEffect(() => {
     if (open && !inline) {
       setQ('');
       setStep('pick');
-      setAdded(0);
     }
   }, [open, inline, sub, section]);
 
@@ -63,7 +61,7 @@ export function BarAddSheet({ open, onClose, section, sub, owned, bottles, sugge
     const t = setTimeout(() => {
       const root = scrollRoot();
       const el = document.getElementById(typeAnchor(prefix, sub));
-      if (root && el) root.scrollTo({ top: el.offsetTop - CHIPS_H });
+      if (root && el) root.scrollTo({ top: root.scrollTop + el.getBoundingClientRect().top - root.getBoundingClientRect().top - CHIPS_H });
     }, 50);
     return () => clearTimeout(t);
   }, [open, sub, prefix, scrollRoot]);
@@ -80,10 +78,7 @@ export function BarAddSheet({ open, onClose, section, sub, owned, bottles, sugge
   const exact = n && (ITEMS.some((i) => normalize(i.name) === n) || !!findBottle(bottles, q));
   const title = `Добавить ${SECTIONS.find((s) => s.id === section)!.addLabel}`;
   const groups = subs.flatMap((s) => (s.group ? [s.group] : []));
-  const toggle = (id: string) => {
-    if (!owned.has(id)) setAdded((a) => a + 1);
-    onToggle(id);
-  };
+  const toggle = (id: string) => onToggle(id);
   const row = (id: string, name: string, subtitle?: string) => (
     <PickRow key={id} title={name} subtitle={subtitle} on={owned.has(id)} onToggle={() => toggle(id)} />
   );
@@ -98,12 +93,9 @@ export function BarAddSheet({ open, onClose, section, sub, owned, bottles, sugge
       onBack={step === 'bottle' ? () => setStep('pick') : undefined}
       footer={
         step === 'pick' && (
-          <SheetFooter>
-            <p className="text-subhead text-fg-2" aria-live="polite">
-              {added ? `Добавлено ${added} ${plural(added, ['позиция', 'позиции', 'позиций'])}` : 'Отметьте, что есть'}
-            </p>
-            <Button onClick={onClose}>Готово</Button>
-          </SheetFooter>
+          <Button className="w-full" onClick={onClose}>
+            Готово
+          </Button>
         )
       }
     >
@@ -115,7 +107,6 @@ export function BarAddSheet({ open, onClose, section, sub, owned, bottles, sugge
             submitLabel="Добавить в бар"
             onSubmit={(b) => {
               onCreateBottle(b);
-              setAdded((a) => a + 1);
               setQ('');
               setStep('pick');
             }}
@@ -132,7 +123,6 @@ export function BarAddSheet({ open, onClose, section, sub, owned, bottles, sugge
               items={subs.map((s) => ({ id: s.id, label: s.label }))}
               prefix={prefix}
               offset={CHIPS_H}
-              root={scrollRoot}
               className="sticky top-0 z-20 mt-1 bg-surface py-2"
             />
           )}
@@ -150,7 +140,7 @@ export function BarAddSheet({ open, onClose, section, sub, owned, bottles, sugge
               ? list.map((i) => row(i.id, i.name, subLabel(i.sub)))
               : subs.map((s) => (
                   <section key={s.id} id={typeAnchor(prefix, s.id)}>
-                    <GroupHeader title={s.label} className="sticky top-15" />
+                    <GroupHeader title={s.label} />
                     {list.filter((i) => i.sub === s.id).map((i) => row(i.id, i.name))}
                   </section>
                 ))}

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode, type RefObject } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { IconButton } from './Button';
@@ -61,4 +61,30 @@ export function NavBar({ title, onBack, visible, inline, action, tone = 'cover' 
       </div>
     </>
   );
+}
+
+/** Высота закреплённого навбара: 8 + кнопки 56 + 8 */
+export const NAV_H = 72;
+
+/**
+ * Подложка и название навбара проявляются, как только крупный заголовок страницы **подходит** к навбару
+ * (его верх дошёл до низа навбара), — а не когда он целиком ушёл под него.
+ */
+export function useNavReveal(title: RefObject<HTMLElement | null>, deps: unknown[] = []): boolean {
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    const check = () => {
+      const el = title.current;
+      if (el) setOn(el.getBoundingClientRect().top <= NAV_H);
+    };
+    check();
+    window.addEventListener('scroll', check, { passive: true });
+    window.addEventListener('resize', check);
+    return () => {
+      window.removeEventListener('scroll', check);
+      window.removeEventListener('resize', check);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+  return on;
 }

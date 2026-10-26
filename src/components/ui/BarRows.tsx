@@ -88,10 +88,10 @@ export function SuggestCard({ children }: { children: ReactNode }) {
   );
 }
 
-/** Заголовок группы в длинном списке шторки: липнет под чипсами (top задаёт родитель), фон шторки */
+/** Заголовок группы в длинном списке шторки: тихая подпись footnote fg-2, секции разделяет отступ 24 сверху */
 export function GroupHeader({ id, title, className }: { id?: string; title: string; className?: string }) {
   return (
-    <h3 id={id} className={cn('z-10 bg-surface px-4 pt-6 pb-2 text-headline text-fg', className)}>
+    <h3 id={id} className={cn('px-4 pt-6 pb-1 text-footnote text-fg-2', className)}>
       {title}
     </h3>
   );

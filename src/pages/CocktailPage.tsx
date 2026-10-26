@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Heart, Wrench } from 'lucide-react';
 import { missing, toolsFor, useInventory } from '../lib/inventory';
 import { AvailabilityLine, InfoNote } from '../components/ui/Availability';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { getCocktail, scaleIngredient, servingVolume, type Servings } from '../lib/cocktails';
 import { CocktailHero } from '../components/ui/CocktailHero';
-import { NavBar } from '../components/ui/NavBar';
+import { NavBar, useNavReveal } from '../components/ui/NavBar';
 import { FavoriteButton } from '../components/ui/FavoriteButton';
 import { Toast, ToastAction } from '../components/ui/Toast';
 import { useFavorites } from '../lib/favorites';
@@ -37,18 +37,9 @@ export function CocktailPage() {
   const favorites = useFavorites();
   // тост — только на добавление [Swiggy]: показывает, где искать избранное
   const [toast, setToast] = useState(0);
-  // подложка навбара — когда низ обложки (с названием) ушёл под закреплённые кнопки (72px)
-  const heroEnd = useRef<HTMLDivElement>(null);
-  const [navVisible, setNavVisible] = useState(false);
-  useEffect(() => {
-    const el = heroEnd.current;
-    if (!el) return;
-    const io = new IntersectionObserver(([e]) => e && setNavVisible(!e.isIntersecting && e.boundingClientRect.top < 72), {
-      rootMargin: '-72px 0px 0px 0px',
-    });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [cocktail?.id]);
+  // навбар проявляется, как только заголовок подходит к нему
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const navVisible = useNavReveal(titleRef, [cocktail?.id]);
 
   if (!cocktail) return <NotFoundPage title="Коктейль не найден" />;
 
@@ -67,8 +58,7 @@ export function CocktailPage() {
     <main className="recipe-tint min-h-svh pb-safe" style={coverStyle(cocktail)}>
       {/* «Назад» и ♡ закреплены сразу (навбар), обложка — без своих кнопок */}
       <NavBar title={cocktail.name} onBack={back} visible={navVisible} action={<FavoriteButton place="cover" on={isFav} onToggle={toggleFav} />} />
-      <CocktailHero cocktail={cocktail} />
-      <div ref={heroEnd} aria-hidden />
+      <CocktailHero cocktail={cocktail} titleRef={titleRef} />
 
       <p className="mt-2 px-4 text-body text-fg-2">{cocktail.description}</p>
       <ParamTiles items={cocktailParams(cocktail)} className="mx-4 mt-5" />

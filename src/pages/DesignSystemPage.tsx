@@ -691,7 +691,7 @@ export function DesignSystemPage() {
             <TypeNav items={[{ id: 'spirit', label: 'Крепкий', count: 3 }, { id: 'bitter', label: 'Биттеры', count: 1 }]} prefix="ds" offset={0} activeId="spirit" />
             <SectionHeader title="Крепкий" count={3} className="mt-2" />
           </State>
-          <State label="SuggestCard + GroupHeader (в шторке)" inset>
+          <State label="SuggestCard + GroupHeader (тихая подпись, секции через 24)" inset>
             <div className="mx-4 overflow-hidden rounded-card bg-surface pt-2 pb-2">
               <SuggestCard>
                 <PickRow title="Бурбон" subtitle="+2 коктейля" on={false} onToggle={() => {}} />

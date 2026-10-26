@@ -90,7 +90,7 @@ export const SUBS: Sub[] = [
 
 export const SECTIONS: { id: SectionKey; label: string; addLabel: string; placeholder: string }[] = [
   { id: 'alcohol', label: 'Алкоголь', addLabel: 'алкоголь', placeholder: 'Например: джин, ром, вермут' },
-  { id: 'mixers', label: 'Миксеры и прочее', addLabel: 'миксеры и прочее', placeholder: 'Например: лайм, сироп, тоник' },
+  { id: 'mixers', label: 'Миксеры и прочее', addLabel: 'миксеры', placeholder: 'Например: лайм, сироп, тоник' },
 ];
 
 export function isSectionKey(v: string | undefined): v is SectionKey {
