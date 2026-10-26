@@ -14,6 +14,8 @@ type Props = {
   inline?: boolean;
   /** для витрины: подсветить таб как нажатый */
   pressedTo?: string;
+  /** для витрины: какой таб показать активным */
+  activeTo?: string;
 };
 
 export const TABS: Tab[] = [
@@ -25,7 +27,7 @@ export const TABS: Tab[] = [
  * Плавающая стеклянная пилюля: отступ 16 от краёв и снизу (над safe-area), высота 64,
  * активный таб — подложка surface-2; по центру — круглая кнопка 48 «Мне повезёт» (tile-strong, не белая) [GitHub, Crouton, CREME]
  */
-export function TabBar({ tabs = TABS, onLucky, luckyDisabled, inline, pressedTo }: Props) {
+export function TabBar({ tabs = TABS, onLucky, luckyDisabled, inline, pressedTo, activeTo }: Props) {
   const [left, right] = [tabs.slice(0, 1), tabs.slice(1)];
   const [roll, setRoll] = useState(0);
   const item = (t: Tab) => (
@@ -37,7 +39,7 @@ export function TabBar({ tabs = TABS, onLucky, luckyDisabled, inline, pressedTo 
       className={({ isActive }) =>
         cn(
           'pressable flex h-12 flex-1 flex-col items-center justify-center gap-0.5 rounded-full text-caption',
-          isActive ? 'bg-surface-2 text-fg' : 'text-fg-2',
+          (activeTo ? activeTo === t.to : isActive) ? 'bg-surface-2 text-fg' : 'text-fg-2',
         )
       }
     >

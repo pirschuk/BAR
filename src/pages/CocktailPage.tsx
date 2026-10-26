@@ -57,7 +57,7 @@ export function CocktailPage() {
     // тинт напитка: цвет обложки продолжается под контентом и растворяется в фоне
     <main className="recipe-tint min-h-svh pb-safe" style={coverStyle(cocktail)}>
       {/* «Назад» и ♡ закреплены сразу (навбар), обложка — без своих кнопок */}
-      <NavBar title={cocktail.name} onBack={back} visible={navVisible} action={<FavoriteButton place="cover" on={isFav} onToggle={toggleFav} />} />
+      <NavBar title={cocktail.name} onBack={back} visible={navVisible} action={<FavoriteButton on={isFav} onToggle={toggleFav} />} />
       <CocktailHero cocktail={cocktail} titleRef={titleRef} />
 
       <p className="mt-2 px-4 text-body text-fg-2">{cocktail.description}</p>
@@ -70,7 +70,7 @@ export function CocktailPage() {
         action={
           // выход порции — рядом с множителем [Alma]: в строку с Unbounded-заголовком не входит
           <div className="flex items-center justify-between gap-3">
-            <SegmentedControl size="l" label="Порции" options={SERVINGS} value={servings} onChange={setServings} />
+            <SegmentedControl label="Порции" options={SERVINGS} value={servings} onChange={setServings} />
             <span className="text-right text-subhead text-fg-2 tabular-nums">{servingVolume(cocktail, servings)}</span>
           </div>
         }

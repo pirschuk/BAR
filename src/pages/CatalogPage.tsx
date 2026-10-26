@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
-import { Citrus, Heart, SearchX, SlidersHorizontal, Wine } from 'lucide-react';
+import { Citrus, Heart, SlidersHorizontal } from 'lucide-react';
 import { cocktails, countLabel } from '../lib/cocktails';
 import {
   EMPTY_FILTERS,
@@ -197,7 +197,7 @@ export function CatalogPage() {
               </Chip>
             ))}
             {hasFacetFilters(f) && (
-              <Button variant="ghost" size="s" onClick={resetFacets}>
+              <Button variant="plain" size="s" onClick={resetFacets}>
                 Сбросить
               </Button>
             )}
@@ -259,7 +259,6 @@ export function CatalogPage() {
           ) : f.fav && favList.length === 0 ? (
             // пустое избранное объясняет жест [Subway, Chick-fil-A]
             <EmptyState
-              icon={Heart}
               title="Здесь будут любимые коктейли"
               hint="Нажмите ♡ на странице коктейля"
               action={
@@ -270,7 +269,6 @@ export function CatalogPage() {
             />
           ) : f.can && !applyFilters(cocktails, { ...EMPTY_FILTERS, can: true }, isAvailable).length ? (
             <EmptyState
-              icon={Wine}
               title={inv.size ? 'Пока ничего не получится' : 'Бар пока пуст'}
               hint={inv.size ? 'Добавьте 1–2 ингредиента в «Мой бар»' : 'Отметьте, что есть дома'}
               action={
@@ -282,7 +280,6 @@ export function CatalogPage() {
           ) : (
             <>
               <EmptyState
-                icon={SearchX}
                 title="Ничего не нашлось"
                 hint={
                   hasFacetFilters(f) && q.trim()

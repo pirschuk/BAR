@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { ChevronLeft, HardDriveDownload, Heart, Plus, Trash2, Moon, SearchX, SlidersHorizontal, Wine, Wrench } from 'lucide-react';
+import { ChevronLeft, HardDriveDownload, Heart, Plus, Trash2, SlidersHorizontal, Wrench } from 'lucide-react';
 import { Link } from 'react-router';
 import { GLASSES, STRENGTH_LABEL, cocktails, servingVolume, countLabel, getCocktail, scaleIngredient, type Servings } from '../lib/cocktails';
 import type { Cocktail, Glass } from '../types/cocktail';
@@ -95,19 +95,25 @@ const PALETTE = [
   { token: '--success', cls: 'bg-success', note: 'успех' },
   { token: '--tile', cls: 'bg-tile', note: 'плитки на тинте' },
   { token: '--tile-strong', cls: 'bg-tile-strong', note: 'круги, пилюли на тинте' },
+  { token: '--strength-none', cls: 'bg-strength-none', note: 'крепость: безалкогольный' },
+  { token: '--strength-light', cls: 'bg-strength-light', note: 'крепость: лёгкий' },
+  { token: '--strength-medium', cls: 'bg-strength-medium', note: 'крепость: средний' },
+  { token: '--strength-strong', cls: 'bg-strength-strong', note: 'крепость: крепкий' },
 ] as const;
 
 const TYPE_SCALE = [
   { cls: 'font-display text-display', name: 'display', spec: 'Unbounded 34/40 · 700', use: 'название на обложке' },
-  { cls: 'font-display text-section', name: 'section', spec: 'Unbounded 24/30 · 600', use: 'секции рецепта' },
-  { cls: 'text-large-title', name: 'large-title', spec: '34/41 · 700', use: 'заголовок экрана' },
-  { cls: 'text-title-1', name: 'title-1', spec: '28/34 · 700', use: 'карта «Мне повезёт»' },
-  { cls: 'text-title-2', name: 'title-2', spec: '22/28 · 700', use: 'секции каталога и бара' },
-  { cls: 'text-title-3', name: 'title-3', spec: '20/26 · 600', use: 'плитки параметров, шаги (400)' },
-  { cls: 'text-headline', name: 'headline', spec: '17/22 · 600', use: 'карточки, кнопки' },
-  { cls: 'text-body', name: 'body', spec: '17/22 · 400', use: 'основной текст' },
-  { cls: 'text-callout', name: 'callout', spec: '16/21 · 400', use: 'сегменты L' },
-  { cls: 'text-subhead', name: 'subhead', spec: '15/20 · 400', use: 'чипсы' },
+  { cls: 'font-display text-hero', name: 'hero', spec: 'Unbounded 64/64 · 700', use: 'число «Можно приготовить»' },
+  { cls: 'font-display text-section', name: 'section', spec: 'Unbounded 24/30 · 600', use: 'секции рецепта, разделы бара' },
+  { cls: 'font-display text-card', name: 'card', spec: 'Unbounded 14/19 · 600', use: 'название на карточке каталога' },
+  { cls: 'text-large-title', name: 'large-title', spec: '34/41 · 700', use: 'не используется (экраны — display)' },
+  { cls: 'text-title-1', name: 'title-1', spec: '28/34 · 700', use: 'резерв' },
+  { cls: 'text-title-2', name: 'title-2', spec: '22/28 · 700', use: 'секции каталога, типы бара, пустые состояния' },
+  { cls: 'text-title-3', name: 'title-3', spec: '20/26 · 600', use: 'значения плиток параметров' },
+  { cls: 'text-headline', name: 'headline', spec: '17/22 · 600', use: 'кнопки, «Советуем», объёмы' },
+  { cls: 'text-body', name: 'body', spec: '17/22 · 400', use: 'основной текст, шаги, строки списков' },
+  { cls: 'text-callout', name: 'callout', spec: '16/21 · 400', use: 'чипсы, сегменты' },
+  { cls: 'text-subhead', name: 'subhead', spec: '15/20 · 400', use: 'подписи действий, информеры' },
   { cls: 'text-footnote', name: 'footnote', spec: '13/18 · 400', use: 'подписи, мета' },
   { cls: 'text-caption', name: 'caption', spec: '12/16 · 500', use: 'плашки' },
 ] as const;
@@ -141,8 +147,8 @@ function Swatch({ token, cls, note }: (typeof PALETTE)[number]) {
       <span className={`size-11 shrink-0 rounded-control border border-border ${cls}`} />
       <span className="min-w-0">
         <span className="block text-subhead font-semibold text-fg">{token}</span>
-        <span className="block truncate text-footnote text-fg-2">{note}</span>
-        <span className="block truncate text-caption text-fg-3 uppercase">{value.replace(/\s+/g, '')}</span>
+        <span className="block text-footnote text-fg-2">{note}</span>
+        <span className="block text-caption break-all text-fg-2">{value}</span>
       </span>
     </div>
   );
@@ -151,7 +157,6 @@ function Swatch({ token, cls, note }: (typeof PALETTE)[number]) {
 // --- страница ---
 
 export function DesignSystemPage() {
-  const [chip, setChip] = useState('gin');
   const [facets, setFacets] = useState<Set<string>>(new Set(['Вкус']));
   const [options, setOptions] = useState<Set<string>>(new Set(['Кислый']));
   const [query, setQuery] = useState('');
@@ -204,13 +209,13 @@ export function DesignSystemPage() {
           ['ingredient', 'IngredientTile'],
           ['steps', 'Steps'],
         ].map(([id, label]) => (
-          <a key={id} href={`#${id}`} className="pressable hit-44 inline-flex h-chip shrink-0 items-center rounded-full border border-border bg-surface-2 px-3.5 text-subhead font-medium text-fg">
+          <a key={id} href={`#${id}`} className="pressable inline-flex h-chip shrink-0 items-center rounded-full bg-tile px-4 text-callout font-medium text-fg">
             {label}
           </a>
         ))}
       </ChipRow>
 
-      <Section id="palette" title="Палитра" note="CSS-переменные, тема одна — тёмная. Обложки коктейлей — данные (cover), не токены.">
+      <Section id="palette" title="Палитра" note="CSS-переменные, тема одна — тёмная, фон #000. Обложки коктейлей — данные (cover), не токены; поверх обложек — on-media (белый / 72% / акцент). Герой бара — hero-brand (акцент → чёрный).">
         <div className="grid grid-cols-2 items-start gap-x-3 gap-y-4 px-4">
           {PALETTE.map((p) => (
             <Swatch key={p.token} {...p} />
@@ -231,7 +236,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="button" title="Button" note="L 50 — CTA, pill; M 44 — действия, радиус 12. IconButton: 36 визуально, 44 тач-зона.">
+      <Section id="button" title="Button" note="L 50 — CTA, pill; M 44 — действия, радиус 12; S 44 — в ряду чипсов («Сбросить»). IconButton: m 36 (тач-зона 44), l 44, xl 56 — закреплённые кнопки навбара.">
         <div className="flex flex-col gap-5 px-4">
           <State label="primary · L — default / pressed / disabled">
             <div className="flex flex-wrap gap-3">
@@ -253,12 +258,11 @@ export function DesignSystemPage() {
               </Button>
             </div>
           </State>
-          <State label="S · ghost / secondary / pressed / disabled — «Сбросить», «Это есть»">
+          <State label="S · plain / pressed / disabled — «Сбросить» в ряду фильтров">
             <div className="flex flex-wrap items-center gap-3">
-              <Button variant="ghost" size="s">Сбросить</Button>
-              <Button variant="secondary" size="s">Это есть</Button>
-              <Button variant="secondary" size="s" pressed>Это есть</Button>
-              <Button variant="ghost" size="s" disabled>Сбросить</Button>
+              <Button variant="plain" size="s">Сбросить</Button>
+              <Button variant="plain" size="s" pressed>Сбросить</Button>
+              <Button variant="plain" size="s" disabled>Сбросить</Button>
             </div>
           </State>
           <State label="Link как кнопка">
@@ -266,17 +270,18 @@ export function DesignSystemPage() {
               Открыть каталог
             </Link>
           </State>
-          <State label="IconButton · tonal — default / pressed / disabled">
+          <State label="IconButton · tonal m 36 — default / pressed / disabled (✕ шторок)">
             <div className="flex gap-4">
-              <IconButton icon={Moon} label="Тема" />
-              <IconButton icon={Moon} label="Тема" pressed />
-              <IconButton icon={Moon} label="Тема" disabled />
+              <IconButton icon={Plus} label="Добавить" />
+              <IconButton icon={Plus} label="Добавить" pressed />
+              <IconButton icon={Plus} label="Добавить" disabled />
             </div>
           </State>
-          <State label="IconButton · glass — поверх обложки">
+          <State label="IconButton · xl 56 — glass поверх обложки / tile-strong на чёрном (навбар)">
             <div className="cover-gradient flex gap-4 rounded-card p-4" style={coverStyle(sour)}>
-              <IconButton icon={ChevronLeft} label="Назад" variant="glass" />
-              <IconButton icon={ChevronLeft} label="Назад" variant="glass" pressed />
+              <IconButton icon={ChevronLeft} label="Назад" variant="glass" size="xl" />
+              <IconButton icon={ChevronLeft} label="Назад" variant="glass" size="xl" pressed />
+              <IconButton icon={Plus} label="Добавить" size="xl" className="bg-tile-strong!" />
             </div>
           </State>
         </div>
@@ -338,20 +343,10 @@ export function DesignSystemPage() {
                 </Chip>
               ))}
               {facets.size > 0 && (
-                <Button variant="ghost" size="s" onClick={() => setFacets(new Set())}>
+                <Button variant="plain" size="s" onClick={() => setFacets(new Set())}>
                   Сбросить
                 </Button>
               )}
-            </ChipRow>
-          </div>
-          <div>
-            <p className="mb-2 px-4 text-caption text-fg-3 uppercase">ChipRow — выбор одного (Итерация 1)</p>
-            <ChipRow label="База">
-              {['Все', 'Джин', 'Ром', 'Виски', 'Текила', 'Водка', 'Аперитивы'].map((label) => (
-                <Chip key={label} selected={chip === label} onClick={() => setChip(label)}>
-                  {label}
-                </Chip>
-              ))}
             </ChipRow>
           </div>
         </div>
@@ -372,7 +367,7 @@ export function DesignSystemPage() {
             <SearchBar value="" onChange={() => {}} disabled placeholder="Найти ингредиент" />
           </State>
           <div>
-            <SearchSectionTitle title="Недавние" action={<Button variant="ghost" size="s">Очистить</Button>} />
+            <SearchSectionTitle title="Недавние" action={<Button variant="plain" size="s">Очистить</Button>} />
             <RecentRow title="негрони" />
             <RecentRow title="что-то с кампари" pressed />
             <SearchSectionTitle title="Подсказка при вводе «камп»" />
@@ -381,16 +376,20 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="empty" title="EmptyState" note="Иконка в круге 96, title-2, одна строка-подсказка, одно действие. Под ним — «Похожие».">
+      <Section id="empty" title="EmptyState" note="Язык v2 — без иконок-заглушек: заголовок title-2, одна подсказка, действие (одно или два).">
         <div className="flex flex-col gap-3">
           <EmptyState
-            icon={SearchX}
             title="Ничего не нашлось"
             hint="Уберите часть фильтров"
             action={<Button variant="secondary" size="m">Сбросить фильтры</Button>}
-            className="mx-4 rounded-card border border-border"
+            className="mx-4 rounded-card bg-tile"
           />
-          <EmptyState icon={Wine} title="Бар пока пуст" hint="Отметьте, что есть дома" className="mx-4 rounded-card border border-border" />
+          <EmptyState
+            title="Соберите бар за минуту"
+            hint="Добавьте, что есть дома, — покажем, что можно приготовить"
+            action={<Button>Быстрый старт: базовый бар</Button>}
+            className="mx-4 rounded-card bg-tile"
+          />
         </div>
       </Section>
 
@@ -439,7 +438,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="sticky" title="StickyHeader" note="До прилипания — фон экрана; после — стекло и линия снизу. Large title уезжает, поиск и фильтры остаются.">
+      <Section id="sticky" title="StickyHeader" note="До прилипания — фон экрана; после — стекло без линии (язык v2). Заголовок уезжает, поиск 56 и ряд чипсов 44 остаются.">
         <div className="flex flex-col gap-5">
           {[false, true].map((stuck) => (
             <State inset key={String(stuck)} label={stuck ? 'прилипла' : 'в потоке'}>
@@ -462,16 +461,21 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="tabbar" title="TabBar" note="Плавающая стеклянная пилюля 64, отступ 16; активный таб — подложка surface-2; по центру — «Мне повезёт» 48 → LuckySheet. Только на корневых экранах.">
+      <Section id="tabbar" title="TabBar" note="Плавающая стеклянная пилюля 64, отступ 16; активный таб — подложка surface-2; по центру — 🎲 48 на tile-strong (действие, не таб; бросок кубика на тап) → LuckySheet. Только на корневых экранах.">
         <div className="flex flex-col gap-5">
           <State inset label="«Мне повезёт» disabled (например, пока данные не готовы)">
             <div className="cover-gradient py-6" style={coverStyle(must('aperol-spritz'))}>
               <TabBar inline luckyDisabled />
             </div>
           </State>
-          <State inset label="pressed «Мой бар» · «Мне повезёт» активна (с 2c)">
+          <State inset label="активный «Каталог»">
             <div className="py-2">
-              <TabBar inline pressedTo="/bar" />
+              <TabBar inline activeTo="/" />
+            </div>
+          </State>
+          <State inset label="активный «Мой бар» · pressed «Каталог»">
+            <div className="py-2">
+              <TabBar inline activeTo="/bar" pressedTo="/" />
             </div>
           </State>
         </div>
@@ -550,13 +554,13 @@ export function DesignSystemPage() {
           <State label="длинное название">
             <CocktailCard cocktail={LONG_NAME} />
           </State>
-          <State label="избранное — ♥ без подложки">
+          <State label="♥ избранное">
             <CocktailCard cocktail={must('dry-martini')} favorite />
           </State>
-          <State label="всё есть — «· всё есть» в строке бокала">
+          <State label="всё есть">
             <CocktailCard cocktail={must('mojito')} available />
           </State>
-          <State label="избранное + всё есть, светлая обложка">
+          <State label="♥ + всё есть">
             <CocktailCard cocktail={must('daiquiri')} available favorite />
           </State>
         </div>
@@ -566,12 +570,12 @@ export function DesignSystemPage() {
         <div className="flex flex-col gap-5">
           <State label="короткое название" className="px-4">
             <div className="overflow-hidden rounded-card">
-              <CocktailHero cocktail={must('negroni')} onBack={() => {}} height="preview" />
+              <CocktailHero cocktail={must('negroni')} height="preview" />
             </div>
           </State>
           <State label="длинное название" className="px-4">
             <div className="overflow-hidden rounded-card">
-              <CocktailHero cocktail={LONG_NAME} onBack={() => {}} height="preview" />
+              <CocktailHero cocktail={LONG_NAME} height="preview" />
             </div>
           </State>
         </div>
@@ -581,13 +585,13 @@ export function DesignSystemPage() {
         <div className="flex flex-col gap-5">
           <State label="в начале скролла — только кнопки" inset>
             <div className="cover-gradient relative mx-4 h-32 overflow-hidden rounded-card" style={coverStyle(must('negroni'))}>
-              <NavBar inline visible={false} title="Негрони" onBack={() => {}} action={<FavoriteButton place="cover" on={fav} onToggle={() => setFav(!fav)} />} />
+              <NavBar inline visible={false} title="Негрони" onBack={() => {}} action={<FavoriteButton on={fav} onToggle={() => setFav(!fav)} />} />
             </div>
           </State>
           <State label="заголовок ушёл — подложка и название" inset>
             <div className="recipe-tint relative mx-4 h-32 overflow-hidden rounded-card" style={coverStyle(must('negroni'))}>
               <p className="absolute inset-x-4 top-10 font-display text-section text-fg">Ингредиенты</p>
-              <NavBar inline visible title="Негрони" onBack={() => {}} action={<FavoriteButton place="cover" on onToggle={() => {}} />} />
+              <NavBar inline visible title="Негрони" onBack={() => {}} action={<FavoriteButton on onToggle={() => {}} />} />
             </div>
           </State>
           <State label="страница бара (plain) · длинное название" inset>
@@ -599,22 +603,14 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="favorites" title="Избранное" note="FavoriteButton: cover — стекло 44 на обложке, bar — 36 в навбаре; в избранном — заливка акцентом + «пульс». Тост — только на добавление. Карточка — ♥-индикатор (не кнопка). CardRail — лента 140, gap 12.">
+      <Section id="favorites" title="Избранное" note="FavoriteButton — стекло 56 в закреплённом навбаре (как «Назад»); в избранном — заливка акцентом + «пульс». Тост — только на добавление. Карточка — ♥ без подложки в правом верхнем углу (не кнопка). CardRail — лента 160, gap 12.">
         <div className="flex flex-col gap-5">
-          <State label="FavoriteButton · обложка (интерактивно) / выкл / вкл / pressed" inset>
+          <State label="FavoriteButton · интерактивно / выкл / вкл / pressed" inset>
             <div className="cover-gradient mx-4 flex items-center gap-4 rounded-card p-4" style={coverStyle(must('negroni'))}>
-              <FavoriteButton place="cover" on={fav} onToggle={() => setFav(!fav)} />
-              <FavoriteButton place="cover" on={false} onToggle={() => {}} />
-              <FavoriteButton place="cover" on onToggle={() => {}} />
-              <FavoriteButton place="cover" on onToggle={() => {}} pressed />
-            </div>
-          </State>
-          <State label="FavoriteButton · навбар / выкл / вкл / pressed" inset>
-            <div className="flex items-center gap-4 px-4">
-              <FavoriteButton place="bar" on={fav} onToggle={() => setFav(!fav)} />
-              <FavoriteButton place="bar" on={false} onToggle={() => {}} />
-              <FavoriteButton place="bar" on onToggle={() => {}} />
-              <FavoriteButton place="bar" on={false} onToggle={() => {}} pressed />
+              <FavoriteButton on={fav} onToggle={() => setFav(!fav)} />
+              <FavoriteButton on={false} onToggle={() => {}} />
+              <FavoriteButton on onToggle={() => {}} />
+              <FavoriteButton on onToggle={() => {}} pressed />
             </div>
           </State>
           <State label="Toast · на добавление, поверх белого заголовка рецепта" inset>
@@ -625,12 +621,7 @@ export function DesignSystemPage() {
               </div>
             </div>
           </State>
-          <State label="Обложка с сердцем" inset>
-            <div className="mx-4 overflow-hidden rounded-card">
-              <CocktailHero cocktail={must('negroni')} onBack={() => {}} height="preview" action={<FavoriteButton place="cover" on={fav} onToggle={() => setFav(!fav)} />} />
-            </div>
-          </State>
-          <State label="CardRail (compact: без плашки, бокал ниже; ♥ не нужен — все избранные) · ✓" inset>
+                    <State label="CardRail (compact: без плашки, бокал ниже; ♥ не нужен — все избранные) · ✓" inset>
             <CardRail label="Избранные коктейли">
               {['negroni', 'mojito', 'dry-martini', 'daiquiri', 'aperol-spritz'].map((id, i) => (
                 <CardRailItem key={id}>
@@ -639,7 +630,7 @@ export function DesignSystemPage() {
               ))}
             </CardRail>
           </State>
-          <State label="Карточка каталога · ♥ + ✓ с длинной плашкой" inset>
+          <State label="Карточка каталога · ♥ + «всё есть» с длинной плашкой" inset>
             <div className="grid grid-cols-2 gap-3 px-4">
               <CocktailCard cocktail={must('virgin-colada')} favorite available />
               <CocktailCard cocktail={must('dry-martini')} favorite />
@@ -651,7 +642,7 @@ export function DesignSystemPage() {
             </HintLine>
           </State>
           <State label="Каталог ?fav=1, избранное пусто" inset>
-            <EmptyState icon={Heart} title="Здесь будут любимые коктейли" hint="Нажмите ♡ на странице коктейля" action={<Button variant="secondary" size="m">Сбросить фильтр</Button>} />
+            <EmptyState title="Здесь будут любимые коктейли" hint="Нажмите ♡ на странице коктейля" action={<Button variant="secondary" size="m">Сбросить фильтр</Button>} />
           </State>
           <State label="Чип фильтра" inset>
             <ChipRow label="Фильтры">
@@ -661,7 +652,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="bar" title="Мой бар" note="v3: главная — герой BarHero (фирменный фон, число Unbounded 64, веер обложек) + BarCategoryCard с шевроном; страница раздела — только непустые типы, TypeNav-якоря, одна «+» в навбаре. Шторка: «Советуем» отдельной плиткой, липкие заголовки типов.">
+      <Section id="bar" title="Мой бар" note="v3: главная — герой BarHero (фирменный фон, число Unbounded 64, веер обложек) + BarCategoryCard с шевроном; страница раздела — только непустые типы, TypeNav-якоря, одна «+» в навбаре. Шторка: «Советуем» отдельной плиткой, липкий TypeNav-якоря, тихие GroupHeader, «Готово» без подписи.">
         <div className="flex flex-col gap-5">
           <State label="BarHero · 5 (веер 3) / 1 / 0 с «Что докупить» / pressed" inset>
             <div className="flex flex-col gap-3 px-4">
@@ -825,7 +816,7 @@ export function DesignSystemPage() {
             title="Ингредиенты"
             action={
               <div className="flex items-center justify-between gap-3">
-                <SegmentedControl size="l" label="Порции" options={SERVINGS} value={servings} onChange={setServings} />
+                <SegmentedControl label="Порции" options={SERVINGS} value={servings} onChange={setServings} />
                 <span className="text-right text-subhead text-fg-2 tabular-nums">{servingVolume(must('mojito'), servings)}</span>
               </div>
             }
@@ -835,16 +826,13 @@ export function DesignSystemPage() {
         </div>
       </Tinted>
 
-      <Tinted id="segmented" title="SegmentedControl" note="Порции 1× / 2× / 4×. L — пилюля 44 на тинте, M — 36. Активный — инверсия (fg на bg), не акцент." cocktail="daiquiri">
+      <Tinted id="segmented" title="SegmentedControl" note="Порции 1× / 2× / 4×: пилюля 44 на тинте, сегменты 40 (тач-зона 44). Активный — инверсия (fg на bg), не акцент." cocktail="daiquiri">
         <div className="flex flex-col gap-5 px-4">
-          <State label="L · интерактивно">
-            <SegmentedControl size="l" label="Порции" options={SERVINGS} value={servings} onChange={setServings} />
-          </State>
-          <State label="L · pressed (4×)">
-            <SegmentedControl size="l" label="Порции" options={SERVINGS} value={1} onChange={() => {}} pressedValue={4} />
-          </State>
-          <State label="M">
+          <State label="интерактивно">
             <SegmentedControl label="Порции" options={SERVINGS} value={servings} onChange={setServings} />
+          </State>
+          <State label="pressed (4×)">
+            <SegmentedControl label="Порции" options={SERVINGS} value={1} onChange={() => {}} pressedValue={4} />
           </State>
         </div>
       </Tinted>
@@ -866,7 +854,7 @@ export function DesignSystemPage() {
         <GarnishNote value={mojito.garnish ?? 'Веточка мяты'} className="mx-4 mt-3" />
         <GarnishNote value="Долька апельсина и коктейльная вишня" className="mx-4 mt-2" />
         <p className="mt-2 px-4 text-footnote text-fg-2">Выход: {servingVolume(mojito, servings)} · Негрони: {servingVolume(must('negroni'), servings)}</p>
-        <p className="mt-2 px-4 text-caption text-fg-3 uppercase">информер наличия: всё / нет дома 1 / 3 / бар пуст (ссылка) · мл / листьев / долить · нет дома · по желанию · украшение — GarnishNote строкой под списком</p>
+        <p className="mt-2 px-4 text-caption text-fg-3 uppercase">информер наличия: всё / нет дома 1 / 3 / бар пуст (ссылка) · мл / листа / долить · нет дома · по желанию · украшение — GarnishNote строкой под списком</p>
       </Tinted>
 
       <Tinted id="steps" title="Steps" note="Таймлайн: номер в круге 32 (callout 600) + вертикальная линия к следующему (у последнего нет), текст body, между шагами 32; без подложек. Подсказка про инструмент — InfoNote-плитка перед первым шагом." cocktail="whiskey-sour">

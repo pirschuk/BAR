@@ -34,7 +34,7 @@ export const SearchBar = forwardRef<HTMLInputElement, Props>(function SearchBar(
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           disabled={disabled}
-          className="h-full min-w-0 flex-1 bg-transparent text-body text-fg outline-none placeholder:text-fg-3 [&::-webkit-search-cancel-button]:hidden"
+          className="h-full min-w-0 flex-1 bg-transparent text-ellipsis text-body text-fg outline-none placeholder:text-fg-3 [&::-webkit-search-cancel-button]:hidden"
           {...rest}
         />
         {value && (

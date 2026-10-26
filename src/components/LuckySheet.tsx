@@ -99,7 +99,7 @@ export function LuckySheet({ open, onClose, pool, caption, onOpenRecipe, empty, 
         </div>
       ) : (
         // та же высота, что у барабана с подписью: шторка не прыгает при смене фильтров
-        <EmptyState icon={Dices} title={empty.title} hint={empty.hint} action={empty.action} className="min-h-deck justify-center" />
+        <EmptyState title={empty.title} hint={empty.hint} action={empty.action} className="min-h-deck justify-center" />
       )}
     </BottomSheet>
   );

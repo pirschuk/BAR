@@ -15,8 +15,8 @@ export function AvailabilityLine(props: AvailabilityProps) {
     return (
       <Link to="/bar" className="pressable -mx-2 flex min-h-tap items-center gap-2 rounded-control px-2 text-subhead text-fg-2">
         {dot('bg-fg-3')}
-        <span className="min-w-0 flex-1">Отметьте, что есть дома</span>
-        <ChevronRight className="size-4 shrink-0 text-fg-3" aria-hidden />
+        <span className="min-w-0">Отметьте, что есть дома</span>
+        <ChevronRight className="-ml-1 size-4 shrink-0 text-fg-3" aria-hidden />
       </Link>
     );
   return (

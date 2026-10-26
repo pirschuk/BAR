@@ -6,16 +6,14 @@ import { IconButton } from './Button';
 type Props = {
   on: boolean;
   onToggle: () => void;
-  /** cover — стеклянная 56 в закреплённом навбаре поверх обложки; bar — тональная 36 */
-  place: 'cover' | 'bar';
   pressed?: boolean;
 };
 
 /**
- * Сердце «в избранное» [Swiggy, Shop]: контур → заливка акцентом, «пульс» 200 мс при добавлении
+ * Сердце «в избранное» в закреплённом навбаре (стекло 56) [Swiggy, Shop]: контур → заливка акцентом, «пульс» 200 мс при добавлении
  * (без анимации при reduced-motion), короткая вибрация на Android. Состояние — aria-pressed.
  */
-export function FavoriteButton({ on, onToggle, place, pressed }: Props) {
+export function FavoriteButton({ on, onToggle, pressed }: Props) {
   // ключ перезапускает анимацию на каждое добавление
   const [beat, setBeat] = useState(0);
   const click = () => {
@@ -31,11 +29,11 @@ export function FavoriteButton({ on, onToggle, place, pressed }: Props) {
       icon={Heart}
       label={on ? 'Убрать из избранного' : 'В избранное'}
       aria-pressed={on}
-      variant={place === 'cover' ? 'glass' : 'tonal'}
-      size={place === 'cover' ? 'xl' : 'm'}
+      variant="glass"
+      size="xl"
       pressed={pressed}
       onClick={click}
-      className={cn(on && (place === 'cover' ? 'text-on-media-accent!' : 'text-accent!'))}
+      className={cn(on && 'text-on-media-accent!')}
       iconClassName={cn(on && 'fill-current', beat > 0 && 'motion-safe:animate-pop')}
     />
   );

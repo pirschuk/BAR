@@ -147,5 +147,5 @@ export function SheetSection({ title, children }: { title: string; children: Rea
  * [Viator, Insight Timer]. Две равные пилюли не берём: «Показать 13 коктейлей» не помещается в половину.
  */
 export function SheetFooter({ children }: { children: ReactNode }) {
-  return <div className="grid grid-cols-[auto_1fr] items-center gap-3">{children}</div>;
+  return <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 [&>:last-child]:w-full">{children}</div>;
 }
