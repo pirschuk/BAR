@@ -282,7 +282,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="chip" title="Chip / ChipRow" note="36 визуально, 44 тач-зона. Варианты: filter, facet (⌄), option (+ / ✓), removable (×).">
+      <Section id="chip" title="Chip / ChipRow" note="44 (сам себе тач-зона), callout 16, иконки 18 — больше прежних 36, но меньше поля поиска 56. Варианты: filter, facet (⌄), option (+ / ✓), removable (×).">
         <div className="flex flex-col gap-5">
           <State label="filter — default / selected / pressed / disabled / с иконкой и бейджем" className="px-4">
             <div className="flex flex-wrap gap-2">
@@ -357,7 +357,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="search" title="SearchBar / строки поиска" note="44, радиус 12; ⓧ при вводе; «Отмена» в режиме поиска. Строки ≥ 48: недавнее (часы), подсказка (лупа).">
+      <Section id="search" title="SearchBar / строки поиска" note="Поле 56 — соразмерно закреплённым кнопкам рецепта; иконки 20, текст body, пилюля; ⓧ при вводе; «Отмена» в режиме поиска. Строки ≥ 48: недавнее (часы), подсказка (лупа).">
         <div className="flex flex-col gap-5">
           <State label="пусто" className="px-4">
             <SearchBar value="" onChange={() => {}} placeholder="Название или ингредиент" />

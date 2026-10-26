@@ -21,7 +21,7 @@ type ChipProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   badge?: number;
 };
 
-/** Чипс: визуально 36, тач-зона 44, pill */
+/** Чипс: 44 (сам себе тач-зона), callout, pill */
 export function Chip({ variant = 'filter', selected = false, pressed, icon: Icon, iconClassName, badge, className, children, type = 'button', ...rest }: ChipProps) {
   const filled = selected || variant === 'removable';
   return (
@@ -30,7 +30,7 @@ export function Chip({ variant = 'filter', selected = false, pressed, icon: Icon
       aria-pressed={variant === 'removable' ? undefined : selected}
       data-pressed={pressed || undefined}
       className={cn(
-        'pressable hit-44 inline-flex h-chip shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-subhead font-medium whitespace-nowrap select-none',
+        'pressable inline-flex h-chip shrink-0 items-center gap-1.5 rounded-full border px-4 text-callout font-medium whitespace-nowrap select-none',
         'disabled:pointer-events-none disabled:opacity-40',
         // язык v2: плитки без рамок
         variant === 'removable'
@@ -38,14 +38,14 @@ export function Chip({ variant = 'filter', selected = false, pressed, icon: Icon
           : filled
             ? 'border-transparent bg-accent text-accent-fg'
             : 'border-transparent bg-tile text-fg',
-        (variant === 'option' || Icon) && 'pl-3',
-        (variant === 'facet' || variant === 'removable') && 'pr-3',
+        (variant === 'option' || Icon) && 'pl-3.5',
+        (variant === 'facet' || variant === 'removable') && 'pr-3.5',
         className,
       )}
       {...rest}
     >
-      {variant === 'option' && (selected ? <Check className="size-4" strokeWidth={2.5} aria-hidden /> : <Plus className="size-4" aria-hidden />)}
-      {Icon && <Icon className={cn('size-4', iconClassName)} aria-hidden />}
+      {variant === 'option' && (selected ? <Check className="size-[18px]" strokeWidth={2.5} aria-hidden /> : <Plus className="size-[18px]" aria-hidden />)}
+      {Icon && <Icon className={cn('size-[18px]', iconClassName)} aria-hidden />}
       {children}
       {badge !== undefined && badge > 0 && (
         <span
@@ -57,8 +57,8 @@ export function Chip({ variant = 'filter', selected = false, pressed, icon: Icon
           {badge}
         </span>
       )}
-      {variant === 'facet' && <ChevronDown className="size-4 opacity-70" aria-hidden />}
-      {variant === 'removable' && <X className="size-4" aria-hidden />}
+      {variant === 'facet' && <ChevronDown className="size-[18px] opacity-70" aria-hidden />}
+      {variant === 'removable' && <X className="size-[18px]" aria-hidden />}
     </button>
   );
 }

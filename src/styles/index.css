@@ -138,7 +138,9 @@
   --spacing-tap: 44px;
   --spacing-row: 48px;
   --spacing-btn-l: 50px;
-  --spacing-chip: 36px;
+  /* чипсы и фильтры — 44 (сами себе тач-зона); поля ввода и поиск — 56, как закреплённые кнопки рецепта */
+  --spacing-chip: 44px;
+  --spacing-field: 56px;
   --spacing-glass-btn: 36px;
   --spacing-app: 430px;
   /* iOS switch и строка с ним */

@@ -40,7 +40,7 @@ type Props = {
  * список по типам с липкими заголовками и отступом 24; чипсы-якоря (прокрутка + подсветка текущего типа);
  * строки + / ✓ (шторка не закрывается); «Добавить «…» как свою бутылку» → форма (тип — из этого раздела).
  */
-const CHIPS_H = 60; // высота липкого ряда чипсов: py-2 + ряд 44
+const CHIPS_H = 68; // высота липкого ряда чипсов: py-2 + ряд (чипс 44 + py-1)
 export function BarAddSheet({ open, onClose, section, sub, owned, bottles, suggestions, onToggle, onCreateBottle, inline, initialQuery = '' }: Props) {
   const subs = subsOf(section).filter((s) => s.id !== 'custom');
   const [q, setQ] = useState(initialQuery);

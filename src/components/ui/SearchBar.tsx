@@ -19,12 +19,12 @@ export const SearchBar = forwardRef<HTMLInputElement, Props>(function SearchBar(
     <div className={cn('flex items-center gap-3', className)}>
       <label
         className={cn(
-          'flex h-tap min-w-0 flex-1 items-center gap-2 rounded-full bg-tile pl-4 text-fg-2',
+          'flex h-field min-w-0 flex-1 items-center gap-3 rounded-full bg-tile pl-5 text-fg-2',
           'focus-within:outline-1 focus-within:outline-fg-3',
           disabled && 'opacity-40',
         )}
       >
-        <Search className="size-[18px] shrink-0" aria-hidden />
+        <Search className="size-5 shrink-0" aria-hidden />
         <input
           ref={ref}
           type="search"
@@ -42,15 +42,15 @@ export const SearchBar = forwardRef<HTMLInputElement, Props>(function SearchBar(
             type="button"
             aria-label="Очистить"
             onClick={() => onChange('')}
-            className="flex h-full w-tap shrink-0 items-center justify-center text-fg-3"
+            className="flex h-full w-field shrink-0 items-center justify-center text-fg-3"
           >
-            <XCircle className="size-[18px]" aria-hidden />
+            <XCircle className="size-5" aria-hidden />
           </button>
         )}
-        {!value && <span className="w-1" aria-hidden />}
+        {!value && <span className="w-3" aria-hidden />}
       </label>
       {showCancel && (
-        <button type="button" onClick={onCancel} className="pressable h-tap shrink-0 text-body text-fg">
+        <button type="button" onClick={onCancel} className="pressable h-field shrink-0 text-body text-fg">
           Отмена
         </button>
       )}

@@ -13,8 +13,8 @@ import { BarSheets, useBarNav, useBarRows } from '../components/BarSheets';
 import { NotFoundPage } from './NotFoundPage';
 import { positionsLabel } from './BarPage';
 
-// высота закреплённого навбара (8 + 56 + 8) + липкий ряд чипсов (60) — куда прокручивать тип
-const NAV_OFFSET = 72 + 60;
+// высота закреплённого навбара (8 + 56 + 8) + липкий ряд чипсов (68) — куда прокручивать тип
+const NAV_OFFSET = 72 + 68;
 
 /** Страница раздела «Моего бара»: только непустые типы, навигация чипсами-якорями, одна кнопка «+» в навбаре */
 export function BarSectionPage() {
