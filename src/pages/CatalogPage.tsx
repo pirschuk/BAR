@@ -5,7 +5,7 @@ import { Toast, ToastAction } from '../components/ui/Toast';
 import { useCustomCocktails } from '../lib/custom';
 import { setNav } from '../lib/motion';
 import { useIsGhost } from '../components/SwipeBack';
-import { cocktails, countLabel } from '../lib/cocktails';
+import { cocktails, countLabel, glassLabel, iceLabel, methodLabel } from '../lib/cocktails';
 import {
   EMPTY_FILTERS,
   FACETS,
@@ -206,6 +206,21 @@ export function CatalogPage() {
             {f.my && (
               <Chip variant="removable" icon={PenLine} aria-label="Убрать фильтр «Авторские»" onClick={() => setFilters({ ...f, my: false })}>
                 Авторские
+              </Chip>
+            )}
+            {f.glass && (
+              <Chip variant="removable" aria-label={`Убрать фильтр «${glassLabel(f.glass)}»`} onClick={() => setFilters({ ...f, glass: null })}>
+                {glassLabel(f.glass)}
+              </Chip>
+            )}
+            {f.method && (
+              <Chip variant="removable" aria-label={`Убрать фильтр «${methodLabel(f.method)}»`} onClick={() => setFilters({ ...f, method: null })}>
+                {methodLabel(f.method)}
+              </Chip>
+            )}
+            {f.ice && (
+              <Chip variant="removable" aria-label={`Убрать фильтр «${iceLabel(f.ice)}»`} onClick={() => setFilters({ ...f, ice: null })}>
+                {f.ice === 'none' ? 'Без льда' : `Лёд: ${iceLabel(f.ice).toLowerCase()}`}
               </Chip>
             )}
             {f.ing && (

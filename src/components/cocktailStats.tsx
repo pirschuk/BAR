@@ -11,12 +11,12 @@ export const STRENGTH_TONE: Record<Cocktail['strength'], string> = {
   strong: 'text-strength-strong',
 };
 
-/** 4 параметра рецепта для ParamTiles: метод, бокал, лёд, крепость словом и цветом */
-export function cocktailParams(c: Cocktail): Param[] {
+/** 4 параметра рецепта для ParamTiles: метод, бокал, лёд, крепость словом и цветом; open — статья «Барной азбуки» */
+export function cocktailParams(c: Cocktail, open?: (kind: 'glass' | 'method' | 'ice', id: string) => void): Param[] {
   return [
-    { icon: Shuffle, label: 'Метод', value: methodLabel(c.method) },
-    { icon: Martini, label: 'Бокал', value: glassLabel(c.glass) },
-    { icon: Snowflake, label: 'Лёд', value: iceLabel(c.ice) },
+    { icon: Shuffle, label: 'Метод', value: methodLabel(c.method), onClick: open && (() => open('method', c.method)) },
+    { icon: Martini, label: 'Бокал', value: glassLabel(c.glass), onClick: open && (() => open('glass', c.glass)) },
+    { icon: Snowflake, label: 'Лёд', value: iceLabel(c.ice), onClick: open && (() => open('ice', c.ice)) },
     { icon: Flame, label: 'Крепость', value: strengthLabel(c.strength), tone: STRENGTH_TONE[c.strength] },
   ];
 }

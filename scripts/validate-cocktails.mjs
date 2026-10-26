@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Валидация src/data/cocktails.json и src/data/ingredients.json по правилам скилла cocktail-data.
+// Валидация src/data/cocktails.json, src/data/ingredients.json и src/data/glossary.json по правилам скилла cocktail-data.
 // Запуск: node scripts/validate-cocktails.mjs  (код выхода 1 при ошибках)
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -8,6 +8,8 @@ import { dirname, resolve } from 'node:path';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const file = resolve(root, 'src/data/cocktails.json');
 const dictFile = resolve(root, 'src/data/ingredients.json');
+const glossaryFile = resolve(root, 'src/data/glossary.json');
+const inventoryFile = resolve(root, 'src/lib/inventory.ts');
 
 const METHODS = ['build', 'stir', 'shake', 'dry-shake', 'blend', 'muddle', 'layer', 'throw'];
 // утверждённый список бокалов (10), у каждого свой силуэт в GlassIllustration
@@ -266,9 +268,64 @@ for (const name of ingredientNames.keys()) {
   else seen.set(k, name);
 }
 
+// глоссарий «Барная азбука» (src/data/glossary.json)
+const G_KINDS = ['glass', 'tool', 'method', 'ice', 'measure'];
+const G_KEYS = ['kind', 'id', 'name', 'what', 'why', 'substitute'];
+const G_LIMITS = { name: 40, what: 80, why: 170, substitute: 90 };
+let glossary = [];
+try {
+  glossary = JSON.parse(readFileSync(glossaryFile, 'utf8'));
+  if (!Array.isArray(glossary)) { errors.push('glossary.json должен быть массивом'); glossary = []; }
+} catch (e) {
+  errors.push(`Не удалось прочитать ${glossaryFile}: ${e.message}`);
+}
+const gIds = new Set();
+const gByKind = Object.fromEntries(G_KINDS.map((k) => [k, new Set()]));
+let lastKind = -1;
+for (const [idx, g] of glossary.entries()) {
+  const gid = `глоссарий ${g?.id ?? `#${idx}`}`;
+  for (const k of Object.keys(g)) if (!G_KEYS.includes(k)) err(gid, `лишнее поле "${k}"`);
+  const ki = G_KINDS.indexOf(g.kind);
+  if (ki < 0) err(gid, `kind "${g.kind}" вне списка (${G_KINDS.join(', ')})`);
+  else {
+    if (ki < lastKind) err(gid, `порядок: ${g.kind} после ${G_KINDS[lastKind]} (нужно ${G_KINDS.join(' → ')})`);
+    lastKind = Math.max(lastKind, ki);
+    gByKind[g.kind].add(g.id);
+  }
+  if (typeof g.id !== 'string' || !KEBAB.test(g.id)) err(gid, 'id не kebab-case');
+  else if (gIds.has(g.id)) err(gid, 'id не уникален');
+  gIds.add(g.id);
+  for (const k of ['name', 'what', 'why']) {
+    if (typeof g[k] !== 'string' || !g[k].trim()) err(gid, `пустое поле ${k}`);
+  }
+  if (g.substitute !== undefined && (typeof g.substitute !== 'string' || !g.substitute.trim())) err(gid, 'пустой substitute');
+  for (const [k, max] of Object.entries(G_LIMITS)) {
+    if (typeof g[k] === 'string' && g[k].length > max) err(gid, `${k} ${g[k].length} > ${max}`);
+  }
+}
+// у каждого glass / method / ice из рецептов есть статья
+for (const [kind, field] of [['glass', 'glass'], ['method', 'method'], ['ice', 'ice']]) {
+  for (const v of new Set(data.map((c) => c[field]))) {
+    if (!gByKind[kind].has(v)) errors.push(`глоссарий: нет статьи ${kind} "${v}" (используется в cocktails.json)`);
+  }
+}
+// все инструменты из TOOLS (src/lib/inventory.ts) описаны
+let toolIds = ['tool-shaker', 'tool-muddler', 'tool-barspoon', 'tool-blender'];
+try {
+  const src = readFileSync(inventoryFile, 'utf8');
+  const body = src.match(/export const TOOLS[^=]*=\s*\[([\s\S]*?)\n\];/)?.[1] ?? '';
+  const found = [...body.matchAll(/id:\s*'([^']+)'/g)].map((m) => m[1]);
+  if (found.length) toolIds = found;
+  else warnings.push('глоссарий: TOOLS в inventory.ts не распознан, проверка по встроенному списку');
+} catch {
+  warnings.push('глоссарий: inventory.ts не прочитан, проверка по встроенному списку');
+}
+for (const t of toolIds) if (!gByKind.tool.has(t)) errors.push(`глоссарий: нет статьи tool "${t}" из TOOLS`);
+
 console.log(`Коктейлей: ${data.length}; ингредиентов (уникальных названий): ${ingredientNames.size}`);
 console.log(`По базам: ${BASES.map((b) => `${b} ${baseCount[b]}`).join(', ')}`);
 console.log(`Словарь: ${dict.length} (popular ${dict.filter((d) => d.popular).length}, pantry ${dict.filter((d) => d.pantry).length})`);
+console.log(`Глоссарий: ${glossary.length} (${G_KINDS.map((k) => `${k} ${gByKind[k].size}`).join(', ')})`);
 console.log(`Ингредиенты: ${[...ingredientNames.keys()].sort((a, b) => a.localeCompare(b, 'ru')).join(', ')}`);
 for (const w of warnings) console.warn(`WARN  ${w}`);
 if (errors.length) {

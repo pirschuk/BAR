@@ -24,6 +24,7 @@ import './styles/index.css';
 import { CatalogPage } from './pages/CatalogPage';
 import { CocktailPage } from './pages/CocktailPage';
 import { CocktailEditorPage } from './pages/CocktailEditorPage';
+import { GuidePage } from './pages/GuidePage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // таб-бар — только на корневых экранах; на рецепте обложка во весь экран
@@ -118,6 +119,7 @@ const PAGES: RouteObject[] = [
   // авторский коктейль: новый и правка — одна форма
   { path: '/new', element: <CocktailEditorPage /> },
   { path: '/cocktail/:slug/edit', element: <CocktailEditorPage /> },
+  { path: '/guide', element: <GuidePage /> },
 ];
 
 const router = createBrowserRouter([

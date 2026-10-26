@@ -43,6 +43,9 @@ import { IngredientPickSheet } from '../components/IngredientPickSheet';
 import { COVERS } from '../lib/custom';
 import { detectPlatform, platformOverride, setPlatformOverride, type Platform } from '../lib/motion';
 import { InstallPage } from './InstallPage';
+import { GlassGuideTile, GuideRow, GuideTile, TermArt } from '../components/ui/GuideParts';
+import { TermSheet } from '../components/TermSheet';
+import { TERMS, TOPICS, getTerm, glassMl, termsOf } from '../lib/glossary';
 
 // --- оболочка витрины ---
 
@@ -72,6 +75,63 @@ function State({ label, children, className, inset }: { label: string; children:
     <div className={className}>
       <p className={`mb-2 text-caption text-fg-3 uppercase ${inset ? 'px-4' : ''}`}>{label}</p>
       {children}
+    </div>
+  );
+}
+
+// --- барная азбука: плитки, строки, все картинки, шторка в трёх видах ---
+
+function GuideShowcase() {
+  const noop = () => {};
+  const t = (kind: Parameters<typeof getTerm>[0], id: string) => getTerm(kind, id)!;
+  return (
+    <div className="flex flex-col gap-6">
+      <State label="GuideTile · default / pressed">
+        <CardRail label="Темы азбуки">
+          {TOPICS.map((x, i) => (
+            <CardRailItem key={x.id}>
+              <GuideTile topic={x.id} label={x.label} count={termsOf(x.id).length} to="/guide" pressed={i === 1} />
+            </CardRailItem>
+          ))}
+        </CardRail>
+      </State>
+      <State label="GlassGuideTile · default / pressed" inset>
+        <div className="grid grid-cols-2 gap-3 px-4">
+          <GlassGuideTile term={t('glass', 'coupe')} ml={glassMl('coupe')} onClick={noop} />
+          <GlassGuideTile term={t('glass', 'hurricane')} ml={glassMl('hurricane')} onClick={noop} pressed />
+        </div>
+      </State>
+      <State label="GuideRow · инструмент / есть дома / pressed / метод / мера" inset>
+        <div className="flex flex-col gap-2 px-4">
+          <GuideRow term={t('tool', 'tool-jigger')} onClick={noop} />
+          <GuideRow term={t('tool', 'tool-shaker')} owned onClick={noop} />
+          <GuideRow term={t('ice', 'crushed')} onClick={noop} pressed />
+          <GuideRow term={t('method', 'dry-shake')} onClick={noop} />
+          <GuideRow term={t('measure', 'measure-dash')} onClick={noop} />
+        </div>
+      </State>
+      <State label={`Картинки статей · все ${TERMS.length - termsOf('glass').length} небокальных`} inset>
+        <div className="grid grid-cols-4 gap-3 px-4">
+          {TERMS.filter((x) => x.kind !== 'glass').map((x) => (
+            <div key={x.kind + x.id} className="flex flex-col items-center gap-1 rounded-row bg-tile p-2 text-center">
+              <TermArt term={x} />
+              <span className="line-clamp-2 text-caption text-fg-2">{x.name}</span>
+            </div>
+          ))}
+        </div>
+      </State>
+      <State label="ParamTiles · с переходом в азбуку (ⓘ)" inset>
+        <ParamTiles items={cocktailParams(must('negroni'), noop)} className="mx-4" />
+      </State>
+      <State label="TermSheet · бокал — лента и «Все N ›»">
+        <TermSheet inline open term={t('glass', 'coupe')} onClose={noop} />
+      </State>
+      <State label="TermSheet · инструмент — «Есть дома», замена">
+        <TermSheet inline open term={t('tool', 'tool-shaker')} onClose={noop} />
+      </State>
+      <State label="TermSheet · мера — без ленты">
+        <TermSheet inline open term={t('measure', 'measure-rim')} onClose={noop} />
+      </State>
     </div>
   );
 }
@@ -952,6 +1012,10 @@ export function DesignSystemPage() {
             </div>
           </State>
         </div>
+      </Section>
+
+      <Section id="guide" title="Барная азбука" note="Лента тем в «Моём баре» (GuideTile 160 в CardRail) → /guide: бокалы сеткой силуэтов (GlassGuideTile), остальное строками [Noom] (GuideRow: название, что это, картинка 56 справа, «· есть дома»). Картинки: бокал — GlassIllustration, инструмент и лёд — ToolIllustration в том же линейном стиле, метод и мера — иконка на круге. Статья — шторка TermSheet [Blue Apron]; плитки «Метод / Бокал / Лёд» рецепта с ⓘ открывают её же.">
+        <GuideShowcase />
       </Section>
 
       <Section id="editor" title="Редактор авторского коктейля" note="Поля 56 на bg-tile; TextArea растёт по тексту. ParamPickRow → шторка с радио. Ингредиенты — только из справочника: IngredientPickSheet без своей бутылки и «Советуем»; строка ≡ · название (2 строки) · Stepper одной ширины (−/+ 44, короткие единицы мл · дш · л · шт · щ; мл шаг 5, штучное 1; «долить» — та же пилюля без кнопок) · ×. AbvLine — живая крепость по составу. Шаги — номер в круге, как Steps. Карточка — «· авторский» в строке бокала, обложка — «Авторский коктейль».">

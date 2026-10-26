@@ -1,3 +1,5 @@
+import { TOPICS, termsOf } from '../lib/glossary';
+import { GuideTile } from '../components/ui/GuideParts';
 import { useMemo } from 'react';
 import { ChevronRight, HardDriveDownload, Heart, Sparkles } from 'lucide-react';
 import { Link } from 'react-router';
@@ -123,6 +125,27 @@ export function BarPage() {
           Нажмите сердце на странице коктейля&nbsp;— он появится в «Избранном»
         </HintLine>
       )}
+
+      {/* «Барная азбука» — внизу: что за бокалы, инструменты, методы, лёд и меры */}
+      <section className="mt-8" aria-label="Барная азбука">
+        <SectionHeader
+          size="l"
+          title="Барная азбука"
+          meta={
+            <Link to="/guide" viewTransition className="pressable -mr-2 inline-flex h-tap items-center gap-0.5 rounded-control px-2 text-subhead text-fg-2">
+              Все
+              <ChevronRight className="size-4" aria-hidden />
+            </Link>
+          }
+        />
+        <CardRail label="Темы азбуки" className="mt-2">
+          {TOPICS.map((t) => (
+            <CardRailItem key={t.id}>
+              <GuideTile topic={t.id} label={t.label} count={termsOf(t.id).length} to={`/guide?topic=${t.id}`} />
+            </CardRailItem>
+          ))}
+        </CardRail>
+      </section>
 
       <BarSheets rows={rows} aboveTabBar />
     </main>

@@ -19,6 +19,7 @@ import { Steps } from '../components/ui/Steps';
 import { cocktailParams } from '../components/cocktailStats';
 import { coverStyle } from '../components/ui/CocktailCard';
 import { NotFoundPage } from './NotFoundPage';
+import { TermSheet, useTermSheet } from '../components/TermSheet';
 
 export const SERVINGS: { value: Servings; label: string }[] = [
   { value: 1, label: '1×' },
@@ -42,6 +43,8 @@ export function CocktailPage() {
   // навбар проявляется, как только заголовок подходит к нему
   const titleRef = useRef<HTMLHeadingElement>(null);
   const navVisible = useNavReveal(titleRef, [cocktail?.id]);
+  // тап по плитке «Метод / Бокал / Лёд» — статья «Барной азбуки» в шторке
+  const { term, openTerm, closeTerm } = useTermSheet();
 
   if (!cocktail) return <NotFoundPage title="Коктейль не найден" />;
 
@@ -74,7 +77,7 @@ export function CocktailPage() {
       <CocktailHero cocktail={cocktail} titleRef={titleRef} />
 
       <p className="mt-2 px-4 text-body text-fg-2">{cocktail.description}</p>
-      <ParamTiles items={cocktailParams(cocktail)} className="mx-4 mt-5" />
+      <ParamTiles items={cocktailParams(cocktail, (kind, id) => openTerm({ kind, id }))} className="mx-4 mt-5" />
 
       <SectionHeader
         size="l"
@@ -118,6 +121,7 @@ export function CocktailPage() {
         </InfoNote>
       ))}
       <Steps steps={cocktail.steps} className="mt-5" />
+      <TermSheet term={term} open={!!term} onClose={closeTerm} />
       {toast > 0 && (
         <Toast key={toast} icon={Heart} text="В избранном" action={<ToastAction to="/?fav=1">Открыть</ToastAction>} onDone={() => setToast(0)} />
       )}

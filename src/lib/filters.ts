@@ -1,6 +1,6 @@
 import ingredientsData from '../data/ingredients.json';
-import type { Base, Cocktail, IngredientDef, Strength, Taste } from '../types/cocktail';
-import { BASES, STRENGTH_LABEL } from './cocktails';
+import type { Base, Cocktail, Glass, Ice, IngredientDef, Method, Strength, Taste } from '../types/cocktail';
+import { BASES, GLASSES, ICES, METHODS, STRENGTH_LABEL } from './cocktails';
 
 export const ingredients = ingredientsData as IngredientDef[];
 const byId = new Map(ingredients.map((i) => [i.id, i]));
@@ -54,9 +54,13 @@ export type FilterState = {
   fav: boolean;
   /** «Только авторские» */
   my: boolean;
+  /** из «Барной азбуки»: «Все коктейли в купе», «… перемешать», «… со льдом» — чипсом в ряду, без шторки */
+  glass: Glass | null;
+  method: Method | null;
+  ice: Ice | null;
 };
 
-export const EMPTY_FILTERS: FilterState = { q: '', base: [], taste: [], strength: [], ing: null, can: false, fav: false, my: false };
+export const EMPTY_FILTERS: FilterState = { q: '', base: [], taste: [], strength: [], ing: null, can: false, fav: false, my: false, glass: null, method: null, ice: null };
 
 function pickList<T extends string>(raw: string | null, allowed: readonly { id: T }[]): T[] {
   if (!raw) return [];
@@ -75,6 +79,9 @@ export function parseFilters(params: URLSearchParams): FilterState {
     can: params.get('can') === '1',
     fav: params.get('fav') === '1',
     my: params.get('my') === '1',
+    glass: GLASSES.find((g) => g.id === params.get('glass'))?.id ?? null,
+    method: METHODS.find((m) => m === params.get('method')) ?? null,
+    ice: ICES.find((i) => i === params.get('ice')) ?? null,
   };
 }
 
@@ -88,12 +95,15 @@ export function filtersToParams(f: FilterState): Record<string, string> {
   if (f.can) out.can = '1';
   if (f.fav) out.fav = '1';
   if (f.my) out.my = '1';
+  if (f.glass) out.glass = f.glass;
+  if (f.method) out.method = f.method;
+  if (f.ice) out.ice = f.ice;
   return out;
 }
 
 /** Число выбранных значений во всех фасетах — бейдж на «Фильтры» (без текста поиска) */
 export function activeCount(f: FilterState): number {
-  return f.base.length + f.taste.length + f.strength.length + (f.ing ? 1 : 0) + (f.can ? 1 : 0) + (f.fav ? 1 : 0) + (f.my ? 1 : 0);
+  return f.base.length + f.taste.length + f.strength.length + (f.ing ? 1 : 0) + (f.can ? 1 : 0) + (f.fav ? 1 : 0) + (f.my ? 1 : 0) + (f.glass ? 1 : 0) + (f.method ? 1 : 0) + (f.ice ? 1 : 0);
 }
 
 export function hasFacetFilters(f: FilterState): boolean {
@@ -152,6 +162,9 @@ export function applyFilters(
       (!f.can || (canMake?.(c) ?? false)) &&
       (!f.fav || (isFav?.(c) ?? false)) &&
       (!f.my || !!c.custom) &&
+      (!f.glass || c.glass === f.glass) &&
+      (!f.method || c.method === f.method) &&
+      (!f.ice || c.ice === f.ice) &&
       matchesQuery(c, f.q) &&
       (!f.base.length || f.base.includes(c.base)) &&
       (!f.taste.length || f.taste.some((t) => c.tags.includes(t))) &&
