@@ -153,7 +153,6 @@ export function CocktailEditorPage() {
             return (
               <IngredientEditRow
                 key={ing.ref}
-                index={k}
                 name={ing.name}
                 onMove={(from, to) => set({ ingredients: move(d.ingredients, from, to) })}
                 onRemove={() => set({ ingredients: d.ingredients.filter((_, j) => j !== k) })}

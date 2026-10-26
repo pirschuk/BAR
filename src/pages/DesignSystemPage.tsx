@@ -198,9 +198,9 @@ function EditorShowcase() {
       </State>
       <State label="IngredientEditRow · default / длинное имя / ошибка" inset>
         <ul className="flex flex-col gap-2 px-4">
-          <IngredientEditRow index={0} name="Мескаль" onMove={noop} onRemove={noop} stepper={<Stepper label="Мескаль" value={ml} unit="мл" step={5} min={5} onChange={setMl} />} />
-          <IngredientEditRow index={1} name="Красный вермут" onMove={noop} onRemove={noop} stepper={<Stepper label="Вермут" value={30} unit="мл" step={5} min={5} onChange={noop} />} />
-          <IngredientEditRow index={2} name="Содовая" error onMove={noop} onRemove={noop} stepper={<Stepper label="Содовая" unit="долить" step={1} />} />
+          <IngredientEditRow name="Мескаль" onMove={noop} onRemove={noop} stepper={<Stepper label="Мескаль" value={ml} unit="мл" step={5} min={5} onChange={setMl} />} />
+          <IngredientEditRow name="Красный вермут" onMove={noop} onRemove={noop} stepper={<Stepper label="Вермут" value={30} unit="мл" step={5} min={5} onChange={noop} />} />
+          <IngredientEditRow name="Содовая" error onMove={noop} onRemove={noop} stepper={<Stepper label="Содовая" unit="долить" step={1} />} />
         </ul>
       </State>
       <State label="AbvLine · пусто / посчитано" inset>

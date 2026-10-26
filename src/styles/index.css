@@ -570,6 +570,27 @@ html[data-nav='grid']::view-transition-group(*) {
   animation-duration: var(--dur-grid);
 }
 
+/* --- перетаскивание строк (редактор): соседи расступаются, поднятая строка — над ними, с тенью; отпустил — садится --- */
+.drag-row {
+  position: relative;
+  transition:
+    transform var(--dur-sheet-out) var(--ease-push),
+    box-shadow var(--dur-sheet-out) var(--ease-push),
+    background-color var(--dur-sheet-out) var(--ease-push);
+}
+.drag-row[data-dragging] {
+  z-index: 10;
+  /* непрозрачная: под поднятой строкой проезжают соседи */
+  background: var(--surface-2);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.5);
+  transition:
+    box-shadow var(--dur-sheet-out) var(--ease-push),
+    background-color var(--dur-sheet-out) var(--ease-push);
+}
+.drag-row[data-dragging][data-settling] {
+  transition: transform var(--dur-sheet-out) var(--ease-push);
+}
+
 /* --- таб-бар стоит на месте при смене вкладок --- */
 ::view-transition-group(tabbar) {
   z-index: 3;

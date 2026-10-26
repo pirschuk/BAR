@@ -1,4 +1,6 @@
 import { useLayoutEffect, useRef, type PointerEvent, type ReactNode, type TextareaHTMLAttributes } from 'react';
+import { flushSync } from 'react-dom';
+import { haptic } from '../../lib/motion';
 import { ChevronRight, GripVertical, Minus, Plus, X, type LucideIcon } from 'lucide-react';
 import type { Cover, Strength } from '../../types/cocktail';
 import { strengthLabel } from '../../lib/cocktails';
@@ -96,41 +98,103 @@ export function ParamPickRow({ icon: Icon, label, value, onClick, pressed }: { i
   );
 }
 
-/** Перетаскивание за ≡ (отдельная ручка — не мешает скроллу): onMove(from, to) по пересечению середин строк */
-function useDrag(index: number, onMove: (from: number, to: number) => void) {
+/**
+ * Перетаскивание за ≡ (отдельная ручка — не мешает скроллу), как в iOS: строка приподнимается и едет за пальцем,
+ * соседние плавно расступаются, у краёв экрана список прокручивается; отпустил — строка садится в слот,
+ * и только тогда порядок меняется в данных (onMove один раз). Тактильный отклик — при захвате и каждой смене места.
+ */
+function useDrag(onMove: (from: number, to: number) => void) {
   return (e: PointerEvent<HTMLButtonElement>) => {
-    const row = e.currentTarget.closest('[data-row]') as HTMLElement | null;
+    const row = e.currentTarget.closest<HTMLElement>('[data-row]');
     const list = row?.parentElement;
     if (!row || !list) return;
+    e.preventDefault();
     e.currentTarget.setPointerCapture(e.pointerId);
-    let current = index;
-    row.dataset.dragging = '1';
-    const move = (ev: globalThis.PointerEvent) => {
-      const rows = [...list.querySelectorAll<HTMLElement>(':scope > [data-row]')];
-      const target = rows.findIndex((r) => {
-        const b = r.getBoundingClientRect();
-        return ev.clientY >= b.top && ev.clientY <= b.bottom;
-      });
-      if (target >= 0 && target !== current) {
-        onMove(current, target);
-        current = target;
+    const rows = [...list.querySelectorAll<HTMLElement>(':scope > [data-row]')];
+    const from = rows.indexOf(row);
+    if (from < 0) return;
+    const rects = rows.map((r) => r.getBoundingClientRect());
+    const gap = rows.length > 1 ? rects[1]!.top - rects[0]!.bottom : 0;
+    const slot = rects[from]!.height + gap; // на столько сдвигаются соседи
+    const startY = e.clientY;
+    const startScroll = window.scrollY;
+    let pointerY = e.clientY;
+    let target = from;
+    let frame = 0;
+
+    row.dataset.dragging = '';
+    haptic();
+
+    const layout = () => {
+      const dy = pointerY - startY + (window.scrollY - startScroll);
+      row.style.transform = `translateY(${dy}px) scale(1.02)`;
+      // куда встаёт: сколько соседей (по их серединам) осталось выше середины строки
+      const mid = rects[from]!.top + rects[from]!.height / 2 + dy;
+      let t = 0;
+      rects.forEach((r, j) => j !== from && r.top + r.height / 2 < mid && t++);
+      if (t !== target) {
+        target = t;
+        haptic();
+        rows.forEach((r, j) => {
+          if (j === from) return;
+          const shift = from < target && j > from && j <= target ? -slot : from > target && j < from && j >= target ? slot : 0;
+          r.style.transform = shift ? `translateY(${shift}px)` : '';
+        });
       }
     };
+    // автопрокрутка у краёв экрана
+    const tick = () => {
+      const edge = 80;
+      const speed = pointerY < edge ? -(edge - pointerY) / 6 : pointerY > innerHeight - edge ? (pointerY - innerHeight + edge) / 6 : 0;
+      if (speed) {
+        window.scrollBy(0, speed);
+        layout();
+      }
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+
+    const move = (ev: globalThis.PointerEvent) => {
+      pointerY = ev.clientY;
+      layout();
+    };
     const up = () => {
-      delete row.dataset.dragging;
+      cancelAnimationFrame(frame);
       window.removeEventListener('pointermove', move);
       window.removeEventListener('pointerup', up);
+      window.removeEventListener('pointercancel', up);
+      // посадить в слот: сумма высот строк, через которые прошла
+      const between = from < target ? rects.slice(from + 1, target + 1) : rects.slice(target, from);
+      const offset = between.reduce((sum, r) => sum + r.height + gap, 0) * (from < target ? 1 : -1);
+      row.dataset.settling = '';
+      row.style.transform = `translateY(${offset}px)`;
+      const done = () => {
+        clearTimeout(timer);
+        row.removeEventListener('transitionend', done);
+        // порядок меняется в данных и одновременно снимаются сдвиги — без вспышки
+        flushSync(() => target !== from && onMove(from, target));
+        rows.forEach((r) => {
+          r.style.transition = 'none';
+          r.style.transform = '';
+          delete r.dataset.dragging;
+          delete r.dataset.settling;
+        });
+        requestAnimationFrame(() => rows.forEach((r) => (r.style.transition = '')));
+      };
+      const timer = setTimeout(done, 300);
+      row.addEventListener('transitionend', done);
     };
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
+    window.addEventListener('pointercancel', up);
   };
 }
 
-function RowShell({ children, index, onMove, onRemove, removeLabel, error }: { children: ReactNode; index: number; onMove: (from: number, to: number) => void; onRemove: () => void; removeLabel: string; error?: boolean }) {
-  const drag = useDrag(index, onMove);
+function RowShell({ children, onMove, onRemove, removeLabel, error }: { children: ReactNode; onMove: (from: number, to: number) => void; onRemove: () => void; removeLabel: string; error?: boolean }) {
+  const drag = useDrag(onMove);
   return (
-    <li data-row className={cn('flex items-center gap-1 rounded-row bg-tile py-1.5 pr-1 pl-1 data-[dragging]:bg-tile-strong', error && 'outline-1 outline-danger')}>
-      <button type="button" aria-label="Перетащить" onPointerDown={drag} className="flex size-tap shrink-0 cursor-grab touch-none items-center justify-center text-fg-3">
+    <li data-row className={cn('drag-row flex items-center gap-1 rounded-row bg-tile py-1.5 pr-1 pl-1', error && 'outline-1 outline-danger')}>
+      <button type="button" aria-label="Перетащить" onPointerDown={drag} className="pressable flex size-tap shrink-0 cursor-grab touch-none items-center justify-center rounded-full text-fg-3 active:cursor-grabbing">
         <GripVertical className="size-5" aria-hidden />
       </button>
       {children}
@@ -143,14 +207,12 @@ function RowShell({ children, index, onMove, onRemove, removeLabel, error }: { c
 
 /** Ингредиент в редакторе: ≡ · название · степпер (или «долить») · × */
 export function IngredientEditRow({
-  index,
   name,
   stepper,
   onMove,
   onRemove,
   error,
 }: {
-  index: number;
   name: string;
   stepper: ReactNode;
   onMove: (from: number, to: number) => void;
@@ -158,7 +220,7 @@ export function IngredientEditRow({
   error?: boolean;
 }) {
   return (
-    <RowShell index={index} onMove={onMove} onRemove={onRemove} removeLabel={`Убрать ${name}`} error={error}>
+    <RowShell onMove={onMove} onRemove={onRemove} removeLabel={`Убрать ${name}`} error={error}>
       <span className="line-clamp-2 min-w-0 flex-1 wrap-break-word hyphens-auto text-subhead text-fg">{name}</span>
       {stepper}
     </RowShell>
@@ -175,7 +237,7 @@ export function StepEditRow({ index, value, onChange, onMove, onRemove }: { inde
     el.style.height = `${el.scrollHeight}px`;
   }, [value]);
   return (
-    <RowShell index={index} onMove={onMove} onRemove={onRemove} removeLabel={`Удалить шаг ${index + 1}`}>
+    <RowShell onMove={onMove} onRemove={onRemove} removeLabel={`Удалить шаг ${index + 1}`}>
       <span className="flex size-8 shrink-0 items-center justify-center self-start rounded-full border-2 border-fg-3/60 text-callout font-semibold text-fg tabular-nums mt-1.5">{index + 1}</span>
       <textarea
         ref={ref}
