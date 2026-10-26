@@ -54,8 +54,8 @@ type IconButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   label: string;
   /** tonal — на фоне экрана, glass — поверх обложки */
   variant?: 'tonal' | 'glass';
-  /** m — 36 (тач-зона 44); l — 44, для обложки рецепта */
-  size?: 'm' | 'l';
+  /** m — 36 (тач-зона 44); l — 44; xl — 56, закреплённые кнопки навбара */
+  size?: 'm' | 'l' | 'xl';
   /** доп. классы иконки: заливка (`fill-current`), анимация */
   iconClassName?: string;
   pressed?: boolean;
@@ -71,14 +71,14 @@ export function IconButton({ icon: Icon, label, variant = 'tonal', size = 'm', i
       data-pressed={pressed || undefined}
       className={cn(
         'pressable-scale inline-flex shrink-0 items-center justify-center rounded-full',
-        size === 'l' ? 'size-tap' : 'hit-44 size-glass-btn',
+        size === 'xl' ? 'size-nav-btn' : size === 'l' ? 'size-tap' : 'hit-44 size-glass-btn',
         'disabled:pointer-events-none disabled:opacity-40',
         variant === 'glass' ? 'glass text-on-media' : 'bg-surface-2 text-fg',
         className,
       )}
       {...rest}
     >
-      <Icon className={cn(size === 'l' ? 'size-6' : 'size-5', iconClassName)} strokeWidth={size === 'l' ? 2.25 : 2} aria-hidden />
+      <Icon className={cn(size === 'xl' ? 'size-7' : size === 'l' ? 'size-6' : 'size-5', iconClassName)} strokeWidth={size === 'm' ? 2 : 2.25} aria-hidden />
     </button>
   );
 }

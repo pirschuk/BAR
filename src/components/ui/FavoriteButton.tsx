@@ -6,7 +6,7 @@ import { IconButton } from './Button';
 type Props = {
   on: boolean;
   onToggle: () => void;
-  /** cover — стеклянная L 44 на обложке; bar — тональная 36 в навбаре */
+  /** cover — стеклянная 56 в закреплённом навбаре поверх обложки; bar — тональная 36 */
   place: 'cover' | 'bar';
   pressed?: boolean;
 };
@@ -32,7 +32,7 @@ export function FavoriteButton({ on, onToggle, place, pressed }: Props) {
       label={on ? 'Убрать из избранного' : 'В избранное'}
       aria-pressed={on}
       variant={place === 'cover' ? 'glass' : 'tonal'}
-      size={place === 'cover' ? 'l' : 'm'}
+      size={place === 'cover' ? 'xl' : 'm'}
       pressed={pressed}
       onClick={click}
       className={cn(on && (place === 'cover' ? 'text-on-media-accent!' : 'text-accent!'))}

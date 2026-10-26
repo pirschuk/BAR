@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ChevronLeft, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { SECTIONS, isSectionKey, subsOf } from '../lib/inventory';
 import { AddRow, BarItemRow } from '../components/ui/BarRows';
@@ -17,14 +17,14 @@ export function BarSectionPage() {
   const location = useLocation();
   const rows = useBarRows();
   const { openAdd, openItem } = useBarNav();
-  // навбар при скролле — как на рецепте: заголовок раздела ушёл под верхние 64px
+  // подложка навбара — как на рецепте: заголовок раздела ушёл под закреплённые кнопки (72px)
   const titleEnd = useRef<HTMLDivElement>(null);
   const [navVisible, setNavVisible] = useState(false);
   useEffect(() => {
     const el = titleEnd.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => e && setNavVisible(!e.isIntersecting && e.boundingClientRect.top < 64), {
-      rootMargin: '-64px 0px 0px 0px',
+    const io = new IntersectionObserver(([e]) => e && setNavVisible(!e.isIntersecting && e.boundingClientRect.top < 72), {
+      rootMargin: '-72px 0px 0px 0px',
     });
     io.observe(el);
     return () => io.disconnect();
@@ -39,19 +39,18 @@ export function BarSectionPage() {
   return (
     <main className="pb-safe">
       <header className="pt-safe px-4">
-        <div className="flex h-tap items-center justify-between">
-          <IconButton icon={ChevronLeft} label="Назад" size="l" className="bg-tile-strong!" onClick={back} />
-          <IconButton icon={Plus} label={`Добавить: ${meta.label.toLowerCase()}`} size="l" className="bg-tile-strong!" onClick={() => openAdd(section)} />
-        </div>
+        {/* место под закреплённые кнопки навбара */}
+        <div className="mt-2 h-nav-btn" aria-hidden />
         <h1 className="mt-2 font-display text-display text-fg">{meta.label}</h1>
         <p className="mt-1 text-footnote text-fg-2">{mine.length ? positionsLabel(mine.length) : 'Пока пусто'}</p>
       </header>
       <div ref={titleEnd} aria-hidden />
       <NavBar
+        tone="plain"
         title={meta.label}
         onBack={back}
         visible={navVisible}
-        action={<IconButton icon={Plus} label={`Добавить: ${meta.label.toLowerCase()}`} onClick={() => openAdd(section)} />}
+        action={<IconButton icon={Plus} label={`Добавить: ${meta.label.toLowerCase()}`} size="xl" className="bg-tile-strong!" onClick={() => openAdd(section)} />}
       />
 
       {subsOf(section).map((s) => {

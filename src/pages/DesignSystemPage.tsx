@@ -562,7 +562,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="hero" title="CocktailHero" note="На экране — 55% высоты; здесь превью 320. «Назад» — glass, под safe-area.">
+      <Section id="hero" title="CocktailHero" note="На экране — 55% высоты; здесь превью 320. На странице кнопки не в обложке, а в закреплённом NavBar.">
         <div className="flex flex-col gap-5">
           <State label="короткое название" className="px-4">
             <div className="overflow-hidden rounded-card">
@@ -577,13 +577,24 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="navbar" title="NavBar" note="Появляется при скролле, когда название на обложке ушло под верх экрана: стекло, «Назад» 36 (тач-зона 44), название headline по центру в одну строку. Скрытый — inert.">
+      <Section id="navbar" title="NavBar" note="Кнопки «Назад» и ♡ (56, стекло) закреплены всегда; когда крупный заголовок ушёл вверх — проявляются название и подложка nav-fade: размытие, сквозь которое виден градиент, с плавным затуханием книзу, без линии.">
         <div className="flex flex-col gap-5">
-          <State label="короткое название" inset>
-            <NavBar inline visible title="Негрони" onBack={() => {}} action={<FavoriteButton place="bar" on={fav} onToggle={() => setFav(!fav)} />} />
+          <State label="в начале скролла — только кнопки" inset>
+            <div className="cover-gradient relative mx-4 h-32 overflow-hidden rounded-card" style={coverStyle(must('negroni'))}>
+              <NavBar inline visible={false} title="Негрони" onBack={() => {}} action={<FavoriteButton place="cover" on={fav} onToggle={() => setFav(!fav)} />} />
+            </div>
           </State>
-          <State label="длинное — обрезка с …" inset>
-            <NavBar inline visible title={LONG_NAME.name} onBack={() => {}} />
+          <State label="заголовок ушёл — подложка и название" inset>
+            <div className="recipe-tint relative mx-4 h-32 overflow-hidden rounded-card" style={coverStyle(must('negroni'))}>
+              <p className="absolute inset-x-4 top-10 font-display text-section text-fg">Ингредиенты</p>
+              <NavBar inline visible title="Негрони" onBack={() => {}} action={<FavoriteButton place="cover" on onToggle={() => {}} />} />
+            </div>
+          </State>
+          <State label="страница бара (plain) · длинное название" inset>
+            <div className="relative mx-4 h-32 overflow-hidden rounded-card bg-bg">
+              <p className="absolute inset-x-4 top-10 text-title-2 text-fg">Сиропы и сахар</p>
+              <NavBar inline visible tone="plain" title={LONG_NAME.name} onBack={() => {}} action={<IconButton icon={Plus} label="Добавить" size="xl" className="bg-tile-strong!" />} />
+            </div>
           </State>
         </div>
       </Section>

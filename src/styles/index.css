@@ -142,6 +142,8 @@
   --spacing-switch-h: 31px;
   --spacing-switch-thumb: 27px;
   --spacing-row-l: 52px;
+  /* закреплённые кнопки навбара («Назад», ♡) — крупные, нажимаются одной рукой */
+  --spacing-nav-btn: 56px;
   /* LuckySheet: подпись + колода 280 + выглядывающая карта + футер */
   --spacing-deck: 420px;
 
@@ -214,6 +216,19 @@
   -webkit-backdrop-filter: blur(24px) saturate(1.8);
   backdrop-filter: blur(24px) saturate(1.8);
   box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+}
+/* Подложка навбара: размытие + полупрозрачный фон (виден градиент напитка) и маска —
+   плавно гаснет книзу, без рамки и линии (скролл ощущается цельным) */
+@utility nav-fade {
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 84%, transparent), color-mix(in srgb, var(--bg) 50%, transparent) 70%, transparent);
+  -webkit-backdrop-filter: blur(28px) saturate(1.4);
+  backdrop-filter: blur(28px) saturate(1.4);
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent);
+}
+/* высота подложки навбара: safe-area + кнопки 56 + хвост затухания */
+@utility h-nav-fade {
+  height: calc(env(safe-area-inset-top, 0px) + var(--spacing) * 24);
 }
 /* тост: непрозрачный (стекло сливалось с плитками --tile под ним) + тень отделяет от контента */
 @utility toast-surface {

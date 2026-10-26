@@ -37,14 +37,14 @@ export function CocktailPage() {
   const favorites = useFavorites();
   // тост — только на добавление [Swiggy]: показывает, где искать избранное
   const [toast, setToast] = useState(0);
-  // навбар появляется, когда низ обложки (с названием) ушёл под верхние 64px экрана
+  // подложка навбара — когда низ обложки (с названием) ушёл под закреплённые кнопки (72px)
   const heroEnd = useRef<HTMLDivElement>(null);
   const [navVisible, setNavVisible] = useState(false);
   useEffect(() => {
     const el = heroEnd.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => e && setNavVisible(!e.isIntersecting && e.boundingClientRect.top < 64), {
-      rootMargin: '-64px 0px 0px 0px',
+    const io = new IntersectionObserver(([e]) => e && setNavVisible(!e.isIntersecting && e.boundingClientRect.top < 72), {
+      rootMargin: '-72px 0px 0px 0px',
     });
     io.observe(el);
     return () => io.disconnect();
@@ -65,8 +65,9 @@ export function CocktailPage() {
   return (
     // тинт напитка: цвет обложки продолжается под контентом и растворяется в фоне
     <main className="recipe-tint min-h-svh pb-safe" style={coverStyle(cocktail)}>
-      <NavBar title={cocktail.name} onBack={back} visible={navVisible} action={<FavoriteButton place="bar" on={isFav} onToggle={toggleFav} />} />
-      <CocktailHero cocktail={cocktail} onBack={back} action={<FavoriteButton place="cover" on={isFav} onToggle={toggleFav} />} />
+      {/* «Назад» и ♡ закреплены сразу (навбар), обложка — без своих кнопок */}
+      <NavBar title={cocktail.name} onBack={back} visible={navVisible} action={<FavoriteButton place="cover" on={isFav} onToggle={toggleFav} />} />
+      <CocktailHero cocktail={cocktail} />
       <div ref={heroEnd} aria-hidden />
 
       <p className="mt-2 px-4 text-body text-fg-2">{cocktail.description}</p>
