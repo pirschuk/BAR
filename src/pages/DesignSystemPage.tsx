@@ -14,7 +14,7 @@ import { FilterSheet } from '../components/FilterSheets';
 import { TabBar } from '../components/ui/TabBar';
 import { LuckySheet } from '../components/LuckySheet';
 import { CheckRow, SwitchRow } from '../components/ui/Toggles';
-import { AvailabilityLine, BarSummary, HintLine, InfoNote } from '../components/ui/Availability';
+import { AvailabilityLine, HintLine, InfoNote } from '../components/ui/Availability';
 import { EMPTY_FILTERS, applyFilters, type FilterState } from '../lib/filters';
 import { GlassIllustration } from '../components/ui/GlassIllustration';
 import { CocktailCard, coverStyle } from '../components/ui/CocktailCard';
@@ -23,7 +23,9 @@ import { NavBar } from '../components/ui/NavBar';
 import { FavoriteButton } from '../components/ui/FavoriteButton';
 import { Toast, ToastAction } from '../components/ui/Toast';
 import { CardRail, CardRailItem } from '../components/ui/CardRail';
-import { AddCustomRow, AddRow, BarCategoryCard, BarItemRow, PickRow } from '../components/ui/BarRows';
+import { AddCustomRow, BarCategoryCard, BarItemRow, GroupHeader, PickRow, SuggestCard } from '../components/ui/BarRows';
+import { BarHero } from '../components/ui/BarHero';
+import { TypeNav } from '../components/ui/TypeNav';
 import { BottleForm } from '../components/ui/BottleForm';
 import { TextField } from '../components/ui/TextField';
 import { BarAddSheet } from '../components/BarAddSheet';
@@ -486,10 +488,8 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="availability" title="Итог бара, подсказка" note="«Мой бар»: итог с CTA. InfoNote — нейтральная подсказка. Наличие в рецепте — AvailabilityLine (раздел IngredientTile).">
+      <Section id="availability" title="Подсказки" note="InfoNote — нейтральная подсказка. Итог бара — BarHero (раздел «Мой бар»), наличие в рецепте — AvailabilityLine (раздел IngredientTile).">
         <div className="flex flex-col gap-3 px-4">
-          <BarSummary can={7} nearly={5} to="/?can=1" />
-          <BarSummary can={0} nearly={2} to="/?can=1" />
           <InfoNote icon={Wrench}>Понадобится шейкер — подойдёт банка с плотной крышкой.</InfoNote>
           <InfoNote icon={HardDriveDownload}>Браузер не даёт сохранить бар — он сохранится до закрытия вкладки.</InfoNote>
         </div>
@@ -661,12 +661,14 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="bar" title="Мой бар" note="v2: главная — итог + BarCategoryCard (раздел → страница, «+» → шторка раздела); страница раздела — подкатегории SectionHeader L со счётчиком и «+», пустая — AddRow. Шторка «Добавить» в контексте раздела/подкатегории, «Советуем» вместо «Докупить». Свои бутылки — только в моём баре.">
+      <Section id="bar" title="Мой бар" note="v3: главная — герой BarHero (фирменный фон, число Unbounded 64, веер обложек) + BarCategoryCard с шевроном; страница раздела — только непустые типы, TypeNav-якоря, одна «+» в навбаре. Шторка: «Советуем» отдельной плиткой, липкие заголовки типов.">
         <div className="flex flex-col gap-5">
-          <State label="BarSummary v2 · есть / 0 / бар пуст" inset>
+          <State label="BarHero · 5 (веер 3) / 1 / 0 с «Что докупить» / pressed" inset>
             <div className="flex flex-col gap-3 px-4">
-              <BarSummary can={12} nearly={6} to="/?can=1" />
-              <BarSummary can={0} nearly={3} to="/?can=1" />
+              <BarHero can={5} nearly={6} covers={[must('negroni'), must('daiquiri'), must('mojito')]} to="/?can=1" />
+              <BarHero can={1} nearly={0} covers={[must('aperol-spritz')]} to="/?can=1" />
+              <BarHero can={0} nearly={3} covers={[]} to="/?can=1" onBuy={() => {}} />
+              <BarHero can={2} nearly={1} covers={[must('dry-martini'), must('gin-tonic')]} to="/?can=1" pressed />
             </div>
           </State>
           <State label="BarItemRow · справочная / своя бутылка / «Другое» / инструмент / pressed" inset>
@@ -680,16 +682,25 @@ export function DesignSystemPage() {
           </State>
           <State label="BarCategoryCard · заполнен / пуст / pressed" inset>
             <div className="flex flex-col gap-3 px-4">
-              <BarCategoryCard title="Алкоголь" meta="4 позиции · в 23 коктейлях" preview="Джин, Водка, Laphroaig 10 и ещё 1" to="/bar/alcohol" placeholder="Например: джин, ром, вермут" onAdd={() => {}} />
-              <BarCategoryCard title="Миксеры и прочее" meta="Пока пусто" to="/bar/mixers" placeholder="Например: лайм, сироп, тоник" onAdd={() => {}} />
-              <BarCategoryCard title="Миксеры и прочее" meta="6 позиций · в 31 коктейле" preview="Лайм, Лимон, Мята и ещё 3" to="/bar/mixers" placeholder="Например: лайм, сироп, тоник" onAdd={() => {}} pressed />
+              <BarCategoryCard title="Алкоголь" meta="4 позиции" preview="Джин, Водка, Laphroaig 10 и ещё 1" to="/bar/alcohol" placeholder="Например: джин, ром, вермут" />
+              <BarCategoryCard title="Миксеры и прочее" meta="Пока пусто" to="/bar/mixers" placeholder="Например: лайм, сироп, тоник" />
+              <BarCategoryCard title="Миксеры и прочее" meta="6 позиций" preview="Лайм, Лимон, Мята и ещё 3" to="/bar/mixers" placeholder="Например: лайм, сироп, тоник" pressed />
             </div>
           </State>
-          <State label="Подкатегория: счётчик у заголовка + «+» справа · AddRow (пустая — без «+» в шапке, pressed)" inset>
-            <SectionHeader title="Газировка и миксеры" count={2} trailing={<IconButton icon={Plus} label="Добавить газировку" onClick={() => {}} className="bg-tile!" />} />
-            <div className="mt-1 flex flex-col gap-2 px-4">
-              <AddRow label="газировку" onClick={() => {}} />
-              <AddRow label="биттер" onClick={() => {}} pressed />
+          <State label="TypeNav · чипсы-якоря со счётчиком (активный) · тип со счётчиком без «+»" inset>
+            <TypeNav items={[{ id: 'spirit', label: 'Крепкий', count: 3 }, { id: 'bitter', label: 'Биттеры', count: 1 }]} prefix="ds" offset={0} activeId="spirit" />
+            <SectionHeader title="Крепкий" count={3} className="mt-2" />
+          </State>
+          <State label="SuggestCard + GroupHeader (в шторке)" inset>
+            <div className="mx-4 overflow-hidden rounded-card bg-surface pt-2 pb-2">
+              <SuggestCard>
+                <PickRow title="Бурбон" subtitle="+2 коктейля" on={false} onToggle={() => {}} />
+                <PickRow title="Кампари" subtitle="+1 коктейль" on onToggle={() => {}} />
+              </SuggestCard>
+              <GroupHeader title="Крепкий" />
+              <PickRow title="Абсент" on={false} onToggle={() => {}} />
+              <GroupHeader title="Ликёры, вина и вермуты" />
+              <PickRow title="Амаретто" on={false} onToggle={() => {}} />
             </div>
           </State>
           <State label="PickRow · выкл / вкл / pressed · AddCustomRow" inset>

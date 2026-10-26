@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ingredients, normalize } from '../lib/filters';
 import { TOOLS, findBottle, sectionOf, subLabel, subOf, subOrder, subsOf, SECTIONS, type Bottle, type Inventory, type SectionKey, type SubKey } from '../lib/inventory';
 import { plural } from '../lib/cocktails';
 import { BottomSheet, SheetFooter } from './ui/BottomSheet';
 import { Button } from './ui/Button';
-import { Chip, ChipRow } from './ui/Chip';
-import { AddCustomRow, PickRow } from './ui/BarRows';
+import { AddCustomRow, GroupHeader, PickRow, SuggestCard } from './ui/BarRows';
+import { TypeNav, typeAnchor } from './ui/TypeNav';
 import { BottleForm } from './ui/BottleForm';
 import { SearchBar } from './ui/SearchBar';
 
@@ -36,14 +36,14 @@ type Props = {
 };
 
 /**
- * Шторка «Добавить» в контексте раздела [Subway, Insight Timer, Shopify]: заголовок «Добавить газировку»,
- * чипсы подкатегорий раздела, «Советуем» (+N коктейлей), строки + / ✓ (шторка не закрывается),
- * «Добавить «…» как свою бутылку» → форма; тип бутылки — только из этого раздела.
+ * Шторка «Добавить» в контексте раздела [Subway, Insight Timer, Shopify]: «Советуем» — отдельная плитка;
+ * список по типам с липкими заголовками и отступом 24; чипсы-якоря (прокрутка + подсветка текущего типа);
+ * строки + / ✓ (шторка не закрывается); «Добавить «…» как свою бутылку» → форма (тип — из этого раздела).
  */
+const CHIPS_H = 60; // высота липкого ряда чипсов: py-2 + ряд 44
 export function BarAddSheet({ open, onClose, section, sub, owned, bottles, suggestions, onToggle, onCreateBottle, inline, initialQuery = '' }: Props) {
   const subs = subsOf(section).filter((s) => s.id !== 'custom');
   const [q, setQ] = useState(initialQuery);
-  const [filter, setFilter] = useState<SubKey | 'all'>(sub ?? 'all');
   const [step, setStep] = useState<'pick' | 'bottle'>('pick');
   const [added, setAdded] = useState(0);
   useEffect(() => {
@@ -51,27 +51,34 @@ export function BarAddSheet({ open, onClose, section, sub, owned, bottles, sugge
       setQ('');
       setStep('pick');
       setAdded(0);
-      setFilter(sub ?? 'all');
     }
   }, [open, inline, sub, section]);
 
-  // выбранная подкатегория может стоять за краем ряда — доскроллить к ней
-  const chips = useRef<HTMLDivElement>(null);
+  // контейнер прокрутки шторки — для чипсов-якорей; открыли на подкатегории — сразу к ней
+  const anchor = useRef<HTMLDivElement>(null);
+  const scrollRoot = useCallback(() => anchor.current?.closest<HTMLElement>('.overflow-y-auto') ?? null, []);
+  const prefix = `add-${section}`;
   useEffect(() => {
-    if (open) chips.current?.querySelector('[aria-pressed="true"]')?.scrollIntoView({ inline: 'nearest', block: 'nearest' });
-  }, [open, filter]);
+    if (!open || !sub) return;
+    const t = setTimeout(() => {
+      const root = scrollRoot();
+      const el = document.getElementById(typeAnchor(prefix, sub));
+      if (root && el) root.scrollTo({ top: el.offsetTop - CHIPS_H });
+    }, 50);
+    return () => clearTimeout(t);
+  }, [open, sub, prefix, scrollRoot]);
 
   const n = normalize(q);
   const list = useMemo(
     () =>
       ITEMS.filter(
-        (i) => i.section === section && (filter === 'all' || i.sub === filter) && (!n || [i.name, ...i.aliases].some((x) => normalize(x).includes(n))),
+        (i) => i.section === section && (!n || [i.name, ...i.aliases].some((x) => normalize(x).includes(n))),
       ),
-    [section, filter, n],
+    [section, n],
   );
-  const advice = !n ? suggestions.filter((s) => filter === 'all' || subOf(s.ref) === filter) : [];
+  const advice = !n ? suggestions : [];
   const exact = n && (ITEMS.some((i) => normalize(i.name) === n) || !!findBottle(bottles, q));
-  const title = `Добавить ${filter === 'all' ? SECTIONS.find((s) => s.id === section)!.addLabel : subs.find((s) => s.id === filter)!.addLabel}`;
+  const title = `Добавить ${SECTIONS.find((s) => s.id === section)!.addLabel}`;
   const groups = subs.flatMap((s) => (s.group ? [s.group] : []));
   const toggle = (id: string) => {
     if (!owned.has(id)) setAdded((a) => a + 1);
@@ -80,7 +87,6 @@ export function BarAddSheet({ open, onClose, section, sub, owned, bottles, sugge
   const row = (id: string, name: string, subtitle?: string) => (
     <PickRow key={id} title={name} subtitle={subtitle} on={owned.has(id)} onToggle={() => toggle(id)} />
   );
-  const shownSubs = subs.filter((s) => filter === 'all' || s.id === filter);
 
   return (
     <BottomSheet
@@ -117,35 +123,34 @@ export function BarAddSheet({ open, onClose, section, sub, owned, bottles, sugge
         </div>
       ) : (
         <>
-          <div className="px-4 pt-1">
+          <div ref={anchor} className="px-4 pt-1">
             <SearchBar value={q} onChange={setQ} placeholder="Название или бренд" aria-label="Найти в справочнике" autoFocus={!inline && !sub} />
           </div>
-          <div ref={chips}>
-            <ChipRow label="Подкатегория" className="mt-3 scroll-px-4">
-              <Chip selected={filter === 'all'} aria-pressed={filter === 'all'} onClick={() => setFilter('all')}>
-                Всё
-              </Chip>
-              {subs.map((s) => (
-                <Chip key={s.id} selected={filter === s.id} aria-pressed={filter === s.id} onClick={() => setFilter(s.id)}>
-                  {s.label}
-                </Chip>
-              ))}
-            </ChipRow>
-          </div>
+          {/* чипсы-якоря липнут к верху шторки; при поиске список плоский — чипсы не нужны */}
+          {!n && (
+            <TypeNav
+              items={subs.map((s) => ({ id: s.id, label: s.label }))}
+              prefix={prefix}
+              offset={CHIPS_H}
+              root={scrollRoot}
+              className="sticky top-0 z-20 mt-1 bg-surface py-2"
+            />
+          )}
 
-          <div className="mt-2 pb-4">
+          <div className="pb-4">
             {n && !exact && <AddCustomRow query={q} onClick={() => setStep('bottle')} />}
             {advice.length > 0 && (
-              <section>
-                <h3 className="px-4 pt-4 pb-1 text-footnote text-fg-2">Советуем</h3>
-                {advice.map((a) => row(a.ref, a.name, `+${a.count} ${plural(a.count, ['коктейль', 'коктейля', 'коктейлей'])}`))}
-              </section>
+              <div className="mt-2">
+                <SuggestCard>
+                  {advice.map((a) => row(a.ref, a.name, `+${a.count} ${plural(a.count, ['коктейль', 'коктейля', 'коктейлей'])}`))}
+                </SuggestCard>
+              </div>
             )}
             {n
               ? list.map((i) => row(i.id, i.name, subLabel(i.sub)))
-              : shownSubs.map((s) => (
-                  <section key={s.id}>
-                    <h3 className="px-4 pt-4 pb-1 text-footnote text-fg-2">{s.label}</h3>
+              : subs.map((s) => (
+                  <section key={s.id} id={typeAnchor(prefix, s.id)}>
+                    <GroupHeader title={s.label} className="sticky top-15" />
                     {list.filter((i) => i.sub === s.id).map((i) => row(i.id, i.name))}
                   </section>
                 ))}

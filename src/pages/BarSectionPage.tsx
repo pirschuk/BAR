@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { SECTIONS, isSectionKey, subsOf } from '../lib/inventory';
-import { AddRow, BarItemRow } from '../components/ui/BarRows';
+import { BarItemRow } from '../components/ui/BarRows';
+import { Button } from '../components/ui/Button';
+import { EmptyState } from '../components/ui/EmptyState';
+import { TypeNav, typeAnchor } from '../components/ui/TypeNav';
 import { IconButton } from '../components/ui/Button';
 import { NavBar } from '../components/ui/NavBar';
 import { SectionHeader } from '../components/ui/SectionHeader';
@@ -10,7 +13,10 @@ import { BarSheets, useBarNav, useBarRows } from '../components/BarSheets';
 import { NotFoundPage } from './NotFoundPage';
 import { positionsLabel } from './BarPage';
 
-/** Страница раздела «Моего бара» [Insight Timer, talabat]: подкатегории со счётчиком и своим «+»; пустая — AddRow */
+// высота закреплённого навбара (8 + 56 + 8) + липкий ряд чипсов (60) — куда прокручивать тип
+const NAV_OFFSET = 72 + 60;
+
+/** Страница раздела «Моего бара»: только непустые типы, навигация чипсами-якорями, одна кнопка «+» в навбаре */
 export function BarSectionPage() {
   const { section } = useParams();
   const navigate = useNavigate();
@@ -33,6 +39,10 @@ export function BarSectionPage() {
 
   const meta = SECTIONS.find((s) => s.id === section)!;
   const mine = rows.filter((r) => r.section === section);
+  // только типы, где что-то есть
+  const types = subsOf(section)
+    .map((sub) => ({ sub, items: mine.filter((r) => r.sub === sub.id) }))
+    .filter((t) => t.items.length > 0);
   // пришли из бара — назад по истории, по прямой ссылке — в «Мой бар»
   const back = () => (location.key !== 'default' ? navigate(-1) : navigate('/bar'));
 
@@ -53,38 +63,41 @@ export function BarSectionPage() {
         action={<IconButton icon={Plus} label={`Добавить: ${meta.label.toLowerCase()}`} size="xl" className="bg-tile-strong!" onClick={() => openAdd(section)} />}
       />
 
-      {subsOf(section).map((s) => {
-        const items = mine.filter((r) => r.sub === s.id);
-        // «Своё» (бутылки без типа) — только когда есть
-        if (s.id === 'custom' && !items.length) return null;
-        return (
-          <section key={s.id} className="mt-5" aria-label={s.label}>
-            {/* подкатегории — системный title-2: Unbounded только у заголовка страницы, иначе спорят */}
-            <SectionHeader
-              title={s.label}
-              count={items.length || undefined}
-              // пустая подкатегория — одно действие (AddRow), без второго «+» в шапке
-              trailing={
-                s.id !== 'custom' &&
-                items.length > 0 && <IconButton icon={Plus} label={`Добавить ${s.addLabel}`} onClick={() => openAdd(section, s.id)} className="bg-tile!" />
-              }
-            />
+      {types.length > 1 && (
+        // навигация по типам — только непустые; липнет под закреплёнными кнопками навбара
+        <TypeNav
+          items={types.map((t) => ({ id: t.sub.id, label: t.sub.label, count: t.items.length }))}
+          prefix={`bar-${section}`}
+          offset={NAV_OFFSET}
+          className="top-under-nav sticky z-10 mt-4 bg-bg py-2"
+        />
+      )}
+
+      {types.length === 0 ? (
+        <EmptyState
+          title="Пока пусто"
+          hint="Добавьте, что есть дома"
+          action={
+            <Button icon={Plus} onClick={() => openAdd(section)}>
+              Добавить
+            </Button>
+          }
+        />
+      ) : (
+        types.map(({ sub: s, items }) => (
+          <section key={s.id} id={typeAnchor(`bar-${section}`, s.id)} className="mt-5" aria-label={s.label}>
+            {/* типы — системный title-2 со счётчиком; «+» нет: добавлять — одной кнопкой в навбаре */}
+            <SectionHeader title={s.label} count={items.length} />
             <ul className="mt-1 flex flex-col gap-2 px-4">
-              {items.length ? (
-                items.map((r) => (
-                  <li key={r.id}>
-                    <BarItemRow title={r.title} subtitle={r.subtitle} meta={r.meta} onClick={() => openItem(r.id)} />
-                  </li>
-                ))
-              ) : (
-                <li>
-                  <AddRow label={s.addLabel} onClick={() => openAdd(section, s.id)} />
+              {items.map((r) => (
+                <li key={r.id}>
+                  <BarItemRow title={r.title} subtitle={r.subtitle} meta={r.meta} onClick={() => openItem(r.id)} />
                 </li>
-              )}
+              ))}
             </ul>
           </section>
-        );
-      })}
+        ))
+      )}
 
       <BarSheets rows={rows} />
     </main>

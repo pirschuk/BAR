@@ -2,10 +2,11 @@ import { useMemo } from 'react';
 import { ChevronRight, HardDriveDownload, Heart, Sparkles } from 'lucide-react';
 import { Link } from 'react-router';
 import type { Cocktail } from '../types/cocktail';
-import { cocktails, getCocktail, inCocktailsLabel, plural } from '../lib/cocktails';
+import { cocktails, getCocktail, plural } from '../lib/cocktails';
 import { useFavorites } from '../lib/favorites';
-import { QUICK_START, SECTIONS, barSummary, canMake, inventoryPersisted, useInventory } from '../lib/inventory';
-import { BarSummary, HintLine, InfoNote } from '../components/ui/Availability';
+import { QUICK_START, SECTIONS, barSummary, canMake, inventoryPersisted, sectionOf, unlocks, useInventory } from '../lib/inventory';
+import { HintLine, InfoNote } from '../components/ui/Availability';
+import { BarHero } from '../components/ui/BarHero';
 import { BarCategoryCard } from '../components/ui/BarRows';
 import { Button } from '../components/ui/Button';
 import { CardRail, CardRailItem } from '../components/ui/CardRail';
@@ -16,12 +17,11 @@ import { BarSheets, useBarNav, useBarRows, type BarRow } from '../components/Bar
 
 export const positionsLabel = (n: number) => `${n} ${plural(n, ['позиция', 'позиции', 'позиций'])}`;
 
-/** «4 позиции · в 23 коктейлях» и превью «Джин, Водка, Laphroaig 10 и ещё 1» для карточки раздела */
+/** «4 позиции» и превью «Джин, Водка, Laphroaig 10 и ещё 1» для карточки раздела */
 function sectionSummary(rows: BarRow[]) {
-  const used = new Set(rows.flatMap((r) => r.used.map((c) => c.id)));
   const names = rows.map((r) => r.title);
   const preview = names.length > 3 ? `${names.slice(0, 3).join(', ')} и ещё ${names.length - 3}` : names.join(', ');
-  return { meta: rows.length ? `${positionsLabel(rows.length)}${used.size ? ` · ${inCocktailsLabel(used.size)}` : ''}` : 'Пока пусто', preview };
+  return { meta: rows.length ? positionsLabel(rows.length) : 'Пока пусто', preview };
 }
 
 /** «Мой бар» v2: итог + два раздела-карточки [WHOOP, GitHub]; списки — на страницах разделов */
@@ -30,8 +30,15 @@ export function BarPage() {
   const rows = useBarRows();
   const { openAdd } = useBarNav();
   const summary = useMemo(() => barSummary(cocktails, inv), [inv]);
-  const isAvailable = (c: Cocktail) => canMake(c, inv);
   const { list: favIds } = useFavorites();
+  // веер героя: что можно приготовить — сначала избранное, затем по каталогу
+  const covers = useMemo(() => {
+    const able = cocktails.filter((c) => canMake(c, inv));
+    return [...able.filter((c) => favIds.includes(c.id)), ...able.filter((c) => !favIds.includes(c.id))].slice(0, 3);
+  }, [inv, favIds]);
+  // «Что докупить ›» — в раздел, где больше советов
+  const buySection = useMemo(() => unlocks(cocktails, inv, 1)[0], [inv]);
+  const isAvailable = (c: Cocktail) => canMake(c, inv);
   const favs = favIds.map((id) => getCocktail(id)).filter((c) => !!c);
   const empty = rows.length === 0;
 
@@ -65,7 +72,13 @@ export function BarPage() {
         />
       ) : (
         <div className="mt-5 px-4">
-          <BarSummary can={summary.can} nearly={summary.nearly} to="/?can=1" />
+          <BarHero
+            can={summary.can}
+            nearly={summary.nearly}
+            covers={covers}
+            to="/?can=1"
+            onBuy={buySection ? () => openAdd(sectionOf(buySection.ref)) : undefined}
+          />
         </div>
       )}
 
@@ -79,9 +92,7 @@ export function BarPage() {
               meta={meta}
               preview={preview}
               placeholder={s.placeholder}
-              accentAdd={!empty && !preview}
               to={`/bar/${s.id}`}
-              onAdd={() => openAdd(s.id)}
             />
           );
         })}

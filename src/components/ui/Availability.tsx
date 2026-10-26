@@ -1,7 +1,6 @@
 import { ChevronRight, type LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router';
-import { countLabel } from '../../lib/cocktails';
 import { cn } from '../../lib/cn';
 
 type AvailabilityProps = { state: 'empty-bar' } | { state: 'all' } | { state: 'missing'; names: string[] };
@@ -36,28 +35,6 @@ export function AvailabilityLine(props: AvailabilityProps) {
         </>
       )}
     </p>
-  );
-}
-
-/**
- * Итог «Моего бара» (язык v2): плитка tile r 24, число Unbounded display, строка «ещё N — без одного»,
- * ссылка-строка «Показать N ›» — не оранжевая CTA: акцент экрана — «Добавить» [Kitchen Stories]
- */
-export function BarSummary({ can, nearly, to }: { can: number; nearly: number; to: string }) {
-  return (
-    <section className="rounded-tile bg-tile p-4" aria-label="Итог бара">
-      <p className="text-subhead text-fg-2">Можно приготовить</p>
-      <p className="mt-1 font-display text-display text-fg tabular-nums">{can}</p>
-      <p className="mt-1 text-footnote text-fg-2">
-        {nearly > 0 ? `ещё ${countLabel(nearly)} — без одного ингредиента` : can > 0 ? 'из того, что есть дома' : 'добавьте 1–2 ингредиента — список появится'}
-      </p>
-      {can > 0 && (
-        <Link to={to} className="pressable -mx-2 mt-2 flex min-h-tap items-center justify-between rounded-control px-2 text-headline text-fg">
-          Показать {countLabel(can)}
-          <ChevronRight className="size-5 text-fg-2" aria-hidden />
-        </Link>
-      )}
-    </section>
   );
 }
 

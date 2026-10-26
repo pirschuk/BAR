@@ -103,6 +103,10 @@
   --text-title-2: 22px;
   --text-title-2--line-height: 28px;
   --text-title-2--font-weight: 700;
+  /* число в герое «Можно приготовить» — font-display */
+  --text-hero: 64px;
+  --text-hero--line-height: 64px;
+  --text-hero--font-weight: 700;
   /* название на карточке каталога — font-display, компактнее headline */
   --text-card: 14px;
   --text-card--line-height: 19px;
@@ -225,6 +229,16 @@
   backdrop-filter: blur(28px) saturate(1.4);
   -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
   mask-image: linear-gradient(to bottom, #000 55%, transparent);
+}
+/* Фирменный фон героя «Можно приготовить»: акцент → чёрный, как обложки уходят в чёрный */
+@utility hero-brand {
+  background:
+    radial-gradient(70% 60% at 85% 20%, rgb(255 255 255 / 0.14), transparent 70%),
+    linear-gradient(160deg, var(--accent), color-mix(in srgb, var(--accent) 45%, var(--bg)) 45%, var(--bg) 100%);
+}
+/* липкое под закреплённым навбаром: safe-area + 8 + кнопки 56 + 8 */
+@utility top-under-nav {
+  top: calc(env(safe-area-inset-top, 0px) + var(--spacing) * 18);
 }
 /* высота подложки навбара: safe-area + кнопки 56 + хвост затухания */
 @utility h-nav-fade {

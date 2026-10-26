@@ -1,7 +1,7 @@
 import { Check, ChevronRight, Plus } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { Link } from 'react-router';
 import { cn } from '../../lib/cn';
-import { IconButton } from './Button';
 
 /**
  * Строка полки «Моего бара» [Alta — бренд крупно, тип подписью]: плитка r 16, название body,
@@ -38,67 +38,62 @@ export function BarItemRow({
   );
 }
 
-/** Пустая подкатегория — «＋ Добавить газировку»: плитка контуром, тап — шторка на этой подкатегории */
-export function AddRow({ label, onClick, pressed }: { label: string; onClick: () => void; pressed?: boolean }) {
-  return (
-    <button
-      type="button"
-      data-pressed={pressed || undefined}
-      onClick={onClick}
-      className="pressable flex min-h-row-l w-full items-center gap-3 rounded-row border border-tile-strong px-4 text-left text-body text-fg-2"
-    >
-      <Plus className="size-5 shrink-0 text-accent" aria-hidden />
-      Добавить {label}
-    </button>
-  );
-}
-
 /**
- * Раздел на главной «Моего бара» [WHOOP, GitHub — My Work]: плитка r 24, Unbounded-заголовок, мета, превью
- * названий (2 строки); вся карточка — переход на страницу раздела, «+» 44 — шторка раздела (не вложены).
+ * Раздел на главной «Моего бара» [WHOOP, GitHub — My Work]: плитка r 24, Unbounded-заголовок, «4 позиции»,
+ * превью названий (2 строки); справа шеврон — вся карточка ведёт внутрь. Добавлять — только на странице раздела.
  */
 export function BarCategoryCard({
   title,
   meta,
   preview,
-  to,
-  onAdd,
   placeholder,
-  accentAdd,
+  to,
   pressed,
 }: {
   title: string;
-  /** «4 позиции · в 23 коктейлях» */
+  /** «4 позиции» / «Пока пусто» */
   meta: string;
-  /** «Джин, Водка, Laphroaig 10 и ещё 1»; пусто — подсказка placeholder */
+  /** «Джин, Водка, Laphroaig 10 и ещё 1»; пусто — placeholder */
   preview?: string;
   /** пустой раздел: «Например: джин, ром, вермут» */
   placeholder: string;
-  /** «+» акцентом — пуст только этот раздел (когда пуст весь бар, акцент у «Быстрого старта») */
-  accentAdd?: boolean;
   to: string;
-  onAdd: () => void;
   pressed?: boolean;
 }) {
   return (
-    <section className="relative flex items-start gap-3 rounded-tile bg-tile p-4" aria-label={title}>
-      <Link to={to} data-pressed={pressed || undefined} className="pressable absolute inset-0 rounded-tile" aria-label={`${title}: ${meta}`} />
-      <div className="pointer-events-none relative min-w-0 flex-1">
-        {/* шеврон — inline за последним словом: при переносе не висит рядом с «+» второй кнопкой */}
-        <h2 className="font-display text-section text-fg">
-          {title}&nbsp;<ChevronRight className="inline size-5 align-[-2px] text-fg-3" aria-hidden />
-        </h2>
-        <p className="mt-1 text-footnote text-fg-2">{meta}</p>
-        <p className={cn('mt-3 line-clamp-2 text-subhead', preview ? 'text-fg' : 'text-fg-2')}>{preview || placeholder}</p>
+    <Link to={to} data-pressed={pressed || undefined} className="pressable flex items-center gap-3 rounded-tile bg-tile p-4">
+      <span className="min-w-0 flex-1">
+        <span className="block font-display text-section text-fg">{title}</span>
+        <span className="mt-1 block text-footnote text-fg-2">{meta}</span>
+        <span className={cn('mt-3 line-clamp-2 block text-subhead', preview ? 'text-fg' : 'text-fg-2')}>{preview || placeholder}</span>
+      </span>
+      <ChevronRight className="size-6 shrink-0 text-fg-2" aria-hidden />
+    </Link>
+  );
+}
+
+/**
+ * «Советуем» в шторке — отдельная плитка над списком [Шаг 13]: заголовок + «откроют новые коктейли»,
+ * строки PickRow с «+N коктейлей». Не смешивается со справочником.
+ */
+export function SuggestCard({ children }: { children: ReactNode }) {
+  return (
+    <section className="mx-4 overflow-hidden rounded-tile bg-tile py-2" aria-label="Советуем">
+      <div className="px-4 pt-2 pb-1">
+        <h3 className="text-headline text-fg">Советуем</h3>
+        <p className="text-footnote text-fg-2">откроют новые коктейли</p>
       </div>
-      <IconButton
-        icon={Plus}
-        label={`Добавить: ${title.toLowerCase()}`}
-        size="l"
-        onClick={onAdd}
-        className={cn('relative', accentAdd ? 'bg-accent! text-accent-fg!' : 'bg-tile-strong!')}
-      />
+      {children}
     </section>
+  );
+}
+
+/** Заголовок группы в длинном списке шторки: липнет под чипсами (top задаёт родитель), фон шторки */
+export function GroupHeader({ id, title, className }: { id?: string; title: string; className?: string }) {
+  return (
+    <h3 id={id} className={cn('z-10 bg-surface px-4 pt-6 pb-2 text-headline text-fg', className)}>
+      {title}
+    </h3>
   );
 }
 
