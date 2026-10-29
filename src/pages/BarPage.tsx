@@ -3,12 +3,12 @@ import { TOPICS, termsOf } from '../lib/glossary';
 import { GuideTile } from '../components/ui/GuideParts';
 import { articlesLabel } from './GuidePage';
 import { useMemo } from 'react';
-import { ChevronRight, CircleHelp, HardDriveDownload, Heart, Sparkles } from 'lucide-react';
+import { ChevronRight, CircleHelp, HardDriveDownload, Heart, Plus } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import type { Cocktail } from '../types/cocktail';
 import { cocktails, getCocktail, plural } from '../lib/cocktails';
 import { useFavorites } from '../lib/favorites';
-import { QUICK_START, SECTIONS, barSummary, canMake, inventoryPersisted, sectionOf, unlocks, useInventory } from '../lib/inventory';
+import { SECTIONS, barSummary, canMake, inventoryPersisted, sectionOf, unlocks, useInventory } from '../lib/inventory';
 import { HintLine, InfoNote } from '../components/ui/Availability';
 import { BarHero } from '../components/ui/BarHero';
 import { BarCategoryCard } from '../components/ui/BarRows';
@@ -26,7 +26,7 @@ const sectionMeta = (rows: BarRow[]) => (rows.length ? positionsLabel(rows.lengt
 
 /** «Мой бар» v2: итог + два раздела-карточки [WHOOP, GitHub]; списки — на страницах разделов */
 export function BarPage() {
-  const { inv, add } = useInventory();
+  const { inv } = useInventory();
   const rows = useBarRows();
   const { openAdd } = useBarNav();
   const navigate = useNavigate();
@@ -63,11 +63,11 @@ export function BarPage() {
       {empty ? (
         <EmptyState
           className="py-8!"
-          title="Соберите бар за минуту"
-          hint="Добавьте, что есть дома, — покажем, что можно приготовить"
+          title="Соберите свой бар"
+          hint="Отметьте, что есть дома, — покажем, что можно приготовить"
           action={
-            <Button icon={Sparkles} onClick={() => add(QUICK_START)}>
-              Быстрый старт: базовый бар
+            <Button icon={Plus} onClick={() => openAdd('alcohol')}>
+              Добавить алкоголь
             </Button>
           }
         />

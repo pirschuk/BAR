@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react';
-import { Sparkles } from 'lucide-react';
+import { ChevronLeft, Wine } from 'lucide-react';
 import { getCocktail } from '../lib/cocktails';
 import type { Cocktail } from '../types/cocktail';
 import { cn } from '../lib/cn';
-import { Button } from './ui/Button';
+import { Button, IconButton } from './ui/Button';
 import { PageDots } from './ui/PageDots';
 import { CocktailCard } from './ui/CocktailCard';
 import { CheckBox } from './ui/Toggles';
@@ -36,17 +36,21 @@ function CardFan() {
   );
 }
 
-const DEMO_ROWS = ['Джин', 'Кампари', 'Красный вермут'];
+const DEMO_ROWS = ['Джин', 'Кампари', 'Красный вермут', 'Лайм', 'Содовая'];
+/** «Можно приготовить» после каждой отметки; шаг — 1 с, круг — заново после паузы */
+const DEMO_CAN = [0, 0, 1, 3, 5, 9];
+const TICK = 1000;
 
-/** Слайд 2 — «Мой бар»: строки отмечаются по очереди, число «Можно приготовить» растёт */
+/** Слайд 2 — «Мой бар»: строки отмечаются по очереди, число «Можно приготовить» растёт; по кругу */
 function BarDemo({ active }: { active: boolean }) {
   const [step, setStep] = useState(0);
   useEffect(() => {
     if (!active) return setStep(0);
-    const t = [1, 2, 3].map((n) => setTimeout(() => setStep(n), 450 + n * 450));
-    return () => t.forEach(clearTimeout);
+    // 0 → 5 отметок, пауза на полном баре, сброс — и снова
+    const t = setInterval(() => setStep((n) => (n >= DEMO_ROWS.length + 1 ? 0 : n + 1)), TICK);
+    return () => clearInterval(t);
   }, [active]);
-  const can = [0, 1, 3, 6][step]!;
+  const can = DEMO_CAN[Math.min(step, DEMO_ROWS.length)]!;
   return (
     <div className="flex w-full max-w-80 flex-col gap-2" inert>
       <div className="hero-brand rounded-sheet p-5 text-on-media">
@@ -80,14 +84,13 @@ const OWN: Cocktail = {
   ],
 };
 
-/** Слайд 3 — своё: авторская карточка в избранном (♡ на ней), плитка азбуки */
+/** Слайд 3 — авторский коктейль и барная азбука */
 function OwnDemo() {
   return (
     <div className="flex w-full max-w-80 items-start gap-3" inert>
       <div className="w-40 shrink-0">
-        <CocktailCard cocktail={OWN} tabIndex={-1} favorite />
+        <CocktailCard cocktail={OWN} tabIndex={-1} />
       </div>
-      {/* ♡ — уже на карточке (избранное), рядом — плитка азбуки */}
       <div className="flex min-w-0 flex-1 flex-col justify-center self-stretch">
         <GuideTile topic="glass" label="Бокалы" count="10 статей" to="/guide" />
       </div>
@@ -100,7 +103,7 @@ type Slide = { title: [string, string]; text: string; visual: (active: boolean) 
 const SLIDES: Slide[] = [
   { title: ['100 коктейлей', 'с рецептами'], text: 'Поиск по названию и ингредиенту, фильтры и «Мне повезёт», когда не знаете, что выбрать.', visual: () => <CardFan /> },
   { title: ['Отметьте,', 'что есть дома'], text: '«Мой бар» покажет, что можно приготовить прямо сейчас и чего не хватает до нового.', visual: (a) => <BarDemo active={a} /> },
-  { title: ['Ваше', 'собственное'], text: 'Собирайте свои коктейли, сохраняйте любимые и разбирайтесь в бокалах и методах в азбуке.', visual: () => <OwnDemo /> },
+  { title: ['Свои коктейли', 'и азбука'], text: 'Собирайте авторские рецепты из того, что есть в баре, а в барной азбуке — разбирайтесь в бокалах, инструментах и методах.', visual: () => <OwnDemo /> },
 ];
 
 type Props = {
@@ -108,15 +111,15 @@ type Props = {
   /** «Пропустить», «Назад», «Понятно» */
   onClose: () => void;
   /** финал: быстрый старт / отмечу сам / каталог; null — без финала (повтор, бар уже не пуст) */
-  onFinish: ((choice: 'quick' | 'bar' | 'catalog') => void) | null;
+  onFinish: ((choice: 'bar' | 'catalog') => void) | null;
   /** для витрины: рисовать в рамке, начать с экрана */
   inline?: boolean;
   startAt?: number;
 };
 
 /**
- * Полноэкранный онбординг [pillowtalk, Google Health]: «Пропустить» сверху, визуал из настоящих компонентов,
- * заголовок Unbounded в два тона (вторая строка — акцент), подпись, точки и «Дальше». Свайп листает
+ * Полноэкранный онбординг [pillowtalk, Google Health]: «Назад» и «Пропустить» сверху, визуал из настоящих компонентов,
+ * заголовок Unbounded в два тона (вторая строка — акцент), подпись, точки и «Далее». Свайп листает вперёд
  * со следованием за пальцем; финальный экран — действие (заполнить бар), а не прощание.
  */
 export function Onboarding({ open, onClose, onFinish, inline, startAt = 0 }: Props) {
@@ -146,12 +149,11 @@ export function Onboarding({ open, onClose, onFinish, inline, startAt = 0 }: Pro
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     }
     // у краёв — сопротивление
-    if (d.on) setDx((index === 0 && mx > 0) || (last && mx < 0) ? mx / 3 : mx);
+    if (d.on) setDx(mx > 0 || last ? mx / 4 : mx); // назад свайпом нельзя — только тянется с сопротивлением
   };
   const onUp = () => {
     if (drag.current?.on) {
       if (dx < -60) go(index + 1);
-      else if (dx > 60) go(index - 1);
     }
     drag.current = null;
     setDx(0);
@@ -160,14 +162,14 @@ export function Onboarding({ open, onClose, onFinish, inline, startAt = 0 }: Pro
   const finalSlide = (
     <div className="flex h-full flex-col items-center justify-center px-6 text-center">
       <span className="flex size-20 items-center justify-center rounded-full bg-tile-strong text-accent">
-        <Sparkles className="size-9" aria-hidden />
+        <Wine className="size-9" aria-hidden />
       </span>
       <h2 className="mt-8 font-display text-display text-fg">
-        Соберите бар
+        Соберите
         <br />
-        <span className="text-accent">за минуту</span>
+        <span className="text-accent">свой бар</span>
       </h2>
-      <p className="mt-4 text-body text-fg-2">Начните с базового набора — потом добавите своё. Или отметьте всё сами.</p>
+      <p className="mt-4 text-body text-fg-2">Отметьте, что есть дома, — и сразу увидите, что можно приготовить.</p>
     </div>
   );
 
@@ -177,12 +179,18 @@ export function Onboarding({ open, onClose, onFinish, inline, startAt = 0 }: Pro
       aria-modal={inline ? undefined : true}
       aria-label="Знакомство с BAR"
       className={cn('flex flex-col overflow-hidden bg-bg text-fg', inline ? 'relative h-[760px]' : 'fixed inset-0 z-[60] mx-auto max-w-app')}
-      onKeyDown={(e) => (e.key === 'ArrowRight' ? go(index + 1) : e.key === 'ArrowLeft' ? go(index - 1) : undefined)}
+      onKeyDown={(e) => (e.key === 'ArrowRight' ? go(index + 1) : undefined)}
     >
       <div className={cn('shrink-0', !inline && 'pt-safe')}>
-        <div className="flex h-nav-btn items-center justify-end px-2">
+        <div className="flex h-nav-btn items-center justify-between px-4">
+          {/* шаг назад — только этой кнопкой (свайп листает вперёд, системное «Назад» закрывает) */}
+          {index > 0 ? (
+            <IconButton icon={ChevronLeft} label="Назад" size="xl" className="bg-tile-strong!" onClick={() => go(index - 1)} />
+          ) : (
+            <span aria-hidden />
+          )}
           {!last && (
-            <Button variant="plain" size="m" className="text-fg-2!" onClick={onClose}>
+            <Button variant="plain" size="m" className="-mr-2 text-fg-2!" onClick={onClose}>
               Пропустить
             </Button>
           )}
@@ -221,11 +229,8 @@ export function Onboarding({ open, onClose, onFinish, inline, startAt = 0 }: Pro
         <PageDots count={total} index={index} className="mb-5" />
         {last && onFinish ? (
           <div className="flex flex-col gap-2">
-            <Button icon={Sparkles} className="w-full" onClick={() => onFinish('quick')}>
-              Быстрый старт: базовый бар
-            </Button>
-            <Button variant="secondary" className="w-full" onClick={() => onFinish('bar')}>
-              Отмечу сам
+            <Button className="w-full" onClick={() => onFinish('bar')}>
+              Собрать бар
             </Button>
             <Button variant="plain" className="w-full text-fg-2!" onClick={() => onFinish('catalog')}>
               Сначала посмотрю каталог
@@ -233,7 +238,7 @@ export function Onboarding({ open, onClose, onFinish, inline, startAt = 0 }: Pro
           </div>
         ) : (
           <Button className="w-full" onClick={next}>
-            {last ? 'Понятно' : 'Дальше'}
+            {last ? 'Понятно' : 'Далее'}
           </Button>
         )}
       </div>

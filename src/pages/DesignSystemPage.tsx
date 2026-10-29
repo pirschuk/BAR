@@ -656,9 +656,9 @@ export function DesignSystemPage() {
             className="mx-4 rounded-card bg-tile"
           />
           <EmptyState
-            title="Соберите бар за минуту"
-            hint="Добавьте, что есть дома, — покажем, что можно приготовить"
-            action={<Button>Быстрый старт: базовый бар</Button>}
+            title="Соберите свой бар"
+            hint="Отметьте, что есть дома, — покажем, что можно приготовить"
+            action={<Button icon={Plus}>Добавить алкоголь</Button>}
             className="mx-4 rounded-card bg-tile"
           />
         </div>
@@ -1033,16 +1033,11 @@ export function DesignSystemPage() {
               />
             </div>
           </State>
-          <State label="Пустой бар — EmptyState без иконки, два действия" inset>
+          <State label="Пустой бар — EmptyState без иконки, одно действие: собрать самому" inset>
             <EmptyState
-              title="Соберите бар за минуту"
-              hint="Отметьте, что есть дома — покажем, что можно приготовить"
-              action={
-                <div className="flex flex-col items-stretch gap-2">
-                  <Button icon={Plus}>Добавить</Button>
-                  <Button variant="plain" size="m">Быстрый старт: базовый бар</Button>
-                </div>
-              }
+              title="Соберите свой бар"
+              hint="Отметьте, что есть дома, — покажем, что можно приготовить"
+              action={<Button icon={Plus}>Добавить алкоголь</Button>}
             />
           </State>
           <State label="Toast · убрано, над таб-баром" inset>

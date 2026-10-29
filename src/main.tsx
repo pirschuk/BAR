@@ -15,7 +15,7 @@ import { cocktails, countLabel } from './lib/cocktails';
 import { useCustomCocktails } from './lib/custom';
 import { useFavorites } from './lib/favorites';
 import { applyFilters, hasFacetFilters, parseFilters } from './lib/filters';
-import { QUICK_START, canMake, useInventory } from './lib/inventory';
+import { canMake, useInventory } from './lib/inventory';
 import { ONBOARDING_HASH, markOnboarded, shouldOnboard } from './lib/onboarding';
 import { Onboarding } from './components/Onboarding';
 import { OnboardingPreviewPage } from './pages/OnboardingPreviewPage';
@@ -36,7 +36,7 @@ const TAB_ROOTS = new Set(['/', '/bar']);
 function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { inv, add } = useInventory();
+  const { inv } = useInventory();
   const { list: favList } = useFavorites();
   const { list: myList } = useCustomCocktails();
   const onRoot = TAB_ROOTS.has(location.pathname);
@@ -66,10 +66,12 @@ function Layout() {
     if ((location.state as { sheet?: boolean } | null)?.sheet) navigate(-1);
     else navigate({ pathname: location.pathname, search: location.search, hash: '' }, { replace: true, preventScrollReset: true });
   };
-  const finishIntro = (choice: 'quick' | 'bar' | 'catalog') => {
+  const finishIntro = (choice: 'bar' | 'catalog') => {
     markOnboarded();
-    if (choice === 'quick') add(QUICK_START);
-    navigate(choice === 'catalog' ? '/' : '/bar', { replace: true });
+    if (choice === 'catalog') return navigate('/', { replace: true });
+    // «Собрать бар» — «Мой бар» и сразу шторка добавления алкоголя («Назад» её закрывает)
+    navigate('/bar', { replace: true });
+    navigate({ pathname: '/bar', hash: '#add-alcohol' }, { state: { sheet: true } });
   };
 
   const isLucky = onRoot && location.hash === '#lucky';

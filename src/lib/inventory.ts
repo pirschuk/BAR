@@ -36,8 +36,6 @@ export function barItems(group: IngredientGroup): IngredientDef[] {
     .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
 }
 
-export const QUICK_START = ['gin', 'white-rum', 'vodka', 'lime', 'lemon', 'simple-syrup', 'soda'];
-
 // --- Наличие ---
 
 export type Inventory = ReadonlySet<string>;

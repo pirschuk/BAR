@@ -4,9 +4,8 @@ import { RotateCcw } from 'lucide-react';
 import { Onboarding } from '../components/Onboarding';
 import { Button, buttonClass } from '../components/ui/Button';
 
-const CHOICE: Record<'quick' | 'bar' | 'catalog' | 'skip', string> = {
-  quick: '«Быстрый старт» — добавил бы базовый бар и открыл «Мой бар»',
-  bar: '«Отмечу сам» — открыл бы «Мой бар»',
+const CHOICE: Record<'bar' | 'catalog' | 'skip', string> = {
+  bar: '«Собрать бар» — открыл бы «Мой бар» со шторкой добавления',
   catalog: '«Сначала посмотрю каталог» — открыл бы каталог',
   skip: '«Пропустить» — открыл бы приложение',
 };
