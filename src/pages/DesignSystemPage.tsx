@@ -44,6 +44,7 @@ import { COVERS } from '../lib/custom';
 import { detectPlatform, platformOverride, setPlatformOverride, type Platform } from '../lib/motion';
 import { InstallPage } from './InstallPage';
 import { DrinkArt, type DrinkStyle } from '../components/ui/DrinkArt';
+import { DrinkArtReal } from '../components/ui/DrinkArtReal';
 import { GlassGuideTile, GuideRow, GuideTile, TermArt } from '../components/ui/GuideParts';
 import { TermSheet } from '../components/TermSheet';
 import { TERMS, TOPICS, getTerm, glassMl, termsOf } from '../lib/glossary';
@@ -82,7 +83,7 @@ function State({ label, children, className, inset }: { label: string; children:
 
 // --- прототип картинок напитков: два стиля на одних и тех же коктейлях ---
 
-const ART_SET = ['negroni', 'mojito', 'pina-colada', 'aviation', 'pisco-sour', 'french-75', 'white-russian', 'aperol-spritz'];
+const ART_SET = ['negroni', 'mojito', 'pina-colada', 'aviation', 'pisco-sour', 'french-75', 'white-russian', 'aperol-spritz', 'dry-martini', 'tom-collins', 'moscow-mule', 'irish-coffee', 'bramble'];
 
 /** авторский пример: никто его не рисовал — картинка из состава */
 const customDemo = (): Cocktail => ({
@@ -102,15 +103,21 @@ const customDemo = (): Cocktail => ({
 });
 
 function DrinkArtShowcase() {
-  const [style, setStyle] = useState<DrinkStyle>('layers');
+  const [style, setStyle] = useState<DrinkStyle | 'real'>('real');
   const cards = [...ART_SET.map(must), customDemo()];
-  const art = (c: Cocktail) => <DrinkArt cocktail={c} style={style} className="absolute inset-x-0 top-7 mx-auto h-[58%]" />;
+  const art = (c: Cocktail) =>
+    style === 'real' ? (
+      <DrinkArtReal cocktail={c} className="absolute inset-x-0 top-6 mx-auto h-[60%]" />
+    ) : (
+      <DrinkArt cocktail={c} style={style} className="absolute inset-x-0 top-7 mx-auto h-[58%]" />
+    );
   return (
     <div className="flex flex-col gap-6">
       <div className="px-4">
         <SegmentedControl
           label="Стиль картинок"
           options={[
+            { value: 'real', label: 'Детально' },
             { value: 'layers', label: 'Слоями' },
             { value: 'aura', label: 'Аура' },
             { value: 'mix', label: 'Смесь' },
@@ -132,7 +139,11 @@ function DrinkArtShowcase() {
         <div className="mx-4 grid grid-cols-2 gap-3">
           {(['negroni', 'mojito'] as const).map((id) => (
             <div key={id} className="cover-gradient relative h-64 overflow-hidden rounded-tile" style={coverStyle(must(id))}>
-              <DrinkArt cocktail={must(id)} style={style} className="absolute inset-0 m-auto h-[80%]" />
+              {style === 'real' ? (
+                <DrinkArtReal cocktail={must(id)} className="absolute inset-0 m-auto h-[80%]" />
+              ) : (
+                <DrinkArt cocktail={must(id)} style={style} className="absolute inset-0 m-auto h-[80%]" />
+              )}
             </div>
           ))}
         </div>
