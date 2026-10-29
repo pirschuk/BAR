@@ -130,10 +130,10 @@ function GuideShowcase() {
   const t = (kind: Parameters<typeof getTerm>[0], id: string) => getTerm(kind, id)!;
   return (
     <div className="flex flex-col gap-6">
-      <State label="GuideTile · главная азбуки — с подсказкой" inset>
+      <State label="GuideTile · главная азбуки" inset>
         <div className="grid grid-cols-2 gap-3 px-4">
-          <GuideTile topic="glass" label="Бокалы" count="10 статей" hint="Рокс, Хайбол, Коллинз…" to="/guide" />
-          <GuideTile topic="tool" label="Инструменты" count="9 статей" hint="Джиггер, Шейкер, Барная ложка…" to="/guide" pressed />
+          <GuideTile topic="glass" label="Бокалы" count="10 статей" to="/guide" />
+          <GuideTile topic="tool" label="Инструменты" count="9 статей" to="/guide" pressed />
         </div>
       </State>
       <State label="GuideTile · лента в «Моём баре» · default / pressed">
@@ -946,9 +946,9 @@ export function DesignSystemPage() {
           </State>
           <State label="BarCategoryCard · заполнен / пуст / pressed" inset>
             <div className="flex flex-col gap-3 px-4">
-              <BarCategoryCard title="Алкоголь" meta="4 позиции" preview="Джин, Водка, Laphroaig 10 и ещё 1" to="/bar/alcohol" placeholder="Например: джин, ром, вермут" />
-              <BarCategoryCard title="Миксеры и прочее" meta="Пока пусто" to="/bar/mixers" placeholder="Например: лайм, сироп, тоник" />
-              <BarCategoryCard title="Миксеры и прочее" meta="6 позиций" preview="Лайм, Лимон, Мята и ещё 3" to="/bar/mixers" placeholder="Например: лайм, сироп, тоник" pressed />
+              <BarCategoryCard title="Алкоголь" meta="4 позиции" to="/bar/alcohol" />
+              <BarCategoryCard title="Миксеры и прочее" meta="Пока пусто" to="/bar/mixers" />
+              <BarCategoryCard title="Миксеры и прочее" meta="6 позиций" to="/bar/mixers" pressed />
             </div>
           </State>
           <State label="TypeNav · чипсы-якоря со счётчиком (активный) · тип со счётчиком без «+»" inset>
@@ -1068,7 +1068,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="guide" title="Барная азбука" note="Лента тем в «Моём баре» (GuideTile 160 в CardRail) ведёт на страницу темы /guide/<тема>; главная азбуки /guide — плитки тем сеткой 2 колонки с подсказкой. На странице темы бокалы — сеткой силуэтов (GlassGuideTile), остальное строками [Noom] (GuideRow: название, что это, картинка 56 справа, «· есть дома»). Картинки: бокал — GlassIllustration, инструмент и лёд — ToolIllustration в том же линейном стиле, метод и мера — иконка на круге. Статья — шторка TermSheet [Blue Apron]; плитки «Метод / Бокал / Лёд» рецепта с ⓘ открывают её же.">
+      <Section id="guide" title="Барная азбука" note="Лента тем в «Моём баре» (GuideTile 160 в CardRail) ведёт на страницу темы /guide/<тема>; главная азбуки /guide — плитки тем сеткой 2 колонки (без перечисления содержимого). На странице темы бокалы — сеткой силуэтов (GlassGuideTile), остальное строками [Noom] (GuideRow: название, что это, картинка 56 справа, «· есть дома»). Картинки: бокал — GlassIllustration, инструмент и лёд — ToolIllustration в том же линейном стиле, метод и мера — иконка на круге. Статья — шторка TermSheet [Blue Apron]; плитки «Метод / Бокал / Лёд» рецепта с ⓘ открывают её же.">
         <GuideShowcase />
       </Section>
 

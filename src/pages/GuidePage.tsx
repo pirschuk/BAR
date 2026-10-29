@@ -49,7 +49,6 @@ export function GuidePage() {
                 topic={t.id}
                 label={t.label}
                 count={articlesLabel(items.length)}
-                hint={`${items.slice(0, 3).map((x) => x.name).join(', ')}…`}
                 to={`/guide/${t.id}`}
               />
             </li>

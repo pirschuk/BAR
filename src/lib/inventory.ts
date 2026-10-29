@@ -88,9 +88,9 @@ export const SUBS: Sub[] = [
   { id: 'tools', section: 'mixers', label: 'Инструменты', addLabel: 'инструмент' },
 ];
 
-export const SECTIONS: { id: SectionKey; label: string; addLabel: string; placeholder: string }[] = [
-  { id: 'alcohol', label: 'Алкоголь', addLabel: 'алкоголь', placeholder: 'Например: джин, ром, вермут' },
-  { id: 'mixers', label: 'Миксеры и прочее', addLabel: 'миксеры', placeholder: 'Например: лайм, сироп, тоник' },
+export const SECTIONS: { id: SectionKey; label: string; addLabel: string }[] = [
+  { id: 'alcohol', label: 'Алкоголь', addLabel: 'алкоголь' },
+  { id: 'mixers', label: 'Миксеры и прочее', addLabel: 'миксеры' },
 ];
 
 export function isSectionKey(v: string | undefined): v is SectionKey {

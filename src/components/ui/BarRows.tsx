@@ -46,18 +46,12 @@ export function BarItemRow({
 export function BarCategoryCard({
   title,
   meta,
-  preview,
-  placeholder,
   to,
   pressed,
 }: {
   title: string;
-  /** «4 позиции» / «Пока пусто» */
+  /** «4 позиции» / «Пока пусто» — содержимое не перечисляем: заголовка и числа достаточно */
   meta: string;
-  /** «Джин, Водка, Laphroaig 10 и ещё 1»; пусто — placeholder */
-  preview?: string;
-  /** пустой раздел: «Например: джин, ром, вермут» */
-  placeholder: string;
   to: string;
   pressed?: boolean;
 }) {
@@ -66,7 +60,6 @@ export function BarCategoryCard({
       <span className="min-w-0 flex-1">
         <span className="block font-display text-section text-fg">{title}</span>
         <span className="mt-1 block text-footnote text-fg-2">{meta}</span>
-        <span className={cn('mt-3 line-clamp-2 block text-subhead', preview ? 'text-fg' : 'text-fg-2')}>{preview || placeholder}</span>
       </span>
       <ChevronRight className="size-6 shrink-0 text-fg-2" aria-hidden />
     </Link>

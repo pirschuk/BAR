@@ -21,11 +21,7 @@ import { BarSheets, useBarNav, useBarRows, type BarRow } from '../components/Bar
 export const positionsLabel = (n: number) => `${n} ${plural(n, ['позиция', 'позиции', 'позиций'])}`;
 
 /** «4 позиции» и превью «Джин, Водка, Laphroaig 10 и ещё 1» для карточки раздела */
-function sectionSummary(rows: BarRow[]) {
-  const names = rows.map((r) => r.title);
-  const preview = names.length > 3 ? `${names.slice(0, 3).join(', ')} и ещё ${names.length - 3}` : names.join(', ');
-  return { meta: rows.length ? positionsLabel(rows.length) : 'Пока пусто', preview };
-}
+const sectionMeta = (rows: BarRow[]) => (rows.length ? positionsLabel(rows.length) : 'Пока пусто');
 
 /** «Мой бар» v2: итог + два раздела-карточки [WHOOP, GitHub]; списки — на страницах разделов */
 export function BarPage() {
@@ -87,17 +83,7 @@ export function BarPage() {
 
       <div className={`${empty ? '' : 'mt-3'} flex flex-col gap-3 px-4`}>
         {SECTIONS.map((s) => {
-          const { meta, preview } = sectionSummary(rows.filter((r) => r.section === s.id));
-          return (
-            <BarCategoryCard
-              key={s.id}
-              title={s.label}
-              meta={meta}
-              preview={preview}
-              placeholder={s.placeholder}
-              to={`/bar/${s.id}`}
-            />
-          );
+          return <BarCategoryCard key={s.id} title={s.label} meta={sectionMeta(rows.filter((r) => r.section === s.id))} to={`/bar/${s.id}`} />;
         })}
       </div>
 
