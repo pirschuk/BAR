@@ -43,6 +43,7 @@ import { IngredientPickSheet } from '../components/IngredientPickSheet';
 import { COVERS } from '../lib/custom';
 import { detectPlatform, platformOverride, setPlatformOverride, type Platform } from '../lib/motion';
 import { InstallPage } from './InstallPage';
+import { DrinkArt, type DrinkStyle, type GarnishKind } from '../components/ui/DrinkArt';
 import { GlassGuideTile, GuideRow, GuideTile, TermArt } from '../components/ui/GuideParts';
 import { TermSheet } from '../components/TermSheet';
 import { TERMS, TOPICS, getTerm, glassMl, termsOf } from '../lib/glossary';
@@ -75,6 +76,84 @@ function State({ label, children, className, inset }: { label: string; children:
     <div className={className}>
       <p className={`mb-2 text-caption text-fg-3 uppercase ${inset ? 'px-4' : ''}`}>{label}</p>
       {children}
+    </div>
+  );
+}
+
+// --- прототип картинок напитков: два стиля на одних и тех же коктейлях ---
+
+const ART_SET: [string, GarnishKind][] = [
+  ['negroni', 'orange-twist'],
+  ['mojito', 'mint'],
+  ['pina-colada', 'pineapple'],
+  ['aviation', 'cherry'],
+  ['pisco-sour', 'bitters-drops'],
+  ['french-75', 'lemon-twist'],
+  ['white-russian', 'none'],
+  ['aperol-spritz', 'orange-wheel'],
+];
+
+/** авторский пример: никто его не рисовал — картинка из состава */
+const customDemo = (): Cocktail => ({
+  ...must('negroni'),
+  id: 'my-demo',
+  name: 'Мой: Кампари-тоник',
+  glass: 'highball',
+  ice: 'cubes',
+  method: 'build',
+  custom: true,
+  ingredients: [
+    { ref: 'campari', name: 'Кампари', amountMl: 40, category: 'bitter' },
+    { ref: 'lime', name: 'Сок лайма', amountMl: 10, category: 'juice' },
+    { ref: 'soda', name: 'Содовая', unit: 'top', category: 'soda' },
+  ],
+  cover: { from: '#E2343F', to: '#4A0A14' },
+});
+
+function DrinkArtShowcase() {
+  const [style, setStyle] = useState<DrinkStyle>('flat');
+  const cards = [...ART_SET.map(([id, g]) => [must(id), g] as const), [customDemo(), 'lime-wedge'] as const];
+  const art = (c: Cocktail, g: GarnishKind) => <DrinkArt cocktail={c} garnish={g} style={style} className="absolute inset-x-0 top-7 mx-auto h-[58%]" />;
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="px-4">
+        <SegmentedControl
+          label="Стиль картинок"
+          options={[
+            { value: 'flat', label: 'Плоский' },
+            { value: 'soft', label: 'Мягкое стекло' },
+          ]}
+          value={style}
+          onChange={setStyle}
+        />
+      </div>
+      <State label="Карточки каталога · 8 классик + авторский (последний)" inset>
+        <ul className="grid grid-cols-2 gap-3 px-4">
+          {cards.map(([c, g]) => (
+            <li key={c.id}>
+              <CocktailCard cocktail={c} art={art(c, g)} />
+            </li>
+          ))}
+        </ul>
+      </State>
+      <State label="Обложка рецепта · крупно" inset>
+        <div className="mx-4 grid grid-cols-2 gap-3">
+          {(['negroni', 'mojito'] as const).map((id) => (
+            <div key={id} className="cover-gradient relative h-64 overflow-hidden rounded-tile" style={coverStyle(must(id))}>
+              <DrinkArt cocktail={must(id)} garnish={id === 'negroni' ? 'orange-twist' : 'mint'} style={style} className="absolute inset-0 m-auto h-[80%]" />
+            </div>
+          ))}
+        </div>
+      </State>
+      <State label="Было · силуэт без напитка" inset>
+        <ul className="grid grid-cols-2 gap-3 px-4">
+          {[must('negroni'), must('mojito')].map((c) => (
+            <li key={c.id}>
+              <CocktailCard cocktail={c} />
+            </li>
+          ))}
+        </ul>
+      </State>
     </div>
   );
 }
@@ -760,6 +839,10 @@ export function DesignSystemPage() {
             </figure>
           ))}
         </div>
+      </Section>
+
+      <Section id="drink-art" title="Картинки напитков — прототип" note="Картинка собирается из данных рецепта: бокал, цвет напитка (смесь цветов ингредиентов по объёму), лёд по полю ice, пена у белка, пузырьки у газировки и игристого, сливки сверху, украшение на краю бокала. Раскладка льда и пузырьков, наклон украшения — по id коктейля. Авторский коктейль получает картинку сам. Два стиля на выбор.">
+        <DrinkArtShowcase />
       </Section>
 
       <Section id="card" title="CocktailCard" note="3:4, 173×231, r 24. Название — Unbounded; под ним бокал и «· всё есть» зелёным, если всё есть дома. Правый верхний угол — только ♥ избранного, без подложки. Плашка — крепость словом.">

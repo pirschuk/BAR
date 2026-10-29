@@ -12,7 +12,7 @@ type GlassGeometry = { body: string; liquidTop: number; extra?: string };
 
 const STEM = 'M40 148 Q60 140 80 148';
 
-const GEOMETRY: Record<Glass, GlassGeometry> = {
+export const GEOMETRY: Record<Glass, GlassGeometry> = {
   // низкий широкий стакан с толстым дном
   rocks: {
     body: 'M28 80 L32 142 Q32 148 38 148 L82 148 Q88 148 88 142 L92 80 Z',

@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { Link } from 'react-router';
 import { Heart } from 'lucide-react';
 import type { Cocktail } from '../../types/cocktail';
@@ -26,10 +26,12 @@ type Props = {
   replace?: boolean;
   /** -1 — не в порядке табуляции (кадры барабана) */
   tabIndex?: number;
+  /** прототип картинки напитка (витрина) — вместо силуэта бокала */
+  art?: ReactNode;
 };
 
 /** Карточка каталога 3:4: градиент напитка, силуэт бокала, плашка крепости (словом), название и бокал поверх скрима */
-export function CocktailCard({ cocktail, pressed, className, available, favorite, compact, large, replace, tabIndex }: Props) {
+export function CocktailCard({ cocktail, pressed, className, available, favorite, compact, large, replace, tabIndex, art }: Props) {
   const to = `/cocktail/${cocktail.id}`;
   // обычный переход вглубь, как у всех страниц; из шторки «Мне повезёт» (replace) — без перехода
   return (
@@ -43,7 +45,7 @@ export function CocktailCard({ cocktail, pressed, className, available, favorite
       style={{ ...coverStyle(cocktail), '--vt': `card-${cocktail.id}` } as CSSProperties}
     >
       {/* compact (лента 140): бокал ниже ростом — двухстрочное название не наезжает */}
-      <GlassIllustration shape={cocktail.glass} className={cn('absolute inset-x-0 mx-auto', compact ? 'top-5 h-2/5' : 'top-9 h-1/2')} />
+      {art ?? <GlassIllustration shape={cocktail.glass} className={cn('absolute inset-x-0 mx-auto', compact ? 'top-5 h-2/5' : 'top-9 h-1/2')} />}
       <span className="scrim-bottom absolute inset-0" aria-hidden />
       {/* крепость — словом, как в фильтре «Крепость»; бокал — под названием */}
       {!compact && (
