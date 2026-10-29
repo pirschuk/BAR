@@ -68,14 +68,18 @@ const TOPIC_ART: Record<TermKind, Pick<Term, 'kind' | 'id'>> = {
   measure: { kind: 'measure', id: 'measure-dash' },
 };
 
-/** Плитка темы в ленте «Барная азбука» (CardRail, 160): картинка, название, число статей; ведёт к разделу */
-export function GuideTile({ topic, label, count, to, pressed }: { topic: TermKind; label: string; count: number; to: string; pressed?: boolean }) {
+/**
+ * Плитка темы: картинка, название, число статей; hint — первые статьи темы («Рокс, Хайбол, Коллинз…»).
+ * В ленте «Моего бара» — 160 высотой без подсказки, на главной азбуки — в сетке 2 колонки, с подсказкой.
+ */
+export function GuideTile({ topic, label, count, to, hint, pressed }: { topic: TermKind; label: string; count: string; to: string; hint?: string; pressed?: boolean }) {
   return (
-    <Link to={to} viewTransition data-pressed={pressed || undefined} className="pressable-scale flex h-40 flex-col justify-between rounded-tile bg-tile p-4">
+    <Link to={to} viewTransition data-pressed={pressed || undefined} className="pressable-scale flex h-full min-h-40 flex-col justify-between gap-3 rounded-tile bg-tile p-4">
       <TermArt term={TOPIC_ART[topic]} />
       <span>
         <span className="block text-headline text-fg">{label}</span>
         <span className="block text-footnote text-fg-2 tabular-nums">{count}</span>
+        {hint && <span className="mt-1 line-clamp-2 block text-footnote text-fg-3">{hint}</span>}
       </span>
     </Link>
   );

@@ -130,11 +130,17 @@ function GuideShowcase() {
   const t = (kind: Parameters<typeof getTerm>[0], id: string) => getTerm(kind, id)!;
   return (
     <div className="flex flex-col gap-6">
-      <State label="GuideTile · default / pressed">
+      <State label="GuideTile · главная азбуки — с подсказкой" inset>
+        <div className="grid grid-cols-2 gap-3 px-4">
+          <GuideTile topic="glass" label="Бокалы" count="10 статей" hint="Рокс, Хайбол, Коллинз…" to="/guide" />
+          <GuideTile topic="tool" label="Инструменты" count="9 статей" hint="Джиггер, Шейкер, Барная ложка…" to="/guide" pressed />
+        </div>
+      </State>
+      <State label="GuideTile · лента в «Моём баре» · default / pressed">
         <CardRail label="Темы азбуки">
           {TOPICS.map((x, i) => (
             <CardRailItem key={x.id}>
-              <GuideTile topic={x.id} label={x.label} count={termsOf(x.id).length} to="/guide" pressed={i === 1} />
+              <GuideTile topic={x.id} label={x.label} count={`${termsOf(x.id).length} статей`} to="/guide" pressed={i === 1} />
             </CardRailItem>
           ))}
         </CardRail>
@@ -1062,7 +1068,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="guide" title="Барная азбука" note="Лента тем в «Моём баре» (GuideTile 160 в CardRail) → /guide: бокалы сеткой силуэтов (GlassGuideTile), остальное строками [Noom] (GuideRow: название, что это, картинка 56 справа, «· есть дома»). Картинки: бокал — GlassIllustration, инструмент и лёд — ToolIllustration в том же линейном стиле, метод и мера — иконка на круге. Статья — шторка TermSheet [Blue Apron]; плитки «Метод / Бокал / Лёд» рецепта с ⓘ открывают её же.">
+      <Section id="guide" title="Барная азбука" note="Лента тем в «Моём баре» (GuideTile 160 в CardRail) ведёт на страницу темы /guide/<тема>; главная азбуки /guide — плитки тем сеткой 2 колонки с подсказкой. На странице темы бокалы — сеткой силуэтов (GlassGuideTile), остальное строками [Noom] (GuideRow: название, что это, картинка 56 справа, «· есть дома»). Картинки: бокал — GlassIllustration, инструмент и лёд — ToolIllustration в том же линейном стиле, метод и мера — иконка на круге. Статья — шторка TermSheet [Blue Apron]; плитки «Метод / Бокал / Лёд» рецепта с ⓘ открывают её же.">
         <GuideShowcase />
       </Section>
 

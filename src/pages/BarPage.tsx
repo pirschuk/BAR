@@ -1,5 +1,6 @@
 import { TOPICS, termsOf } from '../lib/glossary';
 import { GuideTile } from '../components/ui/GuideParts';
+import { articlesLabel } from './GuidePage';
 import { useMemo } from 'react';
 import { ChevronRight, HardDriveDownload, Heart, Sparkles } from 'lucide-react';
 import { Link } from 'react-router';
@@ -141,7 +142,7 @@ export function BarPage() {
         <CardRail label="Темы азбуки" className="mt-2">
           {TOPICS.map((t) => (
             <CardRailItem key={t.id}>
-              <GuideTile topic={t.id} label={t.label} count={termsOf(t.id).length} to={`/guide?topic=${t.id}`} />
+              <GuideTile topic={t.id} label={t.label} count={articlesLabel(termsOf(t.id).length)} to={`/guide/${t.id}`} />
             </CardRailItem>
           ))}
         </CardRail>
