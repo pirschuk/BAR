@@ -11,9 +11,13 @@ function normalizeBase(value: string | undefined): string {
   return `/${value.replace(/^\/+|\/+$/g, '')}/`;
 }
 
+// Абсолютный адрес картинки превью: Vercel отдаёт домен продакшена в VERCEL_PROJECT_PRODUCTION_URL при сборке
+const ogOrigin = process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : base.replace(/\/$/, '');
+
 export default defineConfig({
   base,
   plugins: [
+    { name: 'og-origin', transformIndexHtml: (html) => html.replaceAll('%OG_ORIGIN%', ogOrigin) },
     react(),
     tailwindcss(),
     VitePWA({
@@ -43,7 +47,7 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,json,woff2}'],
         // заставки iPhone нужны только при запуске с экрана «Домой» — браузер берёт их сам, в кэш не кладём
-        globIgnores: ['**/splash/**'],
+        globIgnores: ['**/splash/**', 'og.png'],
         // офлайн-навигация по любому роуту SPA внутри base
         navigateFallback: `${base}index.html`,
       },
