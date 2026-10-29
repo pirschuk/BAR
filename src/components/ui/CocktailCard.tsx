@@ -1,10 +1,10 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties } from 'react';
 import { Link } from 'react-router';
 import { Heart } from 'lucide-react';
 import type { Cocktail } from '../../types/cocktail';
 import { glassLabel, strengthLabel } from '../../lib/cocktails';
 import { cn } from '../../lib/cn';
-import { GlassIllustration } from './GlassIllustration';
+import { DrinkArtReal } from './DrinkArtReal';
 
 export function coverStyle(cocktail: Pick<Cocktail, 'cover'>): CSSProperties {
   return { '--cover-from': cocktail.cover.from, '--cover-to': cocktail.cover.to } as CSSProperties;
@@ -26,12 +26,10 @@ type Props = {
   replace?: boolean;
   /** -1 — не в порядке табуляции (кадры барабана) */
   tabIndex?: number;
-  /** прототип картинки напитка (витрина) — вместо силуэта бокала */
-  art?: ReactNode;
 };
 
 /** Карточка каталога 3:4: градиент напитка, силуэт бокала, плашка крепости (словом), название и бокал поверх скрима */
-export function CocktailCard({ cocktail, pressed, className, available, favorite, compact, large, replace, tabIndex, art }: Props) {
+export function CocktailCard({ cocktail, pressed, className, available, favorite, compact, large, replace, tabIndex }: Props) {
   const to = `/cocktail/${cocktail.id}`;
   // обычный переход вглубь, как у всех страниц; из шторки «Мне повезёт» (replace) — без перехода
   return (
@@ -45,7 +43,8 @@ export function CocktailCard({ cocktail, pressed, className, available, favorite
       style={{ ...coverStyle(cocktail), '--vt': `card-${cocktail.id}` } as CSSProperties}
     >
       {/* compact (лента 140): бокал ниже ростом — двухстрочное название не наезжает */}
-      {art ?? <GlassIllustration shape={cocktail.glass} className={cn('absolute inset-x-0 mx-auto', compact ? 'top-5 h-2/5' : 'top-9 h-1/2')} />}
+      {/* картинка напитка из состава: бокал, цвет, лёд, пена, пузырьки — и у авторских тоже */}
+      <DrinkArtReal cocktail={cocktail} className={cn('absolute inset-x-0 mx-auto', compact ? 'top-4 h-[46%]' : large ? 'top-8 h-[60%]' : 'top-5 h-[58%]')} />
       <span className="scrim-bottom absolute inset-0" aria-hidden />
       {/* крепость — словом, как в фильтре «Крепость»; бокал — под названием */}
       {!compact && (

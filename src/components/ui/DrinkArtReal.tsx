@@ -1,7 +1,7 @@
 import { useId, type ReactNode } from 'react';
 import type { Cocktail, Glass } from '../../types/cocktail';
 import { cn } from '../../lib/cn';
-import { drinkColor } from './DrinkArt';
+import { drinkColor, mixColor as mix } from '../../lib/drinkLook';
 
 // ============================================================================================
 // ПРОТОТИП (только витрина): «реалистичная» картинка напитка из состава рецепта.
@@ -93,10 +93,6 @@ function rng(seed: string) {
   };
 }
 
-const hex = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
-const toHex = (rgb: number[]) => '#' + rgb.map((v) => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join('');
-const mix = (a: string, b: string, t: number) => toHex(hex(a).map((v, i) => v + (hex(b)[i]! - v) * t));
-
 /** Объёмный кубик льда в изометрии: верх светлее, боковые грани прозрачнее, тонкие светлые рёбра */
 function Cube({ x, y, s, rot, tint }: { x: number; y: number; s: number; rot: number; tint: string }) {
   const w = s * 0.5;
@@ -136,7 +132,7 @@ export function DrinkArtReal({ cocktail, className }: Props) {
   const frozen = cocktail.method === 'blend';
   const creamFloat = refs.has('cream') && cocktail.method === 'build';
   const { color, opacity } = drinkColor(cocktail);
-  const liquidOpacity = frozen ? 0.96 : Math.max(0.55, opacity);
+  const liquidOpacity = frozen ? 0.96 : opacity;
 
   const bowl = dense(pr.bowl);
   const top = bowl[0]!;
@@ -268,14 +264,20 @@ export function DrinkArtReal({ cocktail, className }: Props) {
           <stop offset="0.6" stopColor="#b8642f" />
           <stop offset="1" stopColor="#5a2610" />
         </linearGradient>
-        <filter id={id('blur')} x="-100%" y="-100%" width="300%" height="300%">
-          <feGaussianBlur stdDeviation="5" />
-        </filter>
+        {/* тень и отсвет — радиальные градиенты, не размытие: сотня карточек не тормозит на телефоне */}
+        <radialGradient id={id('shadow')}>
+          <stop offset="0" stopColor="black" stopOpacity="0.55" />
+          <stop offset="1" stopColor="black" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id={id('glow')}>
+          <stop offset="0" stopColor={color} stopOpacity="0.45" />
+          <stop offset="1" stopColor={color} stopOpacity="0" />
+        </radialGradient>
       </defs>
 
       {/* стол: тень и цветной отсвет напитка */}
-      <ellipse cx={CX} cy={groundY + 1} rx={groundW * 1.15} ry={groundW * E * 1.4} fill="black" opacity="0.5" filter={url('blur')} />
-      {!pr.metal && <ellipse cx={CX + 6} cy={groundY + 2} rx={groundW * 1.3} ry={groundW * E * 1.8} fill={color} opacity="0.35" filter={url('blur')} />}
+      <ellipse cx={CX} cy={groundY + 1} rx={groundW * 1.5} ry={groundW * E * 2} fill={url('shadow')} />
+      {!pr.metal && <ellipse cx={CX + 6} cy={groundY + 2} rx={groundW * 1.7} ry={groundW * E * 2.6} fill={url('glow')} />}
 
       {/* ножка и подставка */}
       {pr.stem && (
@@ -310,8 +312,8 @@ export function DrinkArtReal({ cocktail, className }: Props) {
             {/* стекло изнутри — лёгкая дымка */}
             <rect x="0" y="0" width="120" height="160" fill="white" opacity="0.04" />
             {/* напиток */}
-            <rect x="0" y={level} width="120" height="160" fill={url('liq')} opacity={liquidOpacity} />
-            <rect x={CX - lw - 4} y={level} width={lw * 2 + 8} height="160" fill={url('vol')} />
+            <rect x="0" y={level} width="120" height={botY - level + 4} fill={url('liq')} opacity={liquidOpacity} />
+            <rect x={CX - lw - 4} y={level} width={lw * 2 + 8} height={botY - level + 4} fill={url('vol')} opacity={liquidOpacity} />
             {frozen &&
               Array.from({ length: 60 }, (_, i) => (
                 <circle key={i} cx={CX + (rand() * 2 - 1) * lw} cy={level + rand() * (botY - level)} r={0.4 + rand() * 0.9} fill="white" opacity={0.25 + rand() * 0.45} />

@@ -4,7 +4,7 @@ import type { Cocktail } from '../../types/cocktail';
 import { countLabel } from '../../lib/cocktails';
 import { cn } from '../../lib/cn';
 import { coverStyle } from './CocktailCard';
-import { GlassIllustration } from './GlassIllustration';
+import { DrinkArtReal } from './DrinkArtReal';
 
 type Props = {
   can: number;
@@ -70,7 +70,7 @@ export function BarHero({ can, nearly, covers, to, onBuy, pressed }: Props) {
             )}
             style={coverStyle(c)}
           >
-            <GlassIllustration shape={c.glass} className="h-12" />
+            <DrinkArtReal cocktail={c} className="h-14" />
           </span>
         ))}
       </div>

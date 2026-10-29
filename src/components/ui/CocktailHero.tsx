@@ -5,6 +5,7 @@ import { cn } from '../../lib/cn';
 import { IconButton } from './Button';
 import { coverStyle } from './CocktailCard';
 import { GlassIllustration } from './GlassIllustration';
+import { DrinkArtReal } from './DrinkArtReal';
 
 type Props = {
   cocktail: Cocktail;
@@ -36,7 +37,12 @@ export function CocktailHero({ cocktail, onBack, action, titleRef, height = 'scr
 
       {/* под кнопкой «Назад» (44) — отступ 48, бокал вписывается в оставшуюся высоту */}
       <div className="relative mt-12 mb-3 min-h-0 flex-1">
-        <GlassIllustration shape={cocktail.glass} className={cn('absolute inset-0 size-full', glassMuted && 'opacity-30')} />
+        {/* бокал ещё не выбран (редактор) — приглушённый силуэт; иначе — напиток из состава */}
+        {glassMuted ? (
+          <GlassIllustration shape={cocktail.glass} className="absolute inset-0 size-full opacity-30" />
+        ) : (
+          <DrinkArtReal cocktail={cocktail} className="absolute inset-0 size-full" />
+        )}
       </div>
 
       {onBack && (

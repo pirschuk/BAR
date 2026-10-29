@@ -81,6 +81,8 @@ export type Cocktail = {
 
 export type IngredientGroup = 'spirit' | 'liqueur' | 'bitter' | 'syrup' | 'juice-fruit' | 'soda' | 'other';
 
+export type IngredientLook = { color: string; tint: number; body: 'clear' | 'tinted' | 'opaque' | 'none' };
+
 /** Словарь ингредиентов — src/data/ingredients.json */
 export type IngredientDef = {
   id: string;
@@ -89,6 +91,8 @@ export type IngredientDef = {
   group: IngredientGroup;
   /** типичная крепость продукта, % (целое 0–80); 0 — безалкогольные и pantry */
   abv: number;
+  /** вид в стакане — для картинки напитка: цвет, сила окраски на единицу объёма, тип (прозрачное / цветное / непрозрачное / не жидкость) */
+  look: IngredientLook;
   /** вода, лёд, сахар, соль — всегда «есть» */
   pantry?: boolean;
   popular?: boolean;

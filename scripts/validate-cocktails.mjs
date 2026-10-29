@@ -21,7 +21,9 @@ const STRENGTHS = ['non-alcoholic', 'light', 'medium', 'strong'];
 const BASES = ['gin', 'rum', 'whiskey', 'tequila', 'vodka', 'brandy', 'aperitif', 'non-alcoholic'];
 const TASTES = ['sour', 'sweet', 'bitter', 'fruity', 'herbal', 'refreshing', 'creamy', 'spicy'];
 const GROUPS = ['spirit', 'liqueur', 'bitter', 'syrup', 'juice-fruit', 'soda', 'other'];
-const DICT_KEYS = ['id', 'name', 'aliases', 'group', 'abv', 'pantry', 'popular'];
+const DICT_KEYS = ['id', 'name', 'aliases', 'group', 'abv', 'look', 'pantry', 'popular'];
+const LOOK_KEYS = ['color', 'tint', 'body'];
+const LOOK_BODIES = ['clear', 'tinted', 'opaque', 'none'];
 const NON_ALC_GROUPS = ['soda', 'juice-fruit', 'syrup'];
 const TAGS = ['classic', 'sour', 'bitter', 'sweet', 'fruity', 'herbal', 'citrus', 'creamy', 'spicy',
   'refreshing', 'summer', 'winter', 'brunch', 'aperitif', 'digestif', 'tiki', 'party', 'easy', 'non-alcoholic'];
@@ -93,6 +95,15 @@ for (const [idx, d] of dict.entries()) {
   if (!Number.isInteger(d.abv) || d.abv < 0 || d.abv > 80) err(did, `abv "${d.abv}" — нужно целое 0–80`);
   else if (NON_ALC_GROUPS.includes(d.group) && d.abv !== 0) err(did, `abv ${d.abv} у группы ${d.group} — должно быть 0`);
   else if (d.pantry && d.abv !== 0) err(did, `abv ${d.abv} у pantry — должно быть 0`);
+  // look — визуальный вид для иллюстрации напитка
+  if (!d.look || typeof d.look !== 'object' || Array.isArray(d.look)) err(did, 'нет look { color, tint, body }');
+  else {
+    for (const k of Object.keys(d.look)) if (!LOOK_KEYS.includes(k)) err(did, `look: лишнее поле "${k}"`);
+    if (typeof d.look.color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(d.look.color)) err(did, `look.color "${d.look.color}" — нужен #RRGGBB`);
+    if (typeof d.look.tint !== 'number' || !Number.isFinite(d.look.tint) || d.look.tint < 0 || d.look.tint > 8) err(did, `look.tint "${d.look.tint}" — нужно число 0–8`);
+    if (!LOOK_BODIES.includes(d.look.body)) err(did, `look.body "${d.look.body}" вне словаря (${LOOK_BODIES.join(', ')})`);
+    else if (d.look.body === 'none' && d.look.tint !== 0) err(did, 'look: body "none" ⇒ tint 0');
+  }
   if (d.pantry !== undefined && d.pantry !== true) err(did, 'pantry — только true или нет поля');
   if (d.popular !== undefined && d.popular !== true) err(did, 'popular — только true или нет поля');
   if (d.pantry && d.popular) err(did, 'pantry и popular одновременно');

@@ -43,7 +43,6 @@ import { IngredientPickSheet } from '../components/IngredientPickSheet';
 import { COVERS } from '../lib/custom';
 import { detectPlatform, platformOverride, setPlatformOverride, type Platform } from '../lib/motion';
 import { InstallPage } from './InstallPage';
-import { DrinkArt, type DrinkStyle } from '../components/ui/DrinkArt';
 import { DrinkArtReal } from '../components/ui/DrinkArtReal';
 import { GlassGuideTile, GuideRow, GuideTile, TermArt } from '../components/ui/GuideParts';
 import { TermSheet } from '../components/TermSheet';
@@ -81,9 +80,7 @@ function State({ label, children, className, inset }: { label: string; children:
   );
 }
 
-// --- прототип картинок напитков: два стиля на одних и тех же коктейлях ---
-
-const ART_SET = ['negroni', 'mojito', 'pina-colada', 'aviation', 'pisco-sour', 'french-75', 'white-russian', 'aperol-spritz', 'dry-martini', 'tom-collins', 'moscow-mule', 'irish-coffee', 'bramble'];
+// --- картинки напитков: контактный лист всех коктейлей + авторский пример ---
 
 /** авторский пример: никто его не рисовал — картинка из состава */
 const customDemo = (): Cocktail => ({
@@ -103,58 +100,23 @@ const customDemo = (): Cocktail => ({
 });
 
 function DrinkArtShowcase() {
-  const [style, setStyle] = useState<DrinkStyle | 'real'>('real');
-  const cards = [...ART_SET.map(must), customDemo()];
-  const art = (c: Cocktail) =>
-    style === 'real' ? (
-      <DrinkArtReal cocktail={c} className="absolute inset-x-0 top-6 mx-auto h-[60%]" />
-    ) : (
-      <DrinkArt cocktail={c} style={style} className="absolute inset-x-0 top-7 mx-auto h-[58%]" />
-    );
   return (
     <div className="flex flex-col gap-6">
-      <div className="px-4">
-        <SegmentedControl
-          label="Стиль картинок"
-          options={[
-            { value: 'real', label: 'Детально' },
-            { value: 'layers', label: 'Слоями' },
-            { value: 'aura', label: 'Аура' },
-            { value: 'mix', label: 'Смесь' },
-          ]}
-          value={style}
-          onChange={setStyle}
-        />
-      </div>
-      <State label="Карточки каталога · 8 классик + авторский (последний)" inset>
-        <ul className="grid grid-cols-2 gap-3 px-4">
-          {cards.map((c) => (
-            <li key={c.id}>
-              <CocktailCard cocktail={c} art={art(c)} />
-            </li>
-          ))}
-        </ul>
-      </State>
-      <State label="Обложка рецепта · крупно" inset>
-        <div className="mx-4 grid grid-cols-2 gap-3">
-          {(['negroni', 'mojito'] as const).map((id) => (
-            <div key={id} className="cover-gradient relative h-64 overflow-hidden rounded-tile" style={coverStyle(must(id))}>
-              {style === 'real' ? (
-                <DrinkArtReal cocktail={must(id)} className="absolute inset-0 m-auto h-[80%]" />
-              ) : (
-                <DrinkArt cocktail={must(id)} style={style} className="absolute inset-0 m-auto h-[80%]" />
-              )}
-            </div>
-          ))}
+      <State label="Авторский — картинка из состава" inset>
+        <div className="grid grid-cols-2 gap-3 px-4">
+          <CocktailCard cocktail={customDemo()} />
         </div>
       </State>
-      <State label="Было · силуэт без напитка" inset>
-        <ul className="grid grid-cols-2 gap-3 px-4">
-          {[must('negroni'), must('mojito')].map((c) => (
-            <li key={c.id}>
-              <CocktailCard cocktail={c} />
-            </li>
-          ))}
+      <State label={`Все коктейли базы · ${cocktails.filter((c) => !c.custom).length}`} inset>
+        <ul className="grid grid-cols-3 gap-2 px-4" data-testid="art-sheet">
+          {cocktails
+            .filter((c) => !c.custom)
+            .map((c) => (
+              <li key={c.id} data-id={c.id} className="cover-gradient relative aspect-card overflow-hidden rounded-row" style={coverStyle(c)}>
+                <DrinkArtReal cocktail={c} className="absolute inset-x-0 top-2 mx-auto h-[70%]" />
+                <span className="absolute inset-x-1 bottom-1 truncate text-center text-caption text-on-media">{c.name}</span>
+              </li>
+            ))}
         </ul>
       </State>
     </div>
@@ -844,7 +806,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="drink-art" title="Картинки напитков — прототип" note="Картинка собирается из данных рецепта: бокал, цвет напитка (смесь цветов ингредиентов по объёму), лёд по полю ice, пена у белка, пузырьки у газировки и игристого, сливки сверху, без украшений. «Слоями» — каждый ингредиент полосой своего цвета, высота по объёму; «Аура» — за бокалом светятся цвета ингредиентов; «Смесь» — общий цвет, лёд, пузырьки. Раскладка — по id коктейля. Авторский коктейль получает картинку сам.">
+      <Section id="drink-art" title="DrinkArtReal — картинки напитков" note="Собирается из рецепта: бокал по профилю в ракурсе 3/4 (эллипсы горлышка и дна, толстое донышко, блики, ножка), цвет напитка — смесь look.color ингредиентов по объёму × look.tint, лёд по полю ice (объёмные кубики, крупный куб, шар, колотый), пена у белка, пузырьки у газировки и игристого, сливки сверху, блендер — плотная масса с инеем, запотевание, тень и отсвет на «столе». Без украшений. Раскладка — по id. Авторский получает картинку сам. Ниже — контактный лист всей базы для проверки.">
         <DrinkArtShowcase />
       </Section>
 
