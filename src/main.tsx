@@ -1,12 +1,12 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { createBrowserRouter, Outlet, ScrollRestoration, useLocation, useNavigate, type RouteObject } from 'react-router';
 import { SwipeBack } from './components/SwipeBack';
 // RouterProvider из react-router/dom — с flushSync: переходы View Transitions снимают кадр синхронно
 import { RouterProvider } from 'react-router/dom';
 import { initMotion } from './lib/motion';
-import { initInstall, installGate, skipInstall } from './lib/install';
+import { initInstall, installGate } from './lib/install';
 import { InstallPage } from './pages/InstallPage';
 
 import { LuckySheet } from './components/LuckySheet';
@@ -173,10 +173,9 @@ const router = createBrowserRouter([
   },
 ], { basename: import.meta.env.BASE_URL });
 
-// Vercel: открыли ссылку в браузере — сначала страница установки; «Открыть в браузере» — приложение
 function Root() {
-  const [gate, setGate] = useState(installGate);
-  if (gate) return <InstallPage onContinue={() => (skipInstall(), setGate(false))} />;
+  // Vercel: в браузере — только страница установки; приложение открывается после установки (standalone)
+  if (installGate()) return <InstallPage />;
   return <RouterProvider router={router} />;
 }
 

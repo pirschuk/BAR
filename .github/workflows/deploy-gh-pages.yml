@@ -1,10 +1,11 @@
-# Тестовый стенд прототипа: https://pirschuk.github.io/BAR/
+# Тестовый стенд: https://pirschuk.github.io/BAR/ — здесь проверяем фичи и идеи (ветки claude/**).
+# Готовое уходит в main → Vercel (продакшен); main сюда не публикуется, чтобы не перетирать стенд старой версией.
 # Сборка с base=/BAR/ (BASE_PATH) + 404.html для прямых ссылок SPA, публикация через actions/deploy-pages.
 name: Deploy prototype to GitHub Pages
 
 on:
   push:
-    branches: [main, 'claude/**']
+    branches: ['claude/**']
   workflow_dispatch:
 
 permissions:

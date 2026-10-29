@@ -1068,16 +1068,21 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="install" title="Установка (страница для Vercel)" note="Открыли ссылку в браузере — сначала эта страница (сборка с VITE_INSTALL_PAGE=1; на тестовом стенде её нет, посмотреть — /install). iPhone — три шага с иконками Safari; Android — кнопка «Установить» (системное окно) или путь через ⋮. Данные хранятся только на телефоне.">
+      <Section id="install" title="Установка (страница для Vercel)" note="Открыли ссылку в браузере — сначала эта страница (сборка с VITE_INSTALL_PAGE=1; на тестовом стенде её нет, посмотреть — /install). iPhone — три шага с иконками Safari; Android — кнопка «Установить» (системное окно) или путь через ⋮; браузер мессенджера — «откройте в Safari / Chrome». Обхода «Открыть в браузере» нет: приложение — только после установки.">
         <div className="flex flex-col gap-6">
           <State label="iPhone" inset>
             <div className="mx-4 overflow-hidden rounded-sheet border border-border">
-              <InstallPage platform="ios" onContinue={() => {}} />
+              <InstallPage platform="ios" />
+            </div>
+          </State>
+          <State label="Браузер мессенджера (Telegram, Instagram…)" inset>
+            <div className="mx-4 overflow-hidden rounded-sheet border border-border">
+              <InstallPage platform="inapp" />
             </div>
           </State>
           <State label="Android · окно установки доступно" inset>
             <div className="mx-4 overflow-hidden rounded-sheet border border-border">
-              <InstallPage platform="android" canPrompt onContinue={() => {}} />
+              <InstallPage platform="android" canPrompt />
             </div>
           </State>
         </div>

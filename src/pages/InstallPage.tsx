@@ -13,10 +13,8 @@ function Glyph({ icon: Icon, label }: { icon: typeof Share; label: string }) {
 }
 
 type Props = {
-  /** «Открыть в браузере» — без установки (данные останутся в браузере) */
-  onContinue?: () => void;
   /** для витрины: какую платформу показать */
-  platform?: 'ios' | 'android' | 'desktop';
+  platform?: 'ios' | 'android' | 'desktop' | 'inapp';
   /** для витрины: Android дал окно установки */
   canPrompt?: boolean;
 };
@@ -24,9 +22,10 @@ type Props = {
 /**
  * Страница установки — то, что видит человек, открыв ссылку в браузере (сборка для Vercel).
  * iPhone: установка только вручную — три шага с иконками Safari. Android: кнопка «Установить» (системное окно),
- * если браузер его не дал — путь через меню ⋮. Компьютер — «откройте на телефоне».
+ * если браузер его не дал — путь через меню ⋮. Браузер мессенджера — «откройте в Safari / Chrome».
+ * Компьютер — «откройте на телефоне». Приложения в браузере нет: полная функциональность — после установки.
  */
-export function InstallPage({ onContinue, platform: forced, canPrompt: forcedPrompt }: Props) {
+export function InstallPage({ platform: forced, canPrompt: forcedPrompt }: Props) {
   const install = useInstall();
   const platform = forced ?? install.platform;
   const canPrompt = forcedPrompt ?? install.canPrompt;
@@ -82,6 +81,20 @@ export function InstallPage({ onContinue, platform: forced, canPrompt: forcedPro
               />
             </>
           )
+        ) : platform === 'inapp' ? (
+          <>
+            <h2 className="px-4 text-headline text-fg">Откройте в браузере</h2>
+            <p className="mt-1 px-4 text-subhead text-fg-2">Из мессенджера установить нельзя.</p>
+            <Steps
+              className="mt-4"
+              steps={[
+                <>
+                  Нажмите <Glyph icon={EllipsisVertical} label="Меню" /> или <Glyph icon={Share} label="Поделиться" /> в углу экрана
+                </>,
+                <>Выберите «Открыть в Safari» или «Открыть в Chrome» — и установите оттуда</>,
+              ]}
+            />
+          </>
         ) : (
           <p className="px-5 text-body text-fg">Откройте эту ссылку на телефоне — BAR устанавливается как приложение на iPhone и Android.</p>
         )}
@@ -89,13 +102,8 @@ export function InstallPage({ onContinue, platform: forced, canPrompt: forcedPro
 
       <p className="mt-4 flex gap-2 px-1 text-footnote text-fg-2">
         <Lock className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-        Ваш бар, избранное и свои коктейли хранятся только на этом телефоне — их никто не видит.
+        Бесплатно, без регистрации. Ваш бар, избранное и свои коктейли хранятся только на этом телефоне.
       </p>
-      {onContinue && (
-        <Button variant="plain" className="mt-2 mb-2 w-full text-fg-2!" onClick={onContinue}>
-          Открыть в браузере
-        </Button>
-      )}
     </main>
   );
 }

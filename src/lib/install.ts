@@ -26,11 +26,14 @@ export function initInstall() {
 
 export type InstallState = {
   /** ios — инструкция; android — кнопка, если браузер дал окно установки, иначе инструкция через меню */
-  platform: 'ios' | 'android' | 'desktop';
+  platform: 'ios' | 'android' | 'desktop' | 'inapp';
   canPrompt: boolean;
   installed: boolean;
   prompt: () => Promise<void>;
 };
+
+/** Встроенный браузер мессенджера / соцсети — установить оттуда нельзя, нужно открыть в Safari или Chrome */
+const isInApp = () => /Telegram|Instagram|FBAN|FBAV|FB_IAB|VKAndroidApp|vkclient|Line\/|; wv\)/i.test(navigator.userAgent);
 
 const isMobile = () => /Android|iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
 
@@ -42,7 +45,7 @@ export function useInstall(): InstallState {
     return () => void listeners.delete(l);
   }, []);
   return {
-    platform: !isMobile() ? 'desktop' : detectPlatform(),
+    platform: !isMobile() ? 'desktop' : isInApp() ? 'inapp' : detectPlatform(),
     canPrompt: !!deferred,
     installed: installed || isStandalone(),
     prompt: async () => {
@@ -56,25 +59,10 @@ export function useInstall(): InstallState {
   };
 }
 
-const SKIP_KEY = 'bar-skip-install';
-
 /**
- * Страница установки вместо приложения: только в сборке для Vercel (VITE_INSTALL_PAGE=1),
- * только во вкладке браузера (не в установленном приложении) и если не выбрали «Открыть в браузере».
+ * Сборка для Vercel (VITE_INSTALL_PAGE=1): в браузере — **только** страница установки, приложение — после установки
+ * (запуск с экрана «Домой»). Обхода «Открыть в браузере» нет — решение владельца.
  */
 export function installGate(): boolean {
-  if (import.meta.env.VITE_INSTALL_PAGE !== '1' || isStandalone()) return false;
-  try {
-    return sessionStorage.getItem(SKIP_KEY) !== '1';
-  } catch {
-    return true;
-  }
-}
-
-export function skipInstall() {
-  try {
-    sessionStorage.setItem(SKIP_KEY, '1');
-  } catch {
-    // приватный режим — до перезагрузки
-  }
+  return import.meta.env.VITE_INSTALL_PAGE === '1' && !isStandalone();
 }

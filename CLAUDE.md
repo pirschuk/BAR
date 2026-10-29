@@ -32,15 +32,18 @@ Claude Code: план → дизайн-система → экран → виз�
 - `node scripts/make-og.mjs` — картинка превью ссылки `public/og.png` 1200×630 (нужен dev-сервер).
 - `node scripts/make-splash.mjs` — заставки запуска iPhone (`public/splash/`), печатает `<link>` для `index.html`.
 
-## Хостинг
+## Хостинг и поток релиза
 
-- **GitHub Pages — тестовый стенд:** https://pirschuk.github.io/BAR/. Деплой —
-  `.github/workflows/deploy-gh-pages.yml` на пуш в `main` и `claude/**`.
-- **Vercel — основная публикация (позже):** от корня `/`, `vercel.json` (rewrites → `index.html`).
-  Сборка с `VITE_INSTALL_PAGE=1 VITE_INTERNAL=0`: служебных страниц (`/design-system`, `/install`, `/onboarding`) нет; ссылка, открытая в браузере, сначала показывает страницу установки PWA
-  (на тестовом стенде её нет — смотреть на `/install` там). Данные (бар, избранное, авторские) — в `localStorage`
-  телефона, между пользователями не пересекаются. Node ≥ 22.12 (`engines`); превью ссылки — `og:image` с абсолютным
-  адресом из `VERCEL_PROJECT_PRODUCTION_URL`; кэш: `/assets/*` — навсегда, `sw.js`/манифест/`index.html` — без кэша.
+- **Две площадки:** на GitHub Pages проверяем фичи и идеи, на Vercel — только готовый функционал.
+  1. Работа идёт в ветках `claude/**` → каждый пуш публикует **тестовый стенд** https://pirschuk.github.io/BAR/
+     (`.github/workflows/deploy-gh-pages.yml`; полный доступ в браузере, витрина `/design-system`, `/install`, `/onboarding`).
+  2. Когда владелец принял фичу — она уходит в `main` → **Vercel** публикует продакшен. В `main` и на Vercel
+     руками/автоматически ничего непроверенного не попадает; превью-деплои веток `claude/**` на Vercel выключены (`vercel.json` → `git`).
+- **Vercel — продакшен:** от корня `/`, `vercel.json` (rewrites → `index.html`). Сборка `VITE_INSTALL_PAGE=1 VITE_INTERNAL=0`:
+  в браузере — **только страница установки** (без обхода), всё приложение — после установки, при запуске с экрана «Домой»;
+  служебных страниц нет. Данные (бар, избранное, авторские) — в `localStorage` телефона, между пользователями не
+  пересекаются. Node ≥ 22.12 (`engines`); превью ссылки — `og:image` с адресом из `VERCEL_PROJECT_PRODUCTION_URL`;
+  кэш: `/assets/*` — навсегда, `sw.js`/манифест/`index.html` — без кэша.
 - Базовый путь — только через `import.meta.env.BASE_URL` (роутер — `basename`, манифест —
   `start_url`/`scope`, иконки — относительные пути). Абсолютные `/…` ссылки на ресурсы
   в коде не писать: на Pages они уйдут мимо `/BAR/`. Ссылки роутера (`<Link to="/">`) — можно.
