@@ -130,7 +130,7 @@ export const stepOf = (i: Ingredient) => (i.amountMl !== undefined ? 5 : 1);
 const SPIRIT_BASE: Record<string, Base> = {
   gin: 'gin', 'white-rum': 'rum', 'dark-rum': 'rum', bourbon: 'whiskey', 'rye-whiskey': 'whiskey', scotch: 'whiskey',
   'peated-scotch': 'whiskey', 'irish-whiskey': 'whiskey', tequila: 'tequila', mezcal: 'tequila', vodka: 'vodka',
-  'citrus-vodka': 'vodka', cognac: 'brandy', pisco: 'brandy',
+  'citrus-vodka': 'vodka', cognac: 'brandy', pisco: 'brandy', cachaca: 'rum', calvados: 'brandy',
 };
 export function baseOf(list: Ingredient[]): Base | null {
   if (!list.length) return null;

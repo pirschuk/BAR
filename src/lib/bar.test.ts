@@ -42,7 +42,9 @@ describe('Мой бар', () => {
     expect(unlocks(cocktails, new Set())).toEqual([]);
   });
   it('использование: ингредиент по ref, инструмент по методу', () => {
-    expect(usage('lime', cocktails).length).toBe(12);
+    // ожидание — из данных: тест не ломается при расширении базы
+    expect(usage('lime', cocktails).length).toBe(cocktails.filter((c) => c.ingredients.some((i) => i.ref === 'lime')).length);
+    expect(usage('lime', cocktails).length).toBeGreaterThan(0);
     expect(usage('tool-blender', cocktails).every((c) => c.method === 'blend')).toBe(true);
   });
 });
