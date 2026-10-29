@@ -148,17 +148,26 @@ const PAGES: RouteObject[] = [
   { path: '/guide/:topic', element: <GuideTopicPage /> },
 ];
 
+// служебные страницы для просмотра — только на тестовом стенде и локально; в сборке для Vercel (VITE_INTERNAL=0)
+// их нет совсем (в бандл не попадают), адреса ведут на «Не найдено»
+const INTERNAL: RouteObject[] =
+  import.meta.env.VITE_INTERNAL === '0'
+    ? []
+    : [
+        // витрина — отдельным чанком: пользователю приложения она не нужна
+        { path: '/design-system', lazy: async () => ({ Component: (await import('./pages/DesignSystemPage')).DesignSystemPage }) },
+        // страница установки — для просмотра (на Vercel её показывает installGate вместо приложения)
+        { path: '/install', element: <InstallPage /> },
+        // онбординг отдельно, для просмотра: не меняет данные и не помечается пройденным
+        { path: '/onboarding', element: <OnboardingPreviewPage /> },
+      ];
+
 const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
       ...PAGES,
-      // витрина — отдельным чанком: пользователю приложения она не нужна
-      { path: '/design-system', lazy: async () => ({ Component: (await import('./pages/DesignSystemPage')).DesignSystemPage }) },
-      // страница установки — для просмотра (на Vercel её показывает installGate вместо приложения)
-      { path: '/install', element: <InstallPage /> },
-      // онбординг отдельно, для просмотра: не меняет данные и не помечается пройденным
-      { path: '/onboarding', element: <OnboardingPreviewPage /> },
+      ...INTERNAL,
       { path: '*', element: <NotFoundPage /> },
     ],
   },

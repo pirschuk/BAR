@@ -37,8 +37,8 @@ Claude Code: план → дизайн-система → экран → виз�
 - **GitHub Pages — тестовый стенд:** https://pirschuk.github.io/BAR/. Деплой —
   `.github/workflows/deploy-gh-pages.yml` на пуш в `main` и `claude/**`.
 - **Vercel — основная публикация (позже):** от корня `/`, `vercel.json` (rewrites → `index.html`).
-  Сборка с `VITE_INSTALL_PAGE=1`: ссылка, открытая в браузере, сначала показывает страницу установки PWA
-  (на тестовом стенде её нет — смотреть на `/install`). Данные (бар, избранное, авторские) — в `localStorage`
+  Сборка с `VITE_INSTALL_PAGE=1 VITE_INTERNAL=0`: служебных страниц (`/design-system`, `/install`, `/onboarding`) нет; ссылка, открытая в браузере, сначала показывает страницу установки PWA
+  (на тестовом стенде её нет — смотреть на `/install` там). Данные (бар, избранное, авторские) — в `localStorage`
   телефона, между пользователями не пересекаются. Node ≥ 22.12 (`engines`); превью ссылки — `og:image` с абсолютным
   адресом из `VERCEL_PROJECT_PRODUCTION_URL`; кэш: `/assets/*` — навсегда, `sw.js`/манифест/`index.html` — без кэша.
 - Базовый путь — только через `import.meta.env.BASE_URL` (роутер — `basename`, манифест —
