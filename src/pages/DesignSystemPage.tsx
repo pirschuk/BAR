@@ -43,7 +43,7 @@ import { IngredientPickSheet } from '../components/IngredientPickSheet';
 import { COVERS } from '../lib/custom';
 import { detectPlatform, platformOverride, setPlatformOverride, type Platform } from '../lib/motion';
 import { InstallPage } from './InstallPage';
-import { DrinkArt, type DrinkStyle, type GarnishKind } from '../components/ui/DrinkArt';
+import { DrinkArt, type DrinkStyle } from '../components/ui/DrinkArt';
 import { GlassGuideTile, GuideRow, GuideTile, TermArt } from '../components/ui/GuideParts';
 import { TermSheet } from '../components/TermSheet';
 import { TERMS, TOPICS, getTerm, glassMl, termsOf } from '../lib/glossary';
@@ -82,16 +82,7 @@ function State({ label, children, className, inset }: { label: string; children:
 
 // --- прототип картинок напитков: два стиля на одних и тех же коктейлях ---
 
-const ART_SET: [string, GarnishKind][] = [
-  ['negroni', 'orange-twist'],
-  ['mojito', 'mint'],
-  ['pina-colada', 'pineapple'],
-  ['aviation', 'cherry'],
-  ['pisco-sour', 'bitters-drops'],
-  ['french-75', 'lemon-twist'],
-  ['white-russian', 'none'],
-  ['aperol-spritz', 'orange-wheel'],
-];
+const ART_SET = ['negroni', 'mojito', 'pina-colada', 'aviation', 'pisco-sour', 'french-75', 'white-russian', 'aperol-spritz'];
 
 /** авторский пример: никто его не рисовал — картинка из состава */
 const customDemo = (): Cocktail => ({
@@ -111,17 +102,18 @@ const customDemo = (): Cocktail => ({
 });
 
 function DrinkArtShowcase() {
-  const [style, setStyle] = useState<DrinkStyle>('flat');
-  const cards = [...ART_SET.map(([id, g]) => [must(id), g] as const), [customDemo(), 'lime-wedge'] as const];
-  const art = (c: Cocktail, g: GarnishKind) => <DrinkArt cocktail={c} garnish={g} style={style} className="absolute inset-x-0 top-7 mx-auto h-[58%]" />;
+  const [style, setStyle] = useState<DrinkStyle>('layers');
+  const cards = [...ART_SET.map(must), customDemo()];
+  const art = (c: Cocktail) => <DrinkArt cocktail={c} style={style} className="absolute inset-x-0 top-7 mx-auto h-[58%]" />;
   return (
     <div className="flex flex-col gap-6">
       <div className="px-4">
         <SegmentedControl
           label="Стиль картинок"
           options={[
-            { value: 'flat', label: 'Плоский' },
-            { value: 'soft', label: 'Мягкое стекло' },
+            { value: 'layers', label: 'Слоями' },
+            { value: 'aura', label: 'Аура' },
+            { value: 'mix', label: 'Смесь' },
           ]}
           value={style}
           onChange={setStyle}
@@ -129,9 +121,9 @@ function DrinkArtShowcase() {
       </div>
       <State label="Карточки каталога · 8 классик + авторский (последний)" inset>
         <ul className="grid grid-cols-2 gap-3 px-4">
-          {cards.map(([c, g]) => (
+          {cards.map((c) => (
             <li key={c.id}>
-              <CocktailCard cocktail={c} art={art(c, g)} />
+              <CocktailCard cocktail={c} art={art(c)} />
             </li>
           ))}
         </ul>
@@ -140,7 +132,7 @@ function DrinkArtShowcase() {
         <div className="mx-4 grid grid-cols-2 gap-3">
           {(['negroni', 'mojito'] as const).map((id) => (
             <div key={id} className="cover-gradient relative h-64 overflow-hidden rounded-tile" style={coverStyle(must(id))}>
-              <DrinkArt cocktail={must(id)} garnish={id === 'negroni' ? 'orange-twist' : 'mint'} style={style} className="absolute inset-0 m-auto h-[80%]" />
+              <DrinkArt cocktail={must(id)} style={style} className="absolute inset-0 m-auto h-[80%]" />
             </div>
           ))}
         </div>
@@ -841,7 +833,7 @@ export function DesignSystemPage() {
         </div>
       </Section>
 
-      <Section id="drink-art" title="Картинки напитков — прототип" note="Картинка собирается из данных рецепта: бокал, цвет напитка (смесь цветов ингредиентов по объёму), лёд по полю ice, пена у белка, пузырьки у газировки и игристого, сливки сверху, украшение на краю бокала. Раскладка льда и пузырьков, наклон украшения — по id коктейля. Авторский коктейль получает картинку сам. Два стиля на выбор.">
+      <Section id="drink-art" title="Картинки напитков — прототип" note="Картинка собирается из данных рецепта: бокал, цвет напитка (смесь цветов ингредиентов по объёму), лёд по полю ice, пена у белка, пузырьки у газировки и игристого, сливки сверху, без украшений. «Слоями» — каждый ингредиент полосой своего цвета, высота по объёму; «Аура» — за бокалом светятся цвета ингредиентов; «Смесь» — общий цвет, лёд, пузырьки. Раскладка — по id коктейля. Авторский коктейль получает картинку сам.">
         <DrinkArtShowcase />
       </Section>
 
