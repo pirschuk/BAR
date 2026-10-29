@@ -1,9 +1,10 @@
+import { ONBOARDING_HASH } from '../lib/onboarding';
 import { TOPICS, termsOf } from '../lib/glossary';
 import { GuideTile } from '../components/ui/GuideParts';
 import { articlesLabel } from './GuidePage';
 import { useMemo } from 'react';
-import { ChevronRight, HardDriveDownload, Heart, Sparkles } from 'lucide-react';
-import { Link } from 'react-router';
+import { ChevronRight, CircleHelp, HardDriveDownload, Heart, Sparkles } from 'lucide-react';
+import { Link, useNavigate } from 'react-router';
 import type { Cocktail } from '../types/cocktail';
 import { cocktails, getCocktail, plural } from '../lib/cocktails';
 import { useFavorites } from '../lib/favorites';
@@ -28,6 +29,7 @@ export function BarPage() {
   const { inv, add } = useInventory();
   const rows = useBarRows();
   const { openAdd } = useBarNav();
+  const navigate = useNavigate();
   const summary = useMemo(() => barSummary(cocktails, inv), [inv]);
   const { list: favIds } = useFavorites();
   // веер героя: что можно приготовить — сначала избранное, затем по каталогу
@@ -133,6 +135,18 @@ export function BarPage() {
           ))}
         </CardRail>
       </section>
+
+      {/* повтор онбординга */}
+      <div className="mt-6 px-4">
+        <button
+          type="button"
+          onClick={() => navigate({ hash: ONBOARDING_HASH }, { state: { sheet: true }, preventScrollReset: true })}
+          className="pressable -mx-2 flex min-h-tap items-center gap-2 rounded-control px-2 text-subhead text-fg-2"
+        >
+          <CircleHelp className="size-4 shrink-0" aria-hidden />
+          Как устроено приложение
+        </button>
+      </div>
 
       <BarSheets rows={rows} aboveTabBar />
     </main>

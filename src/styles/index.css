@@ -570,6 +570,13 @@ html[data-nav='grid']::view-transition-group(*) {
   animation-duration: var(--dur-grid);
 }
 
+/* онбординг: карточки веера чуть покачиваются (transform — не мешает translate/rotate утилит) */
+@keyframes float {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
 /* --- перетаскивание строк (редактор): соседи расступаются, поднятая строка — над ними, с тенью; отпустил — садится --- */
 .drag-row {
   position: relative;

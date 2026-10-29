@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Скриншот роута в мобильном вьюпорте 390×844 @2x → .screenshots/<имя>.png
-// Использование: node scripts/screenshot.mjs <роут> [имя] [--full] [--url http://...] [--click <локатор> ...]
+// Использование: node scripts/screenshot.mjs <роут> [имя] [--full] [--intro] [--url http://...] [--click <локатор> ...]
 // --click можно повторять; локатор Playwright, например: --click 'role=radio[name="2×"]' --click 'text=Белый ром'
 import { mkdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -27,6 +27,9 @@ for (let c = flag('--click'); c !== undefined; c = flag('--click')) clicks.push(
 const full = args.includes('--full');
 if (full) args.splice(args.indexOf('--full'), 1);
 const base = flag('--url') ?? 'http://127.0.0.1:5173';
+// --intro — снять онбординг первого запуска
+const intro = args.includes('--intro');
+if (intro) args.splice(args.indexOf('--intro'), 1);
 
 const route = args[0] ?? '/';
 const name = args[1] ?? (route.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'home');
@@ -44,6 +47,8 @@ const context = await browser.newContext({
   reducedMotion: 'reduce',
 });
 const page = await context.newPage();
+// онбординг первого запуска не перекрывает экран (кроме --intro)
+if (!intro) await context.addInitScript(() => localStorage.getItem('bar-onboarded-v1') || localStorage.setItem('bar-onboarded-v1', 'test')); // онбординг первого запуска не перекрывает снимки
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));

@@ -43,6 +43,8 @@ import { IngredientPickSheet } from '../components/IngredientPickSheet';
 import { COVERS } from '../lib/custom';
 import { detectPlatform, platformOverride, setPlatformOverride, type Platform } from '../lib/motion';
 import { InstallPage } from './InstallPage';
+import { Onboarding } from '../components/Onboarding';
+import { PageDots } from '../components/ui/PageDots';
 import { DrinkArtReal } from '../components/ui/DrinkArtReal';
 import { GlassGuideTile, GuideRow, GuideTile, TermArt } from '../components/ui/GuideParts';
 import { TermSheet } from '../components/TermSheet';
@@ -1051,6 +1053,24 @@ export function DesignSystemPage() {
 
       <Section id="motion" title="Движение" note="Язык платформы — html[data-platform]: iOS (UIKit) — push справа 100%, старая страница на 30% и темнеет, 400 мс cubic-bezier(.32,.72,0,1), свайп назад от края (standalone); Android (Material 3) — shared axis X ±30 px + fade, «назад» — страница сжимается и уходит, 300 мс emphasized. Шторки и тосты уходят анимацией; сетка каталога перестраивается. reduced-motion — только fade. Переходы страниц — View Transitions (Safari 18+, Chrome 111+); без них — мгновенно.">
         <MotionShowcase />
+      </Section>
+
+      <Section id="onboarding" title="Onboarding — первый запуск" note="Полный экран по хэшу #intro поверх корня (прямая ссылка на рецепт не перебивается; у кого уже есть бар/избранное/авторские — не показываем). «Пропустить» сверху, визуал из настоящих компонентов (веер CocktailCard, мини-герой с отмечаемыми строками, авторская карточка + GuideTile), заголовок Unbounded в два тона [pillowtalk], PageDots, «Дальше». Свайп — за пальцем с сопротивлением у краёв. Финал — действие: быстрый старт / отмечу сам / каталог; при повторе с непустым баром финала нет. «Назад» системы закрывает. Повтор — «Как устроено приложение» внизу «Моего бара».">
+        <div className="flex flex-col gap-6">
+          <State label="PageDots · 1 из 4 / 4 из 4" inset>
+            <div className="flex gap-8 px-4">
+              <PageDots count={4} index={0} />
+              <PageDots count={4} index={3} />
+            </div>
+          </State>
+          {[0, 1, 2, 3].map((i) => (
+            <State key={i} label={['Слайд 1 · каталог', 'Слайд 2 · «Мой бар»', 'Слайд 3 · своё', 'Финал · действие'][i]!} inset>
+              <div className="mx-4 overflow-hidden rounded-sheet border border-border">
+                <Onboarding inline open startAt={i} onClose={() => {}} onFinish={() => {}} />
+              </div>
+            </State>
+          ))}
+        </div>
       </Section>
 
       <Section id="install" title="Установка (страница для Vercel)" note="Открыли ссылку в браузере — сначала эта страница (сборка с VITE_INSTALL_PAGE=1; на тестовом стенде её нет, посмотреть — /install). iPhone — три шага с иконками Safari; Android — кнопка «Установить» (системное окно) или путь через ⋮. Данные хранятся только на телефоне.">

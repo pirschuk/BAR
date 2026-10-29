@@ -14,6 +14,7 @@ mkdirSync('.screenshots', { recursive: true });
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
+await ctx.addInitScript(() => localStorage.getItem('bar-onboarded-v1') || localStorage.setItem('bar-onboarded-v1', 'test')); // онбординг первого запуска не перекрывает снимки
 const page = await ctx.newPage();
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));

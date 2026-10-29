@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { createBrowserRouter, Outlet, ScrollRestoration, useLocation, useNavigate, type RouteObject } from 'react-router';
 import { SwipeBack } from './components/SwipeBack';
 // RouterProvider из react-router/dom — с flushSync: переходы View Transitions снимают кадр синхронно
@@ -15,7 +15,9 @@ import { cocktails, countLabel } from './lib/cocktails';
 import { useCustomCocktails } from './lib/custom';
 import { useFavorites } from './lib/favorites';
 import { applyFilters, hasFacetFilters, parseFilters } from './lib/filters';
-import { canMake, useInventory } from './lib/inventory';
+import { QUICK_START, canMake, useInventory } from './lib/inventory';
+import { ONBOARDING_HASH, markOnboarded, shouldOnboard } from './lib/onboarding';
+import { Onboarding } from './components/Onboarding';
 import type { Cocktail } from './types/cocktail';
 import { TabBar } from './components/ui/TabBar';
 import { BarPage } from './pages/BarPage';
@@ -33,7 +35,7 @@ const TAB_ROOTS = new Set(['/', '/bar']);
 function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { inv } = useInventory();
+  const { inv, add } = useInventory();
   const { list: favList } = useFavorites();
   const { list: myList } = useCustomCocktails();
   const onRoot = TAB_ROOTS.has(location.pathname);
@@ -50,6 +52,24 @@ function Layout() {
     const filtered = hasFacetFilters(f) || !!f.q.trim();
     return { pool, caption: filtered ? `Подходят: ${countLabel(pool.length)}` : `Весь каталог: ${countLabel(pool.length)}` };
   }, [location.pathname, location.search, inv, favList, myList]);
+
+  // онбординг: первый запуск на корне (прямая ссылка на рецепт — не перебиваем); открыт по хэшу — «Назад» закрывает
+  useEffect(() => {
+    if (onRoot && !location.hash && shouldOnboard())
+      navigate({ pathname: location.pathname, search: location.search, hash: ONBOARDING_HASH }, { state: { sheet: true }, preventScrollReset: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onRoot]);
+  const isIntro = onRoot && location.hash === ONBOARDING_HASH;
+  const closeIntro = () => {
+    markOnboarded();
+    if ((location.state as { sheet?: boolean } | null)?.sheet) navigate(-1);
+    else navigate({ pathname: location.pathname, search: location.search, hash: '' }, { replace: true, preventScrollReset: true });
+  };
+  const finishIntro = (choice: 'quick' | 'bar' | 'catalog') => {
+    markOnboarded();
+    if (choice === 'quick') add(QUICK_START);
+    navigate(choice === 'catalog' ? '/' : '/bar', { replace: true });
+  };
 
   const isLucky = onRoot && location.hash === '#lucky';
   const openLucky = () =>
@@ -89,6 +109,8 @@ function Layout() {
         <Outlet />
       </SwipeBack>
       {onRoot && <TabBar onLucky={openLucky} />}
+      {/* бар уже не пуст (повтор из «Моего бара») — без финала «Соберите бар» */}
+      {onRoot && <Onboarding open={isIntro} onClose={closeIntro} onFinish={inv.size ? null : finishIntro} />}
       {onRoot && (
         <LuckySheet
           open={isLucky}
