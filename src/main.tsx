@@ -18,6 +18,7 @@ import { applyFilters, hasFacetFilters, parseFilters } from './lib/filters';
 import { QUICK_START, canMake, useInventory } from './lib/inventory';
 import { ONBOARDING_HASH, markOnboarded, shouldOnboard } from './lib/onboarding';
 import { Onboarding } from './components/Onboarding';
+import { OnboardingPreviewPage } from './pages/OnboardingPreviewPage';
 import type { Cocktail } from './types/cocktail';
 import { TabBar } from './components/ui/TabBar';
 import { BarPage } from './pages/BarPage';
@@ -154,6 +155,8 @@ const router = createBrowserRouter([
       { path: '/design-system', lazy: async () => ({ Component: (await import('./pages/DesignSystemPage')).DesignSystemPage }) },
       // страница установки — для просмотра (на Vercel её показывает installGate вместо приложения)
       { path: '/install', element: <InstallPage /> },
+      // онбординг отдельно, для просмотра: не меняет данные и не помечается пройденным
+      { path: '/onboarding', element: <OnboardingPreviewPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
