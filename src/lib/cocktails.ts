@@ -78,7 +78,7 @@ const METHOD_LABEL: Record<Method, string> = {
 const ICE_LABEL: Record<Ice, string> = {
   none: 'Без льда',
   cubes: 'Кубики',
-  'big-cube': 'Крупный',
+  'big-cube': 'Крупный куб',
   crushed: 'Колотый',
   sphere: 'Шар',
 };
