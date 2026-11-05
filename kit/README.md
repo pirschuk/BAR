@@ -1,8 +1,8 @@
 # Набор правил разработки PWA (из BAR)
 
-Как переносится: процесс, команды Claude Code, хуки, скрипты проверки, деплой «тестовый стенд → продакшен»
-и универсальные правила дизайн-системы. Специфика BAR (рецепты, `bartender`, токены и компоненты бара) сюда
-не входит.
+Что переносится: стек, процесс, команды Claude Code, хуки, скрипты проверки, деплой «тестовый стенд → продакшен»
+и инженерные правила PWA. **Внешний вид не переносится**: скилл дизайн-системы — пустой каркас, визуальный язык
+нового приложения строится заново. Специфика BAR (рецепты, `bartender`, токены и компоненты) сюда не входит.
 
 ## Быстрый старт
 
@@ -24,7 +24,8 @@ kit/apply.sh ../my-app "MyApp" owner/my-app 5173 "короткое описан�
 | `.claude/commands/look.md` | скриншот роута → разбор P0/P1/P2 → правки → повтор |
 | `.claude/commands/ref.md` | референс Mobbin → правила в скилл дизайн-системы |
 | `.claude/agents/ui-inspector.md` | субагент-критик по скриншотам |
-| `.claude/skills/design-system/SKILL.md` | скелет + универсальные правила (навигация, движение, формы, онбординг, установка, чек-лист) |
+| `.claude/skills/design-system/SKILL.md` | пустой каркас дизайн-системы + как его вести + чек-лист проверки |
+| `.claude/skills/pwa-engineering/SKILL.md` | механика PWA без дизайна: URL и «Назад», базовый путь, офлайн и кэш, установка iPhone/Android, standalone, данные, первый запуск, переходы, производительность, проверки |
 | `.claude/hooks/typecheck.sh` + `settings.json` | `tsc` после каждой правки `.ts/.tsx`, разрешения на dev/build/скриншоты |
 | `scripts/screenshot.mjs` | скриншот 390×844 @2x, `--full`, `--click`, `--intro` |
 | `scripts/split-shot.py`, `montage.py` | нарезать длинный скриншот / склеить в ряд |
@@ -60,18 +61,17 @@ devDependencies: `playwright` (скриншоты), `vitest`, `vite-plugin-pwa`.
 **Роутер** — `createBrowserRouter(..., { basename: import.meta.env.BASE_URL })`; служебные маршруты
 (`/design-system`, просмотр онбординга и установки) — только если `import.meta.env.VITE_INTERNAL !== '0'`.
 
-## Готовые модули из BAR (скопировать и подогнать)
+## Механика из BAR, которую можно взять (вид — переделать под себя)
 
-| Модуль | Файлы в BAR |
+| Механика | Файлы в BAR |
 |---|---|
-| Движение iOS/Android, View Transitions | `src/lib/motion.ts`, раздел «Движение» в `src/styles/index.css` |
+| Направление переходов, платформа, View Transitions | `src/lib/motion.ts` (без CSS-раздела «Движение» — это вид BAR) |
 | Свайп назад на iPhone (standalone) | `src/components/SwipeBack.tsx` |
-| Шторка с анимацией закрытия и смахом | `src/components/ui/BottomSheet.tsx` |
-| Тост с выходом | `src/components/ui/Toast.tsx` |
-| Навбар с проявлением по заголовку | `src/components/ui/NavBar.tsx` (`useNavReveal`) |
-| Страница установки + гейт продакшена | `src/lib/install.ts`, `src/pages/InstallPage.tsx`, `Root` в `src/main.tsx` |
-| Онбординг первого запуска | `src/lib/onboarding.ts`, `src/components/Onboarding.tsx`, `src/components/ui/PageDots.tsx`, `src/pages/OnboardingPreviewPage.tsx` |
+| Шторка: хэш, закрытие с анимацией, смах | логика в `src/components/ui/BottomSheet.tsx` (`useLeaving`, жест) |
+| Установка: события, платформа, гейт продакшена | `src/lib/install.ts`, `Root` в `src/main.tsx` |
+| Первый запуск: когда показывать | `src/lib/onboarding.ts` |
 | Перетаскивание строк | `useDrag` в `src/components/ui/EditorFields.tsx` |
+| Стор над localStorage | `src/lib/favorites.ts` (`useSyncExternalStore`, `storage`) |
 
 ## Настройка площадок
 
